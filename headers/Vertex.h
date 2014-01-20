@@ -39,6 +39,7 @@ public:
 	Vertex crossProduct(const Vertex &);
 
     static bool parallel(const Vertex &, const Vertex &);
+    static bool equals(const Vertex &, const Vertex &);
 
 	static double length(const Vertex &);
 	static double dotProduct(const Vertex &, const Vertex &);

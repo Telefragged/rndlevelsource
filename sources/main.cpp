@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include <iostream>
-#include <random>
 #include <cstring>
 #include "Timer.h"
 #include "World.h"

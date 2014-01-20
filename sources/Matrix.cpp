@@ -2,6 +2,7 @@
 #include "Matrix.h"
 #include <math.h>
 #include <assert.h>
+#include <limits>
 #include <sstream>
 #include "Vertex.h"
 
@@ -198,26 +199,32 @@ void Matrix::printpretty() const {
 	}
 }
 
-inline void Matrix::rowSet(Matrix &mat, const Matrix &row, unsigned int to) {
+inline void rowSet(Matrix &mat, const Matrix &row, unsigned int to) {
 	for(unsigned int n = 0; n < mat.cols(); n++) {
 		mat[to][n] = row[0][n];
 	}
 }
 
-inline Matrix Matrix::rowGet(const Matrix &mat, unsigned int from, double mod) {
+inline void colSet(Matrix &mat, const Matrix &col, unsigned int to) {
+	for(unsigned int n = 0; n < mat.rows(); n++) {
+		mat[n][to] = col[n][0];
+	}
+}
+
+inline Matrix rowGet(const Matrix &mat, unsigned int from, double mod = 0.0) {
 	Matrix rowcpy(1, mat.cols());
 	for(unsigned int n = 0; n < mat.cols(); n++) rowcpy[0][n] = mat[from][n];
 	rowcpy *= mod;
 	return rowcpy;
 }
 
-inline void Matrix::rowAdd(Matrix &mat, const Matrix &row, unsigned int to) {
+inline void rowAdd(Matrix &mat, const Matrix &row, unsigned int to) {
 	for(unsigned int n = 0; n < mat.y(); n++) {
 		mat[to][n] += row[0][n];
 	}
 }
 
-inline void Matrix::rowSwap(Matrix &mat, unsigned int r1, unsigned int r2) {
+inline void rowSwap(Matrix &mat, unsigned int r1, unsigned int r2) {
 	Matrix row1 = rowGet(mat, r1);
 	rowSet(mat, rowGet(mat, r2), r1);
 	rowSet(mat, row1, r2);
@@ -231,9 +238,50 @@ inline unsigned int rowPivot(Matrix &mat, unsigned int currentrow) {
 	unsigned int workingrow = currentrow;
 	while(doubleeq(mat[currentrow][workingrow], 0.0)) {
 		if(workingrow == mat.rows()-1) return 0xFFFFFFFF;
-		Matrix::rowSwap(mat, currentrow, ++workingrow);
+		rowSwap(mat, currentrow, ++workingrow);
 	}
 	return workingrow;
+}
+
+inline Matrix rowGetSkip(const Matrix &mat, unsigned int from, unsigned int skip) {
+    Matrix rowcpy(1, mat.cols()-1);
+    unsigned int putcnt = 0;
+	for(unsigned int n = 0; n < mat.cols(); n++) {
+        if(n == skip) continue;
+        rowcpy[0][putcnt++] = mat[from][n];
+	}
+	return rowcpy;
+}
+
+inline Matrix colGetSkip(const Matrix &mat, unsigned int from, unsigned int skip) {
+    Matrix rowcpy(mat.rows()-1, 1);
+    unsigned int putcnt = 0;
+	for(unsigned int n = 0; n < mat.rows(); n++) {
+        if(n == skip) continue;
+        rowcpy[putcnt++][0] = mat[n][from];
+	}
+	return rowcpy;
+}
+
+//Probably very slow
+double Matrix::det() const {
+    if(cols() != rows()) return std::numeric_limits<double>::quiet_NaN();
+    if(cols() == 2) return (arr[0][0]*arr[1][1]) - (arr[0][1]*arr[1][0]);
+    double ret = 0.0;
+    int sign = 1.0;
+    for(unsigned int n = 0; n < cols(); n++) {
+        Matrix newmat(cols()-1, rows()-1);
+        double mod = arr[0][n] * sign;
+        sign *= -1;
+        unsigned int colput = 0;
+        for(unsigned int m = 0; m < cols(); m++) {
+            if(m == n) continue;
+            Matrix col = colGetSkip((*this), m, 0);
+            colSet(newmat, col, colput++);
+        }
+        ret += (mod * newmat.det());
+    }
+    return ret;
 }
 
 Matrix Matrix::gaussElim(Matrix mat) {

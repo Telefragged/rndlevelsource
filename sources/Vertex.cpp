@@ -83,6 +83,7 @@ double Vertex::dotProduct(const Vertex &lhs, const Vertex &rhs) {
 
 Vertex Vertex::normalize(const Vertex &v) {
 	double len = v.length();
+	if(doubleeq(len, 0.0)) return v;
 	return Vertex(
 		v.x() / len,
 		v.y() / len,
@@ -91,6 +92,7 @@ Vertex Vertex::normalize(const Vertex &v) {
 
 Vertex Vertex::normalize() {
 	double len = length();
+	if(doubleeq(len, 0.0)) return Vertex((*this));
 	return Vertex(
 		vertex_[0] / len,
 		vertex_[1] / len,
@@ -156,6 +158,12 @@ bool Vertex::parallel(const Vertex &lhs, const Vertex &rhs) {
     return (doubleeq(pvert.x(), 0.0))
         && (doubleeq(pvert.y(), 0.0))
         && (doubleeq(pvert.z(), 0.0));
+}
+
+bool Vertex::equals(const Vertex &lhs, const Vertex &rhs) {
+    return (doubleeq(lhs.x(), rhs.x()))
+        && (doubleeq(lhs.y(), rhs.y()))
+        && (doubleeq(lhs.z(), rhs.z()));
 }
 
 double Vertex::dotProduct(const Vertex &rhs) {

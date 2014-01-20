@@ -69,13 +69,11 @@ public:
 	Matrix &operator*=(const Matrix &);
 	Matrix &operator*=(double);
 
+    double det() const;
+
 	//Returns the product of the matrix(lhs) multiplied by the argument matrix(rhs).
 	Matrix mult(const Matrix &);
 
-	static Matrix rowGet(const Matrix &mat, unsigned int from, double mod = 1.0);
-	static void rowAdd(Matrix &mat, const Matrix &row, unsigned int to);
-	static void rowSet(Matrix &mat, const Matrix &row, unsigned int to);
-	static void rowSwap(Matrix &mat, unsigned int r1, unsigned int r2);
 	static Matrix gaussElim(Matrix mat);
 
 	Matrix(double **, unsigned int, unsigned int);

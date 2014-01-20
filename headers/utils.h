@@ -1,8 +1,9 @@
 #pragma once
+#include <limits>
+#include <math.h>
+#include <stdlib.h>
 #include <sstream>
 #include <string>
-#include <limits>
-#include <stdlib.h>
 
 inline std::string nextword(unsigned int &pos, std::string &str, std::string delim = " \t\n\r") {
 	if(pos >= str.length()) return "";
@@ -28,7 +29,7 @@ inline std::string reverse_string(std::string input) {
 }
 
 inline bool doubleeq(double lhs, double rhs, double epsilon = 0.000001) {
-	return abs(lhs - rhs) < epsilon;
+	return (fabs(lhs - rhs)) < epsilon;
 }
 
 template <typename T>

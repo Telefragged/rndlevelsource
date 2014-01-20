@@ -32,6 +32,19 @@ Matrix Plane::equation() const {
 	return ret;
 }
 
+Plane Plane::vectorPlane(const Vector &line1, const Vector &line2) {
+    if(Vertex::parallel(line1.vec(), line2.vec()) && Vertex::equals(line1.beg(), line2.beg())) return Plane();
+    Vertex p1 = line1.beg();
+    Vertex p2 = line1.end();
+    Vertex p3 = line2.beg();
+    if(Vertex::equals(p3, p1) || Vertex::equals(p3, p2)) p3 = line2.end();
+    Plane ret;
+    ret.p1 = p1;
+    ret.p2 = p2;
+    ret.p3 = p3;
+    return ret;
+}
+
 Vector Plane::intersectLine(const Matrix &lhs, const Matrix &rhs) {
 	Vertex lhsnorm(lhs[0][0], lhs[0][1], lhs[0][2]);
 	Vertex rhsnorm(rhs[0][0], rhs[0][1], rhs[0][2]);
@@ -39,7 +52,7 @@ Vector Plane::intersectLine(const Matrix &lhs, const Matrix &rhs) {
 	if(Vertex::parallel(lhsnorm, rhsnorm)) return Vector(Vertex());
 	Vertex interline = Vertex::normalize(Vertex::crossProduct(lhsnorm, rhsnorm));
 	double eqarr[2][3];
-	int parcase = -1;
+	char parcase = -1; //stores how points are stored and read
 	//Test if the intersection line is parallel to the XY, XZ and YZ planes.
 	if(!doubleeq(Vertex::dotProduct(interline, Vertex(0, 0, 1)), 0.0)) {
         //line will cross XY plane, z will be = 0
@@ -52,6 +65,7 @@ Vector Plane::intersectLine(const Matrix &lhs, const Matrix &rhs) {
         eqarr[1][0] = rhs[0][0]; eqarr[1][1] = rhs[0][2]; eqarr[1][2] = rhs[0][3];
         parcase = 1;
 	} else if(!doubleeq(Vertex::dotProduct(interline, Vertex(1, 0, 0)), 0.0)) {
+        //Can probably skip this test, as the line will have to cross this plane if it doesn't cross the others.
         //line will cross YZ plane, x will be = 0
         eqarr[0][0] = lhs[0][1]; eqarr[0][1] = lhs[0][2]; eqarr[0][2] = lhs[0][3];
         eqarr[1][0] = rhs[0][1]; eqarr[1][1] = rhs[0][2]; eqarr[1][2] = rhs[0][3];
@@ -92,16 +106,26 @@ double Plane::dist(const Vertex &pt, const Vertex &to) {
 	return (pt-to).length();
 }
 
-inline bool oppositeLines(const Vertex &pt1, const Vertex &pt2, const Vector &line) {
-	Vertex cpt1 = Vertex::crossProduct(line.vec(), pt1);
-	Vertex cpt2 = Vertex::crossProduct(line.vec(), pt2);
-	return Vertex::dotProduct(cpt1, cpt2) < 0.0;
-}
-
 bool Plane::crossesLine(const Plane &p, const Vector &line) {
-	if(oppositeLines(p.p1, p.p2, line)) return true;
-	if(oppositeLines(p.p1, p.p3, line)) return true;
-	if(oppositeLines(p.p2, p.p3, line)) return true;
+    //We make the assumption that the line is parallel to the plane.
+    Vector line2(line.beg());
+    line2.vec(Vertex::normalize(p.normal()));
+    Plane pnorm = Plane::vectorPlane(line, line2);
+    Vertex row1 = pnorm.p3 - pnorm.p1,
+        row2 = pnorm.p2 - pnorm.p1;
+    Matrix detmat(3, 3);
+    detmat.setRow(0, row1);
+    detmat.setRow(1, row2);
+    detmat.setRow(2, p.p1 - pnorm.p1);
+    bool left = (detmat.det() > 0.0);
+    printf("Plane: %s\n", pnorm.toStr().c_str());
+    printf("det: %5.3f\n", detmat.det());
+    detmat.setRow(2, p.p2 - pnorm.p1);
+    printf("det: %5.3f\n", detmat.det());
+    if((detmat.det() > 0.0) != left) return true;
+    detmat.setRow(2, p.p3 - pnorm.p1);
+    printf("det: %5.3f\n", detmat.det());
+    if((detmat.det() > 0.0) != left) return true;
 	return false;
 	//std::pair<Vertex, double> max, mid, min;
 	//max.first = p.p1; max.second = dist(p.p1, line);
@@ -136,11 +160,12 @@ bool Plane::testCollision(const Plane &lhs, const Plane &rhs) {
 	//Determine which planes cross the intersection
 	bool lhscrosses = Plane::crossesLine(lhs, vec);
 	bool rhscrosses = Plane::crossesLine(rhs, vec);
-	//If both cross the line then the planes collide
-	printf("Collision: (%s, %s) \nline %s + t(%s)\n\n", lhs.toStr().c_str(), rhs.toStr().c_str(), vec.beg().toStr().c_str(), vec.vec().toStr().c_str());
+	//If both planes cross the line then the planes collide
 	if( lhscrosses && rhscrosses ) {
+        printf("Collision: (%s, %s) \nline %s + t(%s)\n\n", lhs.toStr().c_str(), rhs.toStr().c_str(), vec.beg().toStr().c_str(), vec.vec().toStr().c_str());
 		return true;
 	}
+	printf("\n\n");
 	return false;
 }
 
