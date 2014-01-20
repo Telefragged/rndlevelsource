@@ -33,7 +33,7 @@ Matrix Plane::equation() const {
 }
 
 Plane Plane::vectorPlane(const Vector &line1, const Vector &line2) {
-    if(Vertex::parallel(line1.vec(), line2.vec()) && Vertex::equals(line1.beg(), line2.beg())) return Plane();
+    if(Vertex::parallel(line1.vec(), line2.vec())) return Plane();
     Vertex p1 = line1.beg();
     Vertex p2 = line1.end();
     Vertex p3 = line2.beg();
@@ -118,13 +118,9 @@ bool Plane::crossesLine(const Plane &p, const Vector &line) {
     detmat.setRow(1, row2);
     detmat.setRow(2, p.p1 - pnorm.p1);
     bool left = (detmat.det() > 0.0);
-    printf("Plane: %s\n", pnorm.toStr().c_str());
-    printf("det: %5.3f\n", detmat.det());
     detmat.setRow(2, p.p2 - pnorm.p1);
-    printf("det: %5.3f\n", detmat.det());
     if((detmat.det() > 0.0) != left) return true;
     detmat.setRow(2, p.p3 - pnorm.p1);
-    printf("det: %5.3f\n", detmat.det());
     if((detmat.det() > 0.0) != left) return true;
 	return false;
 	//std::pair<Vertex, double> max, mid, min;

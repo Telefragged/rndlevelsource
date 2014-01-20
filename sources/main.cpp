@@ -9,14 +9,10 @@
 int main(int argc, char *argv[]) {
 	mictimer::print_on_destruct = true;
 	mictimer timer("ms main()", 1000.0);
-	bool compile = false, cleanup = true;
 	std::string outfile = "./rndmap/compile/roomwrite.vmf";
 	for(int i = 1; i < argc; i++) {
-		if(ARGEQ("-compile")) compile = true;
-		else if(ARGEQ("-outfile")) outfile = argv[++i];
-		else if(ARGEQ("-noclean")) cleanup = false;
+        if(ARGEQ("-outfile")) outfile = argv[++i];
 	}
-
 	Part p1("./rndmap/room5.vmf");
 	Part p2("./rndmap/room6.vmf");
 	Part p3("./rndmap/room3.vmf");

@@ -3,13 +3,6 @@
 #include <mutex>
 
 template <class T>
-inline void swap(T *v1, T *v2) {
-	T *tmp = v1;
-	v1 = v2;
-	v2 = tmp;
-}
-
-template <class T>
 class LinkedNode
 {
 private:
@@ -84,15 +77,15 @@ protected:
 
 	static unsigned int partition(T **vals, unsigned int beg, unsigned int end, unsigned int pivotind, bool (*cmpfnc)(const T &, const T &)) {
 		T *pivot = vals[pivotind];
-		swap(vals[pivotind], vals[end]);
+		std::swap(vals[pivotind], vals[end]);
 		unsigned int storeind = beg;
 		for(unsigned int n = beg; n < end; n++) {
 			if(cmpfnc(*vals[n], *pivot)) {
-				swap(vals[n], vals[storeind]);
+				std::swap(vals[n], vals[storeind]);
 				storeind++;
 			}
 		}
-		swap(vals[storeind], vals[end]);
+		std::swap(vals[storeind], vals[end]);
 		return storeind;
 	}
 
@@ -138,7 +131,7 @@ public:
 		bool operator!=(const iterator& rhs) {
 			return this->node != rhs.node;
 		}
-		
+
 	};
 
 	class const_iterator {
@@ -395,34 +388,35 @@ public:
 		return size_;
 	}
 
-	LinkedList(const LinkedList<T> &orig) {
-		size_ = 0;
-		prevind_ = 0;
-		first = nullptr;
-		last = nullptr;
-		prev = nullptr;
+	LinkedList(const LinkedList<T> &orig) :
+        first(nullptr),
+        last(nullptr),
+        prev(nullptr),
+        size_(0),
+        prevind_(0)
+	{
 		for(const T &origt : orig) {
 			put(new T(origt));
 		}
 	}
 
-	LinkedList(LinkedList<T> &&orig)
+	LinkedList(LinkedList<T> &&orig) :
+        first(nullptr),
+        last(nullptr),
+        prev(nullptr),
+        size_(0),
+        prevind_(0)
 	{
-		size_ = 0;
-		prevind_ = 0;
-		first = nullptr;
-		last = nullptr;
-		prev = nullptr;
 		swap(*this, orig);
 	}
 
-	LinkedList()
+	LinkedList() :
+        first(nullptr),
+        last(nullptr),
+        prev(nullptr),
+        size_(0),
+        prevind_(0)
 	{
-		size_ = 0;
-		prevind_ = 0;
-		first = nullptr;
-		last = nullptr;
-		prev = nullptr;
 	}
 
 	void unassign() {
