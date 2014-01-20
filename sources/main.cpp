@@ -8,7 +8,6 @@
 #define ARGEQ(A) !strcmp(argv[i], A)
 
 int main(int argc, char *argv[]) {
-	printf("Halla!\n");
 	mictimer::print_on_destruct = true;
 	mictimer timer("ms main()", 1000.0);
 	bool compile = false, cleanup = true;
