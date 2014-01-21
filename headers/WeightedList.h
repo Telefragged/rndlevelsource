@@ -174,7 +174,7 @@ public:
 	}
 
 	T *getweighted(unsigned int weight) {
-		if(weight < 0 || weight >= totweight_) return nullptr;
+		if(weight >= totweight_) return nullptr;
 		WeightedNode<T> *cnode = first;
 		unsigned int toget = weight, cweight = 0, cind = 0;
 		while(cnode->getWeight() + cweight <= toget) {

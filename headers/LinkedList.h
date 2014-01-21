@@ -207,7 +207,7 @@ public:
 	}
 
 	T *remove(unsigned int index) {
-		if(index < 0 || index >= size()) return nullptr;
+		if(index >= size()) return nullptr;
 		T *ret = nullptr;
 		if(index == 0) {
 			if(prev == first) prev = prev->nextnode();
