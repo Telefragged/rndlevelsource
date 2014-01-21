@@ -1,6 +1,6 @@
 CPP = g++
-DEBUGFLAGS = -std=c++11 -g
-RELEASEFLAGS = -std=c++11 -s -O3 -O2 -O1 -O -Wall
+DEBUGFLAGS = -g -std=c++11
+RELEASEFLAGS = -s -std=c++11 -O3 -Wall
 BUILDFLAGS = $(DEBUGFLAGS)
 SRCDIR = ./sources/
 HDRDIR = ./headers/
