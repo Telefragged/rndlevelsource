@@ -60,6 +60,19 @@ bool Entity::entclasscmp(const Entity &lhs, const std::string &rhs) {
 	return false;
 }
 
+Entity Entity::defaultWorldEntity() {
+    Entity world;
+    world.id_ = 1;
+    world.keyvals.put(new KeyVal("classname", "world"));
+    world.keyvals.put(new KeyVal("mapversion", "1"));
+    world.keyvals.put(new KeyVal("classname", "worldspawn"));
+    world.keyvals.put(new KeyVal("detailmaterial", "detail/detailsprites"));
+    world.keyvals.put(new KeyVal("detailvbsp", "detail.vbsp"));
+    world.keyvals.put(new KeyVal("maxpropscreenwidth", "-1"));
+    world.keyvals.put(new KeyVal("skyname", "sky_day01_01"));
+    return world;
+}
+
 Vertex Entity::origin() {
 	auto kv = keyvals.get_first_match<std::string>("origin", KeyVal::keycmp);
 	if(kv != nullptr) return Vertex(kv->val);
@@ -116,7 +129,7 @@ void Entity::move(const Vector &vec) {
 
 void Entity::reID(unsigned int *entityID,
 				  unsigned int *solidID,
-				  unsigned int *sideID) 
+				  unsigned int *sideID)
 {
 	id_ = ++(*entityID);
 	for(Solid &solid : solids) {

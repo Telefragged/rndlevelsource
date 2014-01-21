@@ -29,6 +29,8 @@ public:
 	static bool testCollision(const Entity &, const Entity &);
 	static bool entclasscmp(const Entity &, const std::string &);
 
+	static Entity defaultWorldEntity();
+
 	void rotate(const Matrix &, const Vertex &);
 	void move(const Vector &);
 	void mergeSolids(const Entity &);

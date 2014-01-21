@@ -17,9 +17,9 @@ class Side
 private:
 	unsigned int id_;
 	mutable unsigned int depth_;
+public:
 	Plane p;
 	Axis uaxis, vaxis;
-public:
 	LinkedList<KeyVal> keyvals;
 
 	unsigned int parse(std::istream &);
@@ -29,7 +29,7 @@ public:
 	void depth(unsigned int newDepth) const {depth_ = newDepth;}
 
 	BoundingBox bbox() const;
-	
+
 	void popuvars();
 	void rotate(const Vertex &, const Matrix &);
 	void move(const Vector &);

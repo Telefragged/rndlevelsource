@@ -21,7 +21,7 @@ Vector::Vector(void) :
 {
 }
 
-Vector::Vector(const Vertex &vert) : 
+Vector::Vector(const Vertex &vert) :
 	_orig(vert),
 	_vec(0.0, 0.0, 0.0)
 {
@@ -38,15 +38,15 @@ Vector::~Vector(void)
 }
 
 Vertex Vector::beg() const {
-	return Vertex(_orig);
+	return _orig;
 }
 
 Vertex Vector::end() const {
-	return Vertex(_orig + _vec);
+	return _orig + _vec;
 }
 
 Vertex Vector::vec() const {
-	return Vertex(_vec);
+	return _vec;
 }
 
 void Vector::vec(const Vertex &vec) {

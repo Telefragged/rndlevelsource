@@ -271,7 +271,7 @@ public:
 	LinkedList<T> &operator=(const LinkedList<T> &orig) {
 		if(this == &orig) return *this;
 		clear();
-		for(T &origt : orig) {
+		for(const T &origt : orig) {
 			put(new T(origt));
 		}
 		return *this;

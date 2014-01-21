@@ -11,8 +11,8 @@ class Part
 {
 private:
 	unsigned int entityID_, solidID_, sideID_;
-	LinkedList<Entity> entities;
 public:
+	LinkedList<Entity> entities;
 	WeightedList<Connection> connections;
 
 	//Test collision between parts

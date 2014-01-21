@@ -20,6 +20,8 @@ public:
 
 	static bool testCollision(const Solid &, const Solid &);
 
+	static Solid createBox(const Vector &, std::string texture = "");
+
 	unsigned int parse(std::istream &);
 	void rotate(const Vertex &, const Matrix &);
 	void move(const Vector &);

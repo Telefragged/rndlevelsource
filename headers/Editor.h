@@ -8,8 +8,8 @@ class Editor
 {
 private:
 	mutable unsigned int depth_;
-	LinkedList<KeyVal> keyvals;
 public:
+	LinkedList<KeyVal> keyvals;
 	unsigned int parse(std::istream &);
 
 	unsigned int depth() const {return depth_;}
@@ -23,7 +23,7 @@ public:
 
 inline std::ostream &operator<<(std::ostream &os, const Editor &e) {
 	if(e.keyvals.size() == 0U) return os;
-	os<<std::setw(e.depth())<<""<<"Editor\n";
+	os<<std::setw(e.depth())<<""<<"editor\n";
 	os<<std::setw(e.depth())<<""<<"{\n";
 	for(const KeyVal &kv : e.keyvals) {
 		os<<std::setw(e.depth())<<""<<"\t"<<kv.toStr()<<"\n";
