@@ -24,7 +24,7 @@ Vertex Plane::normal() const {
 Matrix Plane::equation() const {
 	Matrix ret(1, 4);
 	Vertex norm = normal();
-	double dist = -Vertex::dotProduct(norm, p1);
+	double dist = Vertex::dotProduct(norm, p1);
 	ret[0][0] = norm[0];
 	ret[0][1] = norm[1];
 	ret[0][2] = norm[2];
@@ -50,7 +50,7 @@ Vector Plane::intersectLine(const Matrix &lhs, const Matrix &rhs) {
 	Vertex rhsnorm(rhs[0][0], rhs[0][1], rhs[0][2]);
 	//Check if planes are parallel
 	if(Vertex::parallel(lhsnorm, rhsnorm)) return Vector(Vertex());
-	Vertex interline = Vertex::normalize(Vertex::crossProduct(lhsnorm, rhsnorm));
+	Vertex interline = Vertex::crossProduct(lhsnorm, rhsnorm).normalize();
 	double eqarr[2][3];
 	char parcase = -1; //stores how points are stored and read
 	//Test if the intersection line is parallel to the XY, XZ and YZ planes.
@@ -107,48 +107,43 @@ double Plane::dist(const Vertex &pt, const Vertex &to) {
 }
 
 bool Plane::crossesLine(const Plane &p, const Vector &line) {
-    //We make the assumption that the line is parallel to the plane.
+    //We make the assumption that the line lies on the plane.
     Vector line2(line.beg());
     line2.vec(Vertex::normalize(p.normal()));
+    //Construct plane given the argument line and the argument plane normal.
+    //If the line lies on the plane, the constructed plane
+    //is perpendicular to the argument plane.
     Plane pnorm = Plane::vectorPlane(line, line2);
     Vertex row1 = pnorm.p3 - pnorm.p1,
         row2 = pnorm.p2 - pnorm.p1;
+    //Construct matrix with vectors AB and AC on the new plane
+    //and the point we want test. The sign of the determinant
+    //determines which side of the plane the point lies on.
     Matrix detmat(3, 3);
     detmat.setRow(0, row1);
     detmat.setRow(1, row2);
     detmat.setRow(2, p.p1 - pnorm.p1);
-    bool left = (detmat.det() > 0.0);
+
+    //Using this fact, we can determine if the three points
+    //That define the plane are on the same side of the line or not.
+    double det = detmat.det();
+    bool left = (!doubleeq(det, 0.0) && det > 0.0);
+
     detmat.setRow(2, p.p2 - pnorm.p1);
-    if((detmat.det() > 0.0) != left) return true;
+    det = detmat.det();
+    if((!doubleeq(det, 0.0) && (det > 0.0)) != left) return true;
+
     detmat.setRow(2, p.p3 - pnorm.p1);
-    if((detmat.det() > 0.0) != left) return true;
+    det = detmat.det();
+    if((!doubleeq(det, 0.0) && (det > 0.0)) != left) return true;
+    //It might not be the most efficient way of doing it, but it works.
 	return false;
-	//std::pair<Vertex, double> max, mid, min;
-	//max.first = p.p1; max.second = dist(p.p1, line);
-	//mid.first = p.p2; mid.second = dist(p.p2, line);
-	//if(mid.second > max.second) mid.swap(max);
-	//min.first = p.p3; min.second = dist(p.p3, line);
-	//if(min.second > mid.second) {
-	//	min.swap(mid);
-	//	if(mid.second > max.second) mid.swap(max);
-	//}
-	//if(Plane::dist(max.first, mid.first) > max.second
-	//	&& !doubleeq(Plane::dist(max.first, mid.first), max.second)) {
-	//	//printf("mid %f %f\n", Plane::dist(max.first, mid.first), max.second);
-	//	return true;
-	//}
-	//else if(Plane::dist(max.first, min.first) > max.second
-	//	&& !doubleeq(Plane::dist(max.first, min.first), max.second)) {
-	//	//printf("min %f %f\n", Plane::dist(max.first, min.first), max.second);
-	//	return true;
-	//}
-	//else return false;
 }
 
 bool Plane::testCollision(const Plane &lhs, const Plane &rhs) {
 	//Line where the infinite planes meet
 	Vector vec = intersectLine(lhs.equation(), rhs.equation());
-	//If planes are parallel beg() is set to NaN
+	//If planes are parallel beg() is set to NaN by intersectLine()
 	Vertex line = vec.vec();
 	//printf("%s\n", line.toStr().c_str());
 	if(doubleeq(line.x(), 0.0) && doubleeq(line.y(), 0.0) && doubleeq(line.z(), 0.0)) return false;
@@ -158,10 +153,9 @@ bool Plane::testCollision(const Plane &lhs, const Plane &rhs) {
 	bool rhscrosses = Plane::crossesLine(rhs, vec);
 	//If both planes cross the line then the planes collide
 	if( lhscrosses && rhscrosses ) {
-        printf("Collision: (%s, %s) \nline %s + t(%s)\n\n", lhs.toStr().c_str(), rhs.toStr().c_str(), vec.beg().toStr().c_str(), vec.vec().toStr().c_str());
+        printf("Collision: (%s, %s) \nline: %s\n\n", lhs.toStr().c_str(), rhs.toStr().c_str(), vec.toStr().c_str());
 		return true;
 	}
-	printf("\n\n");
 	return false;
 }
 

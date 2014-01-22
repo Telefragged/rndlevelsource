@@ -24,6 +24,8 @@ public:
 	Vector &operator+=(const Vector &);
 	Vector &operator-=(const Vector &);
 
+    std::string toStr() const;
+
 	Vector(void);
 	Vector(const Vertex &);
 	Vector(const Vertex &, const Vertex &);

@@ -9,12 +9,12 @@
 #define M_PI 3.14159265358979323846
 
 double Matrix::get(unsigned int x, unsigned int y) const {
-	if((x >= xsize) || (y >= ysize)) return std::numeric_limits<double>::quiet_NaN();
+	if((x >= xsize || x < 0) || (y >= ysize || y < 0)) return std::numeric_limits<double>::quiet_NaN();
 	return arr[x][y];
 }
 
 void Matrix::set(unsigned int x, unsigned int y, double newval) {
-	if((x >= xsize) || (y >= ysize)) return;
+	if((x >= xsize || x < 0) || (y >= ysize || y < 0)) return;
 	arr[x][y] = newval;
 }
 

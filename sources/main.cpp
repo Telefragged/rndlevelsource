@@ -3,8 +3,6 @@
 #include <cstring>
 #include "Timer.h"
 #include "World.h"
-#include "Solid.h"
-#include "Vector.h"
 
 #define ARGEQ(A) !strcmp(argv[i], A)
 
@@ -19,6 +17,7 @@ int main(int argc, char *argv[]) {
 	Part p2("./rndmap/room6.vmf");
 	Part p3("./rndmap/room3.vmf");
 	World world;
+
 	world.addPart(p1);
 	world.addPart(p2);
 	world.addPart(p2);

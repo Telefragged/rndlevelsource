@@ -71,7 +71,7 @@ Connection *World::randConnection(Part &part) {
 
 World::World(void)
 {
-	eng_.seed(9);
+	eng_.seed(5);
 }
 
 World::~World(void)

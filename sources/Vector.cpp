@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <string>
 #include "Vector.h"
 
 void Vector::rotate(const Matrix &rotmat) {
@@ -13,6 +14,10 @@ Vector &Vector::operator+=(const Vector &rhs) {
 Vector &Vector::operator-=(const Vector &rhs) {
 	_vec-=rhs._vec;
 	return *this;
+}
+
+std::string Vector::toStr() const {
+    return std::string() + '('+ _orig.toStr() + ") + t(" + _vec.toStr() + ')';
 }
 
 Vector::Vector(void) :
