@@ -32,6 +32,8 @@ void Quaternion::normalize() {
 }
 
 Matrix Quaternion::quaternionMatrix() {
+    //Quaternion has to be a unit quaternion
+    //for this to produce a correct result.
 	Matrix matrix(3, 3);
 
 	matrix[0][0] = 1.0 - 2.0 * y() * y() - 2.0 * z() * z();
@@ -97,15 +99,6 @@ double &Quaternion::operator[](unsigned int pos) {
 	}
 }
 
-Quaternion::Quaternion(const Vertex &v1, const Vertex &v2) {
-	//Vertex v1 = Vertex::normalize(v1o), v2 = Vertex::normalize(v2o);
-	double dotp = Vertex::dotProduct(v1, v2);
-	xyz_ = Vertex::normalize(Vertex::crossProduct(v1, v2));
-	w_ = acos(dotp);
-	printf("dotp: %.3f\n", dotp);
-	printf("xyz: %s\n w_: %.3f\n", xyz_.toStr().c_str(), w_);
-}
-
 Quaternion::Quaternion(double x, double y, double z, double w) :
 	xyz_(x, y, z),
 	w_(w)
@@ -122,7 +115,6 @@ Quaternion::Quaternion(const Angle &a) {
 	sy = sin( DEG2RAD(a.z()) * 0.5);
 	cy = cos( DEG2RAD(a.z()) * 0.5);
 
-	// NJS: for some reason VC6 wasn't recognizing the common subexpressions:
 	double srXcp = sy * cr, crXsp = cy * sr;
 	xyz_.x(srXcp*cp-crXsp*sp); // X
 	xyz_.y(crXsp*cp+srXcp*sp); // Y

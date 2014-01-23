@@ -5,7 +5,6 @@
 #include "Vector.h"
 
 bool BoundingBox::testCollision(const BoundingBox &lhs, const BoundingBox &rhs) {
-	if(!Vertex::isVertex(lhs.min) || !Vertex::isVertex(rhs.min)) return false;
 	return(lhs.max.x() > rhs.min.x()
 		&& lhs.min.x() < rhs.max.x()
 		&& lhs.max.y() > rhs.min.y()

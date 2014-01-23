@@ -2,10 +2,10 @@
 #include "Axis.h"
 
 void Axis::parsestr(std::string &pstr) {
-	unsigned int epos = pstr.find_first_of(']')+1;
+	size_t epos = pstr.find_first_of(']')+1;
 	if(epos == std::string::npos) return;
 	std::string fstr = trim(pstr.substr(0, epos), "[]");
-	unsigned int vpos =  fstr.find_last_of(' ');
+	size_t vpos =  fstr.find_last_of(' ');
 	std::string parstr = fstr.substr(0, vpos);
 	v.parsestr(parstr);
 	parstr = fstr.substr(vpos+1);

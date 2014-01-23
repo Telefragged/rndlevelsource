@@ -30,7 +30,6 @@ public:
 	double operator[](unsigned int) const;
 
 	Quaternion(void);
-	Quaternion(const Vertex &, const Vertex &);
 	Quaternion(double, double, double, double);
 	Quaternion(const Angle &);
 	~Quaternion(void);

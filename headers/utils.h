@@ -7,15 +7,15 @@
 
 inline std::string nextword(unsigned int &pos, std::string &str, std::string delim = " \t\n\r") {
 	if(pos >= str.length()) return "";
-	unsigned int spos = pos;
-	unsigned int to = str.find_first_of(delim, pos);
+	size_t spos = pos;
+	size_t to = str.find_first_of(delim, pos);
 	if(to == std::string::npos) to = str.length();
 	pos = to+1;
 	return str.substr(spos, to-spos);
 }
 
 inline std::string trim(const std::string &str, const std::string delim = " \t\n\r") {
-	unsigned int bpos = str.find_first_not_of(delim), epos = str.find_last_not_of(delim);
+	size_t bpos = str.find_first_not_of(delim), epos = str.find_last_not_of(delim);
 	if(epos < bpos || epos >= str.length()) return "";
 	return str.substr(bpos, epos-bpos+1);
 }
@@ -51,7 +51,6 @@ inline std::string formatNum(T num, bool printDec = true, char sep = ',') {
 		n++;
 	}
 	n--;
-	unsigned int len = unpretty.length() + (n/3);
 	unsigned int j = n, i = 0;
 	while (j != 0xffffffff) {
 		if(i == 3) {

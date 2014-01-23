@@ -3,8 +3,8 @@
 #include <iostream>
 #include <math.h>
 #include "Matrix.h"
-#include "Vertex.h"
 #include "Vector.h"
+#include "Vertex.h"
 
 Vertex::Vertex(void)
 {
@@ -108,7 +108,7 @@ Vertex Vertex::crossProduct(const Vertex &lhs, const Vertex &rhs) {
 
 void Vertex::parsestr(const std::string &pstr) {
 	std::string str = trim(pstr, " \t\n()");
-	unsigned int fspos = str.find_first_of(' '), espos = str.find_last_of(' ');
+	size_t fspos = str.find_first_of(' '), espos = str.find_last_of(' ');
 	if(fspos == std::string::npos || espos == std::string::npos || fspos == espos) {
 		vertex_[0] = std::numeric_limits<double>::quiet_NaN();
 		vertex_[1] = std::numeric_limits<double>::quiet_NaN();
