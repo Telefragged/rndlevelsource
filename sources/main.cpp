@@ -3,6 +3,9 @@
 #include <cstring>
 #include "Timer.h"
 #include "World.h"
+#include "Vector.h"
+#include "Solid.h"
+
 
 #define ARGEQ(A) !strcmp(argv[i], A)
 

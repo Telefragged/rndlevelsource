@@ -64,8 +64,7 @@ Vector Plane::intersectLine(const Matrix &lhs, const Matrix &rhs) {
         eqarr[0][0] = lhs[0][0]; eqarr[0][1] = lhs[0][2]; eqarr[0][2] = lhs[0][3];
         eqarr[1][0] = rhs[0][0]; eqarr[1][1] = rhs[0][2]; eqarr[1][2] = rhs[0][3];
         parcase = 1;
-	} else if(!doubleeq(Vertex::dotProduct(interline, Vertex(1, 0, 0)), 0.0)) {
-        //Can probably skip this test, as the line will have to cross this plane if it doesn't cross the others.
+	} else {
         //line will cross YZ plane, x will be = 0
         eqarr[0][0] = lhs[0][1]; eqarr[0][1] = lhs[0][2]; eqarr[0][2] = lhs[0][3];
         eqarr[1][0] = rhs[0][1]; eqarr[1][1] = rhs[0][2]; eqarr[1][2] = rhs[0][3];
