@@ -8,7 +8,6 @@
 
 Vertex::Vertex(void)
 {
-
 	vertex_[0] = std::numeric_limits<double>::quiet_NaN();
 	vertex_[1] = std::numeric_limits<double>::quiet_NaN();
 	vertex_[2] = std::numeric_limits<double>::quiet_NaN();
@@ -25,9 +24,9 @@ Vertex::Vertex(const std::string &str) {
 	parsestr(str);
 }
 
-void Vertex::x(double x) {vertex_[0] = x;};
-void Vertex::y(double y) {vertex_[1] = y;};
-void Vertex::z(double z) {vertex_[2] = z;};
+void Vertex::x(double x) {vertex_[0] = x;}
+void Vertex::y(double y) {vertex_[1] = y;}
+void Vertex::z(double z) {vertex_[2] = z;}
 
 double Vertex::x() const {return vertex_[0];}
 double Vertex::y() const {return vertex_[1];}
@@ -154,7 +153,7 @@ Vertex &Vertex::operator*=(double mod) {
 
 bool Vertex::parallel(const Vertex &lhs, const Vertex &rhs) {
     //crossproduct of parallel vectors is (0, 0, 0)
-    Vertex pvert = Vertex::crossProduct(lhs, rhs);
+    Vertex pvert = Vertex::crossProduct(Vertex::normalize(lhs), Vertex::normalize(rhs));
     return (doubleeq(pvert.x(), 0.0))
         && (doubleeq(pvert.y(), 0.0))
         && (doubleeq(pvert.z(), 0.0));

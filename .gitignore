@@ -23,3 +23,7 @@
 # Extra
 *.vmf
 *.bsp
+
+/nbproject/
+/debug/
+/release/
