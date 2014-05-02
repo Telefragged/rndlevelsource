@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 class Matrix;
 
 //For all intents and purposes a vector from the
@@ -12,6 +14,7 @@ public:
     virtual std::string toStr() const;
 
     static bool isVertex(const Vertex &);
+
     static Vertex allmin(const Vertex &, const Vertex &);
     static Vertex allmax(const Vertex &, const Vertex &);
 
@@ -19,9 +22,10 @@ public:
 
     Vertex rotate(const Matrix&);
     Vertex rotate(const Vertex&, const Matrix&);
+
     void rotateInPlace(const Matrix&);
     void rotateInPlace(const Vertex &, const Matrix &);
-
+	
     virtual void x(double x);
     virtual void y(double y);
     virtual void z(double z);

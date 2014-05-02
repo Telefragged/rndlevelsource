@@ -18,9 +18,8 @@ unsigned int Entity::parse(std::istream &stream) {
 	while(std::getline(stream, curline)) {
 		numparsed++;
 		if(trim(curline) == "solid") {
-			Solid *sol = new Solid();
-			numparsed += sol->parse(stream);
-			solids.put(sol);
+			auto it = solids.emplace(solids.end());
+			numparsed += it->parse(stream);
 		} else if (trim(curline) == "editor") {
 			numparsed += edt.parse(stream);
 		} else if(trim(curline) == "group") {
@@ -31,13 +30,13 @@ unsigned int Entity::parse(std::istream &stream) {
 		} else if (trim(curline) == "{") {
 			++depth;
 		} else {
-			keyvals.put(new KeyVal(curline));
+			KeyVal parsed(curline);
+			keyvals[parsed.key] = parsed.val;
 		}
 	}
-	auto kv = keyvals.remove_first_match<std::string>("id", KeyVal::keycmp);
-	if(kv != nullptr) {
-		this->id_ = atoi(kv->val.c_str());
-		delete kv;
+	if(keyvals.count("id") > 0) {
+		this->id_ = atoi(keyvals["id"].c_str());
+		keyvals.erase("id");
 	}
 	return numparsed;
 }
@@ -54,48 +53,62 @@ bool Entity::testCollision(const Entity &lhs, const Entity &rhs) {
 }
 
 bool Entity::entclasscmp(const Entity &lhs, const std::string &rhs) {
-	auto kv = lhs.keyvals.get_first_match<std::string>("classname", KeyVal::keycmp);
-	if(kv == nullptr) return false;
-	if(kv->val == rhs) return true;
-	return false;
+	
+	if(lhs.keyvals.count("classname") == 0)
+		return false;
+	else if(lhs.keyvals.at("classname") == rhs)
+		return true;
+	else
+		return false;
+}
+
+bool Entity::entworldcmp(const Entity &entity) {
+	return entity["classname"] == "worldspawn";
 }
 
 Entity Entity::defaultWorldEntity() {
     Entity world;
     world.id_ = 1;
-    world.keyvals.put(new KeyVal("classname", "world"));
-    world.keyvals.put(new KeyVal("mapversion", "1"));
-    world.keyvals.put(new KeyVal("classname", "worldspawn"));
-    world.keyvals.put(new KeyVal("detailmaterial", "detail/detailsprites"));
-    world.keyvals.put(new KeyVal("detailvbsp", "detail.vbsp"));
-    world.keyvals.put(new KeyVal("maxpropscreenwidth", "-1"));
-    world.keyvals.put(new KeyVal("skyname", "sky_day01_01"));
+	world.keyvals["classname"] = "worldspawn";
+	world.keyvals["mapversion"] = "1";
+	world.keyvals["detailmaterial"] = "detail/detailsprites";
+	world.keyvals["detailvbsp"] = "detail.vbsp";
+	world.keyvals["maxpropscreenwidth"] = "-1";
+	world.keyvals["skyname"] = "sky_day_01_01";
+    //world.keyvals.put(new KeyVal("classname", "world"));
+    //world.keyvals.put(new KeyVal("mapversion", "1"));
+    //world.keyvals.put(new KeyVal("classname", "worldspawn"));
+    //world.keyvals.put(new KeyVal("detailmaterial", "detail/detailsprites"));
+    //world.keyvals.put(new KeyVal("detailvbsp", "detail.vbsp"));
+    //world.keyvals.put(new KeyVal("maxpropscreenwidth", "-1"));
+    //world.keyvals.put(new KeyVal("skyname", "sky_day01_01"));
     return world;
 }
 
-Vertex Entity::origin() {
-	auto kv = keyvals.get_first_match<std::string>("origin", KeyVal::keycmp);
-	if(kv != nullptr) return Vertex(kv->val);
+Vertex Entity::origin() const {
+	auto val = (*this)["origin"];
+	if (val != "") return Vertex(val);
 	BoundingBox b = bbox();
 	Vector vec(b.min, b.max);
 	Vertex mod = vec.vec() * 0.5;
 	return vec.beg()+mod;
 }
 
-Vertex Entity::originKV() {
-	auto kv = keyvals.get_first_match<std::string>("origin", KeyVal::keycmp);
-	if(kv != nullptr) return Vertex(kv->val);
+Vertex Entity::originKV() const {
+	
+	if(keyvals.count("origin") > 0) return Vertex(keyvals.at("origin"));
 	return Vertex();
 }
 
-Angle Entity::angles() {
-	auto kv = keyvals.get_first_match<std::string>("angles", KeyVal::keycmp);
-	if(kv != nullptr) return Angle(kv->val);
+Angle Entity::angles() const {
+	auto val = (*this)["angles"];
+	if (val != "") return Angle(val);
 	return Angle();
 }
 
 void Entity::mergeSolids(const Entity &entity) {
-	solids += entity.solids;
+	solids.reserve(solids.size() + entity.solids.size());
+	solids.insert(solids.end(), entity.solids.begin(), entity.solids.end());
 }
 
 void Entity::rotate(const Matrix &rotmat, const Vertex &pt) {
@@ -118,12 +131,11 @@ void Entity::move(const Vector &vec) {
 	for(Solid &s : solids) {
 		s.move(vec);
 	}
-	auto kv = keyvals.get_first_match<std::string>
-		("origin", KeyVal::keycmp);
-	if(kv != nullptr) {
-		Vertex orig(kv->val);
+	if(keyvals.count("origin") > 0) {
+		std::string origStr = keyvals.at("origin");
+		Vertex orig(origStr);
 		orig += vec.vec();
-		kv->val = orig.toStr();
+		keyvals["origin"] = orig.toStr();
 	}
 }
 
@@ -135,21 +147,6 @@ void Entity::reID(unsigned int *entityID,
 	for(Solid &solid : solids) {
 		solid.reID(solidID, sideID);
 	}
-}
-
-std::string &Entity::operator[](std::string key) {
-	auto kv = keyvals.get_first_match(key, KeyVal::keycmp);
-	if(kv == nullptr) {
-		kv = new KeyVal(key);
-		keyvals.put(kv);
-	}
-	return kv->val;
-}
-
-std::string Entity::operator[](std::string key) const {
-	auto kv = keyvals.get_first_match(key, KeyVal::keycmp);
-	if(kv == nullptr) return "";
-	return kv->val;
 }
 
 BoundingBox Entity::bbox() const {
@@ -172,7 +169,7 @@ Entity::Entity(void)
 Entity::Entity(const std::string &classname) :
 	id_(0)
 {
-	keyvals.put(new KeyVal("classname", classname));
+	keyvals["classname"] = classname;
 }
 
 Entity::~Entity(void)

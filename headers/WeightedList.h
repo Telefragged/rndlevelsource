@@ -209,6 +209,7 @@ public:
 			ind++;
 		}
 	}
+
 	void put(T *val) {
 		auto newNode = new WeightedNode<T>(val);
 		if(first == nullptr) {

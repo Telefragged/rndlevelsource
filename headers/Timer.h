@@ -5,7 +5,7 @@
 
 #ifdef QUERYTIMER
 #include <Windows.h>
-const long long g_Frequency = []() -> long long 
+const long long g_Frequency = []() -> long long
 {
     LARGE_INTEGER frequency;
     QueryPerformanceFrequency(&frequency);

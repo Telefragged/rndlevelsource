@@ -6,6 +6,7 @@ class Connection :
 {
 public:
 	std::string connectstr;
+	bool isConnected;
 
 	//Only move constructor for now.
 	Connection(Entity &&);

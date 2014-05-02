@@ -263,12 +263,12 @@ inline Matrix colGetSkip(const Matrix &mat, unsigned int from, unsigned int skip
 	return rowcpy;
 }
 
-//Probably very slow
+// Probably very slow
 double Matrix::det() const {
     if(cols() != rows()) return std::numeric_limits<double>::quiet_NaN();
     if(cols() == 2) return (arr[0][0]*arr[1][1]) - (arr[0][1]*arr[1][0]);
     double ret = 0.0;
-    int sign = 1.0;
+    int sign = 1;
     for(unsigned int n = 0; n < cols(); n++) {
         Matrix newmat(cols()-1, rows()-1);
         double mod = arr[0][n] * sign;

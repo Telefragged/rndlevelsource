@@ -2,6 +2,7 @@
 #include <ios>
 #include <stdio.h>
 #include "BoundingBox.h"
+#include "KeyVal.h"
 #include "Side.h"
 #include "Vector.h"
 
@@ -17,7 +18,8 @@ unsigned int Side::parse(std::istream &stream) {
 		if(trim(curline) == "}") {
 			break;
 		} else {
-			keyvals.put(new KeyVal(curline));
+			KeyVal parsed(curline);
+			keyvals[parsed.key] = parsed.val;
 		}
 	}
 	popuvars();
@@ -29,25 +31,21 @@ void Side::reID(unsigned int *sideID) {
 }
 
 void Side::popuvars() {
-	auto kv = keyvals.remove_first_match<std::string>(std::string("id"), KeyVal::keycmp);
-	if(kv != nullptr) {
-		this->id_ = kv->toInt();
-		delete kv;
+	if (keyvals.count("id") > 0) {
+		this->id_ = atoi(keyvals.at("id").c_str());
+		keyvals.erase("id");
 	}
-	kv = keyvals.remove_first_match<std::string>(std::string("plane"), KeyVal::keycmp);
-	if(kv != nullptr) {
-		this->p.parsestr(kv->val);
-		delete kv;
+	if (keyvals.count("plane") > 0) {
+		this->p.parsestr(keyvals.at("plane"));
+		keyvals.erase("plane");
 	}
-	kv = keyvals.remove_first_match<std::string>(std::string("uaxis"), KeyVal::keycmp);
-	if(kv != nullptr) {
-		this->uaxis.parsestr(kv->val);
-		delete kv;
+	if (keyvals.count("uaxis") > 0) {
+		this->uaxis.parsestr(keyvals.at("uaxis"));
+		keyvals.erase("uaxis");
 	}
-	kv = keyvals.remove_first_match<std::string>(std::string("vaxis"), KeyVal::keycmp);
-	if(kv != nullptr) {
-		this->vaxis.parsestr(kv->val);
-		delete kv;
+	if (keyvals.count("vaxis") > 0) {
+		this->vaxis.parsestr(keyvals.at("vaxis"));
+		keyvals.erase("vaxis");
 	}
 }
 

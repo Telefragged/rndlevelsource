@@ -1,10 +1,12 @@
 #include "stdafx.h"
 #include <assert.h>
+#include <algorithm>
 #include "Angle.h"
 #include "BoundingBox.h"
 #include "Matrix.h"
 #include "Vector.h"
 #include "World.h"
+#include "WeightedList.h"
 
 bool World::testCollisions(Part *partptr) {
 	if(partptr == nullptr) return true;
@@ -23,33 +25,39 @@ bool World::testCollisions(Part *partptr) {
 }
 
 void World::addMaster(const Part &part) {
-	master.put(new Part(part));
+	master.push_back(part);
 }
 
 void World::addPart(const Part &part) {
 	if(parts.size() == 0) {
-		parts.put(new Part(part));
+		parts.emplace_back(part);
 		return;
 	}
-	Part *prevpart = parts.peek_last();
+	Part *prevpart = &parts.back();
 	Connection *prevc = randConnection(*prevpart);
 	if(prevc == nullptr) {
 		printf("Failed to add part\n");
 		return;
 	}
-	Part *newpart = new Part(part);
-	movePart(newpart, prevc);
-	testCollisions(newpart);
-	parts.put(newpart);
+	Part newpart(part);
+	movePart(&newpart, prevc);
+	testCollisions(&newpart);
+	parts.push_back(std::move(newpart));
 }
 
-void World::movePart(Part *part, Connection *prevc) {
+void World::movePart(Part *part, const Connection *prevc) {
 	Connection *newc = randConnection(*part);
+	movePart(part, newc, prevc);
+}
+
+void World::movePart(Part *part, Connection *newc, const Connection *prevc) {
 	Angle targetAngle = prevc->angles();
 	targetAngle[YAW] += 180.0;
 	Angle newAngle = newc->angles();
+
 	Angle rotAngle;
 	rotAngle.fromMatrix(newAngle.calcRotation(targetAngle));
+
 	part->rotate(rotAngle);
 	Vector mov(newc->origin(), prevc->origin());
 	part->move(mov);
@@ -64,14 +72,103 @@ Part World::collapse() {
 }
 
 Connection *World::randConnection(Part &part) {
-	Connection *ret = part.connections.getweighted(eng_);
-	part.connections.setWeight(ret, 0); //Make sure the connection isn't selected again.
+	if (part.connections.weight() == 0) return nullptr;
+	std::uniform_int_distribution<unsigned int> dist(0, part.connections.weight() - 1);
+	auto ptr = part.connections.getWeighted(dist(eng_));
+	part.connections.setWeight(ptr, 0);
+	return ptr;
+}
+
+void World::removePart(unsigned int index) {
+	if (index >= parts.size()) return;
+	parts.erase(parts.begin() + index);
+}
+
+Part *World::getPart(unsigned int index) {
+	if (index >= parts.size()) return nullptr;
+	return &parts.at(index);
+}
+
+void World::buildWorld() {
+	std::vector<Part> startParts(master.size()), interParts(master.size()), endParts(master.size());
+	auto startIter = std::copy_if(master.begin(), master.end(), startParts.begin(), [](const Part &part) {
+		//startParts test
+		return (part.countEntities("info_player_start") > 0) && (part.connections.size() >= 1);
+	});
+
+	auto interIter = std::copy_if(master.begin(), master.end(), interParts.begin(), [](const Part &part) {
+		//interParts test
+		return (part.countEntities("info_player_start") == 0) && (part.connections.size() >= 2);
+	});
+
+	auto endIter = std::copy_if(master.begin(), master.end(), endParts.begin(), [](const Part &part) {
+		//endParts test
+		return (part.countEntities("info_player_start") == 0) && (part.connections.size() == 1);
+	});
+
+	startParts.resize(std::distance(startParts.begin(), startIter));
+	interParts.resize(std::distance(interParts.begin(), interIter));
+	endParts.resize(std::distance(endParts.begin(), endIter));
+
+	std::uniform_int_distribution<unsigned int> 
+		startDist(0, startParts.size() - 1), 
+		interDist(0, interParts.size() - 1), 
+		endDist(0, endParts.size() - 1);
+
+	addPart(startParts.at(startDist(eng_)));
+
+	for (unsigned int n = 0; n < 20; n++) {
+		addPart(interParts.at(interDist(eng_)));
+	}
+
+	addPart(endParts.at(endDist(eng_)));
+}
+
+void World::filterFitHelper(const Part &p1, const Part &p2, const Part &test, std::vector<parttuple> &resList) {
+	Part copy(test);
+	for (const Connection &prevc : p1.connections) {
+		unsigned int newcpos = 0;
+		for (Connection &newc : copy.connections) {
+			if (newc.connectstr != prevc.connectstr) {
+				newcpos++;
+				continue;
+			}
+			movePart(&copy, &newc, &prevc); // TODO -- Only rotate connections to save some time.
+			unsigned int cmpnewcpos = 0;
+			for (Connection &cmpnewc : copy.connections) {
+				if (&cmpnewc == &newc) 
+					continue;
+				for (const Connection &cmpprevc : p2.connections) {
+					if (cmpnewc.connectstr != cmpprevc.connectstr) 
+						continue;
+					else if (Vertex::equals(cmpprevc.origin(), cmpnewc.origin())) {
+						resList.push_back(std::make_tuple(copy, newcpos, cmpnewcpos, &prevc, &cmpprevc));
+						//return; // or maybe not?
+					}
+				}
+				cmpnewcpos++;
+			}
+			newcpos++;
+		}
+	}
+}
+
+std::vector<parttuple> World::filterFit(const Part &p1, const Part &p2, const std::vector<Part> &cands) {
+
+	std::vector<parttuple> ret;
+
+	for (const Part &part : cands) {
+		if (part.connections.size() <= 1)
+			continue;
+		filterFitHelper(p1, p2, part, ret);
+
+	}
 	return ret;
 }
 
 World::World(void)
 {
-	eng_.seed(9);
+	eng_.seed(UINTTIME);
 }
 
 World::~World(void)

@@ -2,8 +2,7 @@
 #include <ios>
 #include <iomanip>
 #include "Axis.h"
-#include "KeyVal.h"
-#include "LinkedList.h"
+#include "KeyValBase.h"
 #include "Plane.h"
 
 #ifndef TABDEPTH
@@ -12,7 +11,8 @@
 
 class BoundingBox;
 
-class Side
+class Side :
+	public KeyValBase
 {
 private:
 	unsigned int id_;
@@ -20,7 +20,6 @@ private:
 public:
 	Plane p;
 	Axis uaxis, vaxis;
-	LinkedList<KeyVal> keyvals;
 
 	unsigned int parse(std::istream &);
 
@@ -50,8 +49,8 @@ inline std::ostream &operator<<(std::ostream &os, const Side &s) {
 	os<<std::setw(s.depth())<<""<<"\t\"Plane\" \""<<s.p.toStr()<<"\"\n";
 	os<<std::setw(s.depth())<<""<<"\t\"uaxis\" \""<<s.uaxis.toStr()<<"\"\n";
 	os<<std::setw(s.depth())<<""<<"\t\"vaxis\" \""<<s.vaxis.toStr()<<"\"\n";
-	for(const KeyVal &kv : s.keyvals) {
-		os<<std::setw(s.depth())<<""<<"\t"<<kv.toStr()<<"\n";
+	for(const auto &pair : s.keyvals) {
+		os<<std::setw(s.depth())<<""<<"\t"<<KeyValBase::toStr(pair)<<"\n";
 	}
 	os<<std::setw(s.depth())<<""<<"}";
 	return os;

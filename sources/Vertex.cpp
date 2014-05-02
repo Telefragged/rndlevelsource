@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include <assert.h>
 #include <iostream>
-#include <math.h>
+#include <algorithm>
 #include "Matrix.h"
 #include "Vector.h"
 #include "Vertex.h"
@@ -24,13 +24,13 @@ Vertex::Vertex(const std::string &str) {
 	parsestr(str);
 }
 
-void Vertex::x(double x) {vertex_[0] = x;}
-void Vertex::y(double y) {vertex_[1] = y;}
-void Vertex::z(double z) {vertex_[2] = z;}
+void Vertex::x(double x) { vertex_[0] = x; }
+void Vertex::y(double y) { vertex_[1] = y; }
+void Vertex::z(double z) { vertex_[2] = z; }
 
-double Vertex::x() const {return vertex_[0];}
-double Vertex::y() const {return vertex_[1];}
-double Vertex::z() const {return vertex_[2];}
+double Vertex::x() const { return vertex_[0]; }
+double Vertex::y() const { return vertex_[1]; }
+double Vertex::z() const { return vertex_[2]; }
 
 Vertex Vertex::rotate(const Matrix &rotmat) {
 	Matrix th = this->toMat();
@@ -63,7 +63,7 @@ void Vertex::rotateInPlace(const Matrix &rotmat) {
 
 double Vertex::length() const {
 	return sqrt(
-		  (x() * x())
+		(x() * x())
 		+ (y() * y())
 		+ (z() * z()));
 }
@@ -82,7 +82,7 @@ double Vertex::dotProduct(const Vertex &lhs, const Vertex &rhs) {
 
 Vertex Vertex::normalize(const Vertex &v) {
 	double len = v.length();
-	if(doubleeq(len, 0.0)) return v;
+	if (doubleeq(len, 0.0)) return v;
 	return Vertex(
 		v.x() / len,
 		v.y() / len,
@@ -91,7 +91,7 @@ Vertex Vertex::normalize(const Vertex &v) {
 
 Vertex Vertex::normalize() {
 	double len = length();
-	if(doubleeq(len, 0.0)) return Vertex((*this));
+	if (doubleeq(len, 0.0)) return Vertex((*this));
 	return Vertex(
 		vertex_[0] / len,
 		vertex_[1] / len,
@@ -108,7 +108,7 @@ Vertex Vertex::crossProduct(const Vertex &lhs, const Vertex &rhs) {
 void Vertex::parsestr(const std::string &pstr) {
 	std::string str = trim(pstr, " \t\n()");
 	size_t fspos = str.find_first_of(' '), espos = str.find_last_of(' ');
-	if(fspos == std::string::npos || espos == std::string::npos || fspos == espos) {
+	if (fspos == std::string::npos || espos == std::string::npos || fspos == espos) {
 		vertex_[0] = std::numeric_limits<double>::quiet_NaN();
 		vertex_[1] = std::numeric_limits<double>::quiet_NaN();
 		vertex_[2] = std::numeric_limits<double>::quiet_NaN();
@@ -145,24 +145,24 @@ Vertex &Vertex::operator-=(const Vertex &rhs) {
 }
 
 Vertex &Vertex::operator*=(double mod) {
-	vertex_[0]*=mod;
-	vertex_[1]*=mod;
-	vertex_[2]*=mod;
+	vertex_[0] *= mod;
+	vertex_[1] *= mod;
+	vertex_[2] *= mod;
 	return *this;
 }
 
 bool Vertex::parallel(const Vertex &lhs, const Vertex &rhs) {
-    //crossproduct of parallel vectors is (0, 0, 0)
-    Vertex pvert = Vertex::crossProduct(Vertex::normalize(lhs), Vertex::normalize(rhs));
-    return (doubleeq(pvert.x(), 0.0))
-        && (doubleeq(pvert.y(), 0.0))
-        && (doubleeq(pvert.z(), 0.0));
+	//crossproduct of parallel vectors is (0, 0, 0)
+	Vertex pvert = Vertex::crossProduct(Vertex::normalize(lhs), Vertex::normalize(rhs));
+	return (doubleeq(pvert.x(), 0.0))
+		&& (doubleeq(pvert.y(), 0.0))
+		&& (doubleeq(pvert.z(), 0.0));
 }
 
 bool Vertex::equals(const Vertex &lhs, const Vertex &rhs) {
-    return (doubleeq(lhs.x(), rhs.x()))
-        && (doubleeq(lhs.y(), rhs.y()))
-        && (doubleeq(lhs.z(), rhs.z()));
+	return (doubleeq(lhs.x(), rhs.x()))
+		&& (doubleeq(lhs.y(), rhs.y()))
+		&& (doubleeq(lhs.z(), rhs.z()));
 }
 
 double Vertex::dotProduct(const Vertex &rhs) {
@@ -197,23 +197,23 @@ Matrix Vertex::toMat() {
 
 std::string Vertex::toStr() const {
 	std::ostringstream os;
-	os<<x()<<" "<<y()<<" "<<z();
+	os << x() << " " << y() << " " << z();
 	return os.str();
 }
 
 Vertex Vertex::allmin(const Vertex &v1, const Vertex &v2) {
 	Vertex v;
-	v.x(std::min(v1.x(), v2.x() ));
-	v.y(std::min(v1.y(), v2.y() ));
-	v.z(std::min(v1.z(), v2.z() ));
+	v.x(std::min(v1.x(), v2.x()));
+	v.y(std::min(v1.y(), v2.y()));
+	v.z(std::min(v1.z(), v2.z()));
 	return v;
 }
 
 Vertex Vertex::allmax(const Vertex &v1, const Vertex &v2) {
 	Vertex v;
-	v.x(std::max(v1.x(), v2.x() ));
-	v.y(std::max(v1.y(), v2.y() ));
-	v.z(std::max(v1.z(), v2.z() ));
+	v.x(std::max(v1.x(), v2.x()));
+	v.y(std::max(v1.y(), v2.y()));
+	v.z(std::max(v1.z(), v2.z()));
 	return v;
 }
 

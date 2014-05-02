@@ -28,7 +28,7 @@ inline std::string reverse_string(std::string input) {
 	return output;
 }
 
-inline bool doubleeq(double lhs, double rhs, double epsilon = 0.000001) {
+inline bool doubleeq(double lhs, double rhs, double epsilon = 1e-6) {
 	return (fabs(lhs - rhs)) < epsilon;
 }
 

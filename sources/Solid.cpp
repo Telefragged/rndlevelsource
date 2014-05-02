@@ -36,11 +36,15 @@ Solid Solid::createBox(const Vector &vec, std::string texture) {
 
     Solid box;
     for(unsigned int n = 0; n < 6; n++) {
-        Side *side = new Side();
-        side->keyvals.put(new KeyVal("material", texture));
-        side->keyvals.put(new KeyVal("rotation", "0"));
-        side->keyvals.put(new KeyVal("lightmapscale", "16"));
-        side->keyvals.put(new KeyVal("smoothing_groups", "0"));
+		Side side;
+		side["material"] = texture;
+		side["rotation"] = "0";
+		side["lightmapscale"] = "16";
+		side["smoothing_groups"] = "0";
+        //side.keyvals.put(new KeyVal("material", texture));
+        //side.keyvals.put(new KeyVal("rotation", "0"));
+        //side.keyvals.put(new KeyVal("lightmapscale", "16"));
+        //side.keyvals.put(new KeyVal("smoothing_groups", "0"));
         Plane plane;
         Axis uaxis, vaxis;
         //We fix translation later.
@@ -102,10 +106,10 @@ Solid Solid::createBox(const Vector &vec, std::string texture) {
         //translation for pos (0, 0, 0) is 0.0, so we translate it to the start of the vector.
         uaxis.translate(vec.beg());
         vaxis.translate(vec.beg());
-        side->p = plane;
-        side->uaxis = uaxis;
-        side->vaxis = vaxis;
-        box.sides.put(side);
+        side.p = plane;
+        side.uaxis = uaxis;
+        side.vaxis = vaxis;
+        box.sides.push_back(side);
     }
     Editor edt;
     edt.keyvals.put(new KeyVal("color", "192 0 192"));
@@ -126,9 +130,8 @@ unsigned int Solid::parse(std::istream &stream) {
 	while (std::getline(stream, curline)) {
 		numparsed++;
 		if(trim(curline) == "side") {
-			Side *side = new Side();
-			numparsed += side->parse(stream);
-			sides.put(side);
+			auto it = sides.emplace(sides.end());
+			numparsed += it->parse(stream);
 		} else if(trim(curline) == "editor") {
 			numparsed+=edt.parse(stream);
 		} else if(trim(curline) == "}") {

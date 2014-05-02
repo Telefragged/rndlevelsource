@@ -1,9 +1,9 @@
 #pragma once
 #include <ios>
+#include <random>
 #include "Connection.h"
 #include "Entity.h"
-#include "LinkedList.h"
-#include "WeightedList.h"
+#include "WeightedVector.h"
 
 class BoundingBox;
 
@@ -12,8 +12,8 @@ class Part
 private:
 	unsigned int entityID_, solidID_, sideID_;
 public:
-	LinkedList<Entity> entities;
-	WeightedList<Connection> connections;
+	std::vector<Entity> entities;
+	WeightedVector<Connection> connections;
 
 	//Test collision between parts
 	static bool testCollision(const Part &, const Part &);
@@ -21,9 +21,10 @@ public:
 	//Parse contents of stream in .vmf format.
 	//Parses until end of stream.
 	unsigned int parse(std::istream &);
-
 	//Open and parse file in .vmf format.
 	unsigned int parse(std::string);
+	//Counts number of entities in the part with the exact same classname
+	unsigned int countEntities(std::string) const;
 
 	//Opens and writes a file in .vmf format.
 	std::streampos toFile(std::string);

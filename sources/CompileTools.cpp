@@ -1,20 +1,14 @@
 #include "stdafx.h"
 #include "CompileTools.h"
+#include <stdlib.h>
 
 #if defined (_WIN32)
 #include <Windows.h>
-#elseif defined (__CYGWIN__) || defined (_LINUX)
-#include <stdlib.h>
 #endif
 
 std::string CompileTools::getabspath(std::string partialpath) {
 	std::string ret;
 	char buf[256];
-#if defined (_WIN32)
-	GetFullPathName(partialpath.c_str(), 256, buf, NULL);
-#elseif defined (__CYGWIN__)
-	realpath(partialpath.c_str(), buf);
-#endif
 	ret = buf;
 	return ret;
 }
@@ -24,7 +18,7 @@ std::string CompileTools::removeext(std::string file) {
 }
 
 void CompileTools::runtools(std::string file, std::string game) {
-#if defined (_WIN32)
+#if defined (_WIN)
 	std::string outfileabs = CompileTools::getabspath(file);
 	std::string outfilebsp = removeext(outfileabs) + ".bsp";
 	CompileTools::exec("F:\\Program Files (x86)\\Steam\\steamapps\\common\\Half-Life 2\\bin\\vbsp.exe",
@@ -40,7 +34,7 @@ void CompileTools::runtools(std::string file, std::string game) {
 }
 
 void CompileTools::exec(std::string binpath, std::string param, bool showoutput) {
-#if defined (_WIN32)
+#if defined (_WIN)
 	STARTUPINFO info={sizeof(info)};
 	PROCESS_INFORMATION processInfo;
 	char params[8192];
@@ -71,7 +65,7 @@ void CompileTools::exec(std::string binpath, std::string param, bool showoutput)
 }
 
 void CompileTools::cleanup(std::string vmfpath) {
-#if defined (_WIN32)
+#if defined (_WIN)
 	std::string outfilevmf = CompileTools::getabspath(vmfpath);
 	std::string outfilenoext = CompileTools::removeext(outfilevmf);
 	printf("Removing files %s.*\n", outfilenoext.c_str());
@@ -86,7 +80,7 @@ void CompileTools::cleanup(std::string vmfpath) {
 }
 
 void CompileTools::copyfile(std::string existing, std::string newfile, bool confirm) {
-#if defined (_WIN32)
+#if defined (_WIN)
 	printf("Copy: %s -> %s\n", existing.c_str(), newfile.c_str());
 	BOOL result = CopyFile(existing.c_str(), newfile.c_str(), (int)confirm);
 	if(!result && confirm) {

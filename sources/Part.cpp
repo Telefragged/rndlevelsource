@@ -1,5 +1,7 @@
 #include "stdafx.h"
+#include <algorithm>
 #include <fstream>
+#include <functional>
 #include <string>
 #include <stdio.h>
 #include "Angle.h"
@@ -19,17 +21,15 @@ unsigned int Part::parse(std::istream &stream) {
 	while(std::getline(stream, curline)) {
 		numparsed++;
 		if(trim(curline) == "world") {
-			Entity *world = new Entity("world");
-			numparsed += world->parse(stream);
-			entities.put(world);
+			auto it = entities.emplace(entities.end(), "world");
+			numparsed += it->parse(stream);
 		} else if(trim(curline) == "entity") {
-			Entity *entity = new Entity();
-			numparsed+=entity->parse(stream);
-			if((*entity)["classname"].substr(0, 12) == "rnd_connect_") {
-				connections.put(new Connection(std::move(*entity)));
-				delete entity;
+			Entity entity;
+			numparsed+=entity.parse(stream);
+			if(entity["classname"].substr(0, 12) == "rnd_connect_") {
+				connections.push_back(std::move(entity));
 			} else {
-				entities.put(entity);
+				entities.push_back(std::move(entity));
 			}
 		}
 	}
@@ -52,21 +52,29 @@ unsigned int Part::parse(std::string filepath) {
 	return ret;
 }
 
+unsigned int Part::countEntities(std::string classname) const {
+	unsigned int count = 0;
+	for (const Entity& entity : entities)
+		if (entity["classname"] == classname) 
+			count++;
+	return count;
+}
+
 BoundingBox Part::bbox() const {
-	Entity *worldptr = entities.get_first_match<std::string>("world", &Entity::entclasscmp);
 	BoundingBox ret;
-	if(worldptr == nullptr) return ret;
-	ret = worldptr->bbox();
+	auto it = std::find_if(entities.cbegin(), entities.cend(), &Entity::entworldcmp);
+	if (it == entities.cend()) return ret;
+	ret = it->bbox();
 	return ret;
 }
 
 bool Part::testCollision(const Part &lhs, const Part &rhs) {
 	BoundingBox lhbbox = lhs.bbox(), rhbbox = rhs.bbox();
 	if(BoundingBox::testCollision(lhbbox, rhbbox)) {
-		Entity *lhworld = lhs.entities.get_first_match<std::string>("world", Entity::entclasscmp),
-			*rhworld = rhs.entities.get_first_match<std::string>("world", Entity::entclasscmp);
-		if(lhworld == nullptr || rhworld == nullptr) return false;
-		return Entity::testCollision(*lhworld, *rhworld);
+		auto lhsit = std::find_if(lhs.entities.cbegin(), lhs.entities.cend(), &Entity::entworldcmp),
+			rhsit = std::find_if(rhs.entities.cbegin(), rhs.entities.cend(), &Entity::entworldcmp);
+		if(lhsit == lhs.entities.cend() || rhsit == rhs.entities.cend()) return false;
+		return Entity::testCollision(*lhsit, *rhsit);
 	}
 	return false;
 }
@@ -76,32 +84,37 @@ void Part::move(const Vector &vec) {
 	for(Entity &e : entities) {
 		e.move(vec);
 	}
-	for(Connection &c : connections) {
+	for(auto &c : connections) {
 		c.move(vec);
 	}
 }
 
 void Part::moveTo(const Vertex &pt) {
-	Entity *worldptr = entities.get_first_match<std::string>("world", &Entity::entclasscmp);
-	if(worldptr == nullptr) return;
-	Vertex wOrig = worldptr->origin();
+	using namespace std;
+	using namespace std::placeholders;
+
+	auto it = find_if(entities.begin(), entities.end(), &Entity::entworldcmp);
+	Vertex wOrig;
+	if (it == entities.end())
+		wOrig = Vertex(0, 0, 0);
+	else
+		wOrig = it->origin();
 	Vector mov(wOrig, pt);
 	move(mov);
 }
 
 void Part::rotate(const Angle &angle, const Vertex &pt) {
-	Entity *worldptr = entities.get_first_match<std::string>
-		("world", &Entity::entclasscmp);
+	auto it = std::find_if(entities.begin(), entities.end(), &Entity::entworldcmp);
 	Vertex orig;
 	if(Vertex::isVertex(pt)) orig = pt;
-	else if(worldptr == nullptr) orig = Vertex(0, 0, 0);
-	else orig = worldptr->origin();
+	else if(it == entities.end()) orig = Vertex(0, 0, 0);
+	else orig = it->origin();
 	Angle rotangle(-angle[PITCH], angle[YAW], angle[ROLL]); //Invert pitch for compliance with hammer.
 	Matrix rotmat = rotangle.angleMatrix();
 	for(Entity &e : entities) {
 		e.rotate(rotmat, orig);
 	}
-	for(Connection &c : connections) {
+	for(auto &c : connections) {
 		c.rotate(rotmat, orig);
 	}
 }
@@ -137,45 +150,39 @@ Part &Part::operator=(Part &&orig) {
 	return *this;
 }
 
-//Merges world entities and copies all entities
+//Merges world entities and copies all other entities
 Part &Part::operator+=(const Part &rhs) {
-	Entity *tWorld = entities.get_first_match<std::string>
-		("world", Entity::entclasscmp),
-		*origWorld = rhs.entities.get_first_match<std::string>
-		("world", Entity::entclasscmp);
-	if(tWorld != nullptr && origWorld != nullptr) {
-		unsigned int fakeEntityID = 0;
-		Entity worldcopy(*origWorld);
-		worldcopy.reID(&fakeEntityID, &solidID_, &sideID_);
-		tWorld->mergeSolids(worldcopy);
+	//Entity *tWorld = entities.get_first_match<std::string>
+	//	("worldspawn", Entity::entclasscmp),
+	//	*origWorld = rhs.entities.get_first_match<std::string>
+	//	("worldspawn", Entity::entclasscmp);
+	auto cit = std::find_if(entities.begin(), entities.end(), &Entity::entworldcmp);
+	auto origit = std::find_if(rhs.entities.cbegin(), rhs.entities.cend(), &Entity::entworldcmp);
+	if(cit != entities.end() && origit != rhs.entities.cend()) {
+		cit->mergeSolids(*origit);
 	}
-	else if(tWorld == nullptr && origWorld != nullptr) {
-		Entity *copy = new Entity(*origWorld);
-		copy->reID(&entityID_, &solidID_, &sideID_);
-		entities.put(copy);
+	else if(cit == entities.end() && origit != rhs.entities.cend()) {
+		entities.push_back(*origit);
 	}
 	unsigned int cap = std::numeric_limits<unsigned int>::max(), count = 0;
 	if(this == &rhs) cap = entities.size(); //Safety against self-addition.
-	for(auto &entity : rhs.entities) {		//We can't call LinkedList::operator+= as we have to not copy the world entity.
+	for(const Entity &entity : rhs.entities) {
 		if(count++ == cap) break;
-		if(&entity == origWorld) continue;
-		Entity *copy = new Entity(entity);
-		copy->reID(&entityID_, &solidID_, &sideID_);
-		entities.put(copy);
+		if(entity["classname"] == "worldspawn") continue;
+		entities.push_back(entity);
 	}
+	reID(); // Faster to call this here than make lots of copies everywhere.
 	return *this;
 }
 
 //Returns reference to a entity with classname equal to argument.
 //If no such entity exists, the function will create one and return its reference.
 Entity &Part::operator[](std::string classname) {
-	Entity *entity = entities.get_first_match<std::string>
-		(classname, Entity::entclasscmp);
-	if(entity == nullptr) {
-		entity = new Entity(classname);
-		entities.put(entity);
+	auto it = std::find_if(entities.begin(), entities.end(), std::bind(&Entity::entclasscmp, std::placeholders::_1, classname));
+	if(it == entities.end()) {
+		it = entities.emplace(entities.end(), classname);
 	}
-	return *entity;
+	return *it;
 }
 
 Part::Part(void)
@@ -185,7 +192,8 @@ Part::Part(void)
 	sideID_ = 0;
 }
 
-Part::Part(std::string filepath) {
+Part::Part(std::string filepath) : Part()
+{
 	parse(filepath);
 }
 

@@ -21,7 +21,7 @@ public:
 	void add(LinkedNode<T> *val) {
 		next = val;
 	}
-
+	
 	T &value() {
 		return *val;
 	}
@@ -317,6 +317,23 @@ public:
 			if(cmpfnc(elem, cmp)) ret += &elem;
 		}
 		(*this) -= ret;
+		return ret;
+	}
+
+	//Return a new list with only the elements that return true in the given function.
+	const LinkedList<T> filterList(bool (*predfnc)(const T &cmp)) {
+		LinkedList<T> ret;
+		for (const T &elem : *this) {
+			if (predfnc(elem)) ret.put(new T(elem));
+		}
+		return ret;
+	}
+
+	const LinkedList<T> filterList(bool (*predfnc)(const T &cmp, void *extra), void *extra) {
+		LinkedList<T> ret;
+		for (const T &elem : *this) {
+			if (predfnc(elem, extra)) ret.put(new T(elem));
+		}
 		return ret;
 	}
 

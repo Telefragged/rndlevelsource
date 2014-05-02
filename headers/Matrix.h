@@ -26,7 +26,7 @@ public:
 		const_matrow(unsigned int r, const Matrix &p) : row(r), parent(p) {}
 		double operator[](unsigned int col) const {return parent.arr[row][col];}
 	};
-
+	
 	matrow operator[](unsigned int row) {return matrow(row, *this);}
 	const_matrow operator[](unsigned int row) const {return const_matrow(row, *this);}
 

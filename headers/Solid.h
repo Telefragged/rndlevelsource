@@ -1,7 +1,8 @@
-#pragma once
+#pragma
 #include <ios>
+#include <vector>
 #include "Editor.h"
-#include "LinkedList.h"
+#include "KeyValBase.h"
 #include "Side.h"
 
 class BoundingBox;
@@ -9,13 +10,15 @@ class Matrix;
 class Vector;
 class Vertex;
 
-class Solid
+class Solid :
+	public KeyValBase
 {
 private:
-	LinkedList<Side> sides;
+	std::vector<Side> sides;
 	unsigned int id_;
 	mutable unsigned int depth_;
 	Editor edt;
+	
 public:
 
 	static bool testCollision(const Solid &, const Solid &);
