@@ -14,7 +14,7 @@ bool Solid::testCollision(const Solid &lhs, const Solid &rhs) {
 	return false;
 }
 
-Solid Solid::createBox(const Vector &vec, std::string texture) {
+Solid Solid::createBox(const Vector &vec, std::string texture, int texturemode, std::string othertexture) {
     Vertex spos = Vertex::allmin(vec.beg(), vec.end());
     Vertex epos = Vertex::allmax(vec.beg(), vec.end());
     Vertex tpos[4]; //Topmost coordinates. (max z)
@@ -41,21 +41,19 @@ Solid Solid::createBox(const Vector &vec, std::string texture) {
 		side["rotation"] = "0";
 		side["lightmapscale"] = "16";
 		side["smoothing_groups"] = "0";
-        //side.keyvals.put(new KeyVal("material", texture));
-        //side.keyvals.put(new KeyVal("rotation", "0"));
-        //side.keyvals.put(new KeyVal("lightmapscale", "16"));
-        //side.keyvals.put(new KeyVal("smoothing_groups", "0"));
         Plane plane;
         Axis uaxis, vaxis;
         //We fix translation later.
         uaxis.trans = 0.0;
         vaxis.trans = 0.0;
+		
         //scale default is 0.25
         uaxis.scale = 0.25;
         vaxis.scale = 0.25;
         switch(n) {
         case 0:
-            //top face (XY plane)
+            // top face / UP (XY plane)
+			if (texturemode & texmode::UP) side["material"] = othertexture;
             plane.p1 = tpos[0];
             plane.p2 = tpos[1];
             plane.p3 = tpos[2];
@@ -63,7 +61,8 @@ Solid Solid::createBox(const Vector &vec, std::string texture) {
             vaxis.v = Vertex(0, -1, 0);
             break;
         case 1:
-            //bottom face (XY plane)
+            // bottom face / DOWN (XY plane)
+			if (texturemode & texmode::DOWN) side["material"] = othertexture;
             plane.p1 = bpos[3];
             plane.p2 = bpos[2];
             plane.p3 = bpos[1];
@@ -71,7 +70,8 @@ Solid Solid::createBox(const Vector &vec, std::string texture) {
             vaxis.v = Vertex(0, -1, 0);
             break;
         case 2:
-            //front face (XZ plane)
+            // front face / SOUTH (XZ plane)
+			if (texturemode & texmode::SOUTH) side["material"] = othertexture;
             plane.p1 = tpos[3];
             plane.p2 = tpos[2];
             plane.p3 = bpos[2];
@@ -79,7 +79,8 @@ Solid Solid::createBox(const Vector &vec, std::string texture) {
             vaxis.v = Vertex(0, 0, -1);
             break;
         case 3:
-            //back face (XZ plane)
+            // back face / NORTH (XZ plane)
+			if (texturemode & texmode::NORTH) side["material"] = othertexture;
             plane.p1 = tpos[1];
             plane.p2 = tpos[0];
             plane.p3 = bpos[0];
@@ -87,7 +88,8 @@ Solid Solid::createBox(const Vector &vec, std::string texture) {
             vaxis.v = Vertex(0, 0, -1);
             break;
         case 4:
-            //left face (YZ plane)
+            // left face / WEST (YZ plane)
+			if (texturemode & texmode::WEST) side["material"] = othertexture;
             plane.p1 = tpos[0];
             plane.p2 = tpos[3];
             plane.p3 = bpos[3];
@@ -95,7 +97,8 @@ Solid Solid::createBox(const Vector &vec, std::string texture) {
             vaxis.v = Vertex(0, 0, -1);
             break;
         case 5:
-            //right face (YZ plane)
+            // right face / EAST (YZ plane)
+			if (texturemode & texmode::EAST) side["material"] = othertexture;
             plane.p1 = tpos[2];
             plane.p2 = tpos[1];
             plane.p3 = bpos[1];
@@ -104,8 +107,8 @@ Solid Solid::createBox(const Vector &vec, std::string texture) {
             break;
         }
         //translation for pos (0, 0, 0) is 0.0, so we translate it to the start of the vector.
-        uaxis.translate(vec.beg());
-        vaxis.translate(vec.beg());
+        //uaxis.translate(vec.beg());
+        //vaxis.translate(vec.beg());
         side.p = plane;
         side.uaxis = uaxis;
         side.vaxis = vaxis;
@@ -119,6 +122,73 @@ Solid Solid::createBox(const Vector &vec, std::string texture) {
     return box;
 }
 
+std::vector<Solid> Solid::carveBox(const Vector &size, const Solid &initial) {
+	auto sVolume = initial.bbox();
+	BoundingBox cVolume(size);
+
+	if (!BoundingBox::testCollision(sVolume, cVolume)) {
+		std::vector <Solid>{initial};
+	}
+
+	std::vector<Solid> ret;
+
+	Vertex minBound = sVolume.min, maxBound = sVolume.max;
+
+	if (cVolume.min.z() > sVolume.min.z() && !doubleeq(cVolume.min.z(), sVolume.min.z())) {
+		Vertex min(sVolume.min);
+		Vertex max(sVolume.max.x(), sVolume.max.y(), cVolume.min.z());
+		Vector box(min, max);
+		minBound.z(max.z());
+		ret.push_back(createBox(box));
+	}
+
+	if (cVolume.max.z() < sVolume.max.z() && !doubleeq(cVolume.max.z(), sVolume.max.z())) {
+		Vertex min(sVolume.min.x(), sVolume.min.y(), cVolume.max.z());
+		Vertex max(sVolume.max);
+		Vector box(min, max);
+		maxBound.z(min.z());
+		ret.push_back(createBox(box));
+	}
+
+	if (cVolume.min.x() > sVolume.min.x() && !doubleeq(cVolume.min.x(), sVolume.min.x())) {
+		Vertex min = Vertex::allmax(minBound, sVolume.min);
+		Vertex max = Vertex::allmin(maxBound, sVolume.max);
+		max.x(cVolume.min.x());
+		Vector box(min, max);
+		minBound.x(max.x());
+		ret.push_back(createBox(box));
+	}
+
+	if (cVolume.max.x() < sVolume.max.x() && !doubleeq(cVolume.max.x(), sVolume.max.x())) {
+		Vertex min = Vertex::allmax(minBound, sVolume.min);
+		Vertex max = Vertex::allmin(maxBound, sVolume.max);
+		min.x(cVolume.max.x());
+		Vector box(min, max);
+		maxBound.x(min.x());
+		ret.push_back(createBox(box));
+	}
+
+	if (cVolume.min.y() > sVolume.min.y() && !doubleeq(cVolume.min.y(), sVolume.min.y())) {
+		Vertex min = Vertex::allmax(minBound, sVolume.min);
+		Vertex max = Vertex::allmin(maxBound, sVolume.max);
+		max.y(cVolume.min.y());
+		Vector box(min, max);
+		minBound.y(max.y());
+		ret.push_back(createBox(box));
+	}
+
+	if (cVolume.max.y() < sVolume.max.y() && !doubleeq(cVolume.max.y(), sVolume.max.y())) {
+		Vertex min = Vertex::allmax(minBound, sVolume.min);
+		Vertex max = Vertex::allmin(maxBound, sVolume.max);
+		min.y(cVolume.max.y());
+		Vector box(min, max);
+		maxBound.y(min.y());
+		ret.push_back(createBox(box));
+	}
+
+	return ret;
+}
+
 unsigned int Solid::parse(std::istream &stream) {
 	unsigned int numparsed = 0;
 	std::string curline;
@@ -129,14 +199,17 @@ unsigned int Solid::parse(std::istream &stream) {
 	unsigned int depth = 1;
 	while (std::getline(stream, curline)) {
 		numparsed++;
-		if(trim(curline) == "side") {
+		if (trim(curline) == "side") {
 			auto it = sides.emplace(sides.end());
 			numparsed += it->parse(stream);
-		} else if(trim(curline) == "editor") {
+		} 
+		else if (trim(curline) == "editor") {
 			numparsed+=edt.parse(stream);
-		} else if(trim(curline) == "}") {
+		} 
+		else if (trim(curline) == "}") {
 			if(--depth == 0) break;
-		} else {
+		} 
+		else {
 			KeyVal k(curline);
 			if(k.key == "id") id_ = k.toInt();
 		}

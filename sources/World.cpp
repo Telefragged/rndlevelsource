@@ -110,15 +110,20 @@ void World::buildWorld() {
 	interParts.resize(std::distance(interParts.begin(), interIter));
 	endParts.resize(std::distance(endParts.begin(), endIter));
 
+	WeightedVector<Part> weightedInter(interParts, 5);
+
 	std::uniform_int_distribution<unsigned int> 
 		startDist(0, startParts.size() - 1), 
-		interDist(0, interParts.size() - 1), 
 		endDist(0, endParts.size() - 1);
 
 	addPart(startParts.at(startDist(eng_)));
 
 	for (unsigned int n = 0; n < 20; n++) {
-		addPart(interParts.at(interDist(eng_)));
+		std::uniform_int_distribution<unsigned int> interDist(0, weightedInter.weight() - 1);
+		auto *part = weightedInter.getWeighted(interDist(eng_));
+		int weight = weightedInter.changeWeight(part, -int(5*weightedInter.size()));
+		weightedInter.addToRandomWeights(std::abs(weight), eng_);
+		addPart(*part);
 	}
 
 	addPart(endParts.at(endDist(eng_)));
@@ -162,6 +167,20 @@ std::vector<parttuple> World::filterFit(const Part &p1, const Part &p2, const st
 			continue;
 		filterFitHelper(p1, p2, part, ret);
 
+	}
+	return ret;
+}
+
+std::vector<Part> World::filter(const Connection *connection, const std::vector<Part> &parts) {
+	std::vector<Part> ret;
+	for (const Part &part : parts) {
+		Part copy(part);
+		for (Connection &con : copy.connections) {
+			movePart(&copy, &con, connection);
+			if (!testCollisions(&copy)) {
+				ret.emplace_back(copy);
+			}
+		}
 	}
 	return ret;
 }

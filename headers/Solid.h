@@ -14,16 +14,28 @@ class Solid :
 	public KeyValBase
 {
 private:
-	std::vector<Side> sides;
 	unsigned int id_;
 	mutable unsigned int depth_;
 	Editor edt;
 	
 public:
 
+	std::vector<Side> sides;
 	static bool testCollision(const Solid &, const Solid &);
 
-	static Solid createBox(const Vector &, std::string texture = "");
+	enum texmode {
+		UP		= 0x0001,
+		DOWN	= 0x0002,
+		NORTH	= 0x0004,
+		SOUTH	= 0x0008,
+		WEST	= 0x0010,
+		EAST	= 0x0020,
+		INSIDE	= 0x0040
+	};
+
+	static Solid createBox(const Vector &, std::string texture = "tools/toolsnodraw", int texturemode = 0, std::string othertexture = "tools/toolsnodraw");
+
+	static std::vector<Solid> carveBox(const Vector &size, const Solid &initial);
 
 	unsigned int parse(std::istream &);
 	void rotate(const Vertex &, const Matrix &);

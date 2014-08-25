@@ -4,10 +4,9 @@
 
 class KeyValBase
 {
-protected:
-	std::unordered_map<std::string, std::string> keyvals;
 
 public:
+	std::unordered_map<std::string, std::string> keyvals;
 	KeyValBase();
 	~KeyValBase();
 

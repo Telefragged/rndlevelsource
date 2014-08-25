@@ -24,6 +24,10 @@ public:
 	Vector &operator+=(const Vector &);
 	Vector &operator-=(const Vector &);
 
+	Vector &operator*=(double);
+
+	static Vector allMinMax(const Vertex &, const Vertex &);
+
     std::string toStr() const;
 
 	Vector(void);
@@ -33,11 +37,16 @@ public:
 };
 
 inline Vector operator+(Vector lhs, const Vector &rhs) {
-	lhs+=rhs;
+	lhs += rhs;
 	return lhs;
 }
 
 inline Vector operator-(Vector lhs, const Vector &rhs) {
-	lhs-=rhs;
+	lhs -= rhs;
+	return lhs;
+}
+
+inline Vector operator*(Vector lhs, double rhs) {
+	lhs *= rhs;
 	return lhs;
 }

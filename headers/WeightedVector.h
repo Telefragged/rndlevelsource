@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <random>
 
 template <class _Ty>
 class WeightedVector
@@ -81,6 +82,20 @@ public:
 		return &vec.at(index);
 	}
 
+	// Modify weight of the object pointed at by ptr.
+	// Returns how much the weight actually changed by ( Weight can't be less than 0 )
+	int changeWeight(_Ty *ptr, int diff) {
+		for (auto &pair : vec) {
+			if (&pair.second == ptr) {
+				int aDiff = (-diff > int(pair.first)) ? -int(pair.first) : diff;
+				totWeight += aDiff;
+				pair.first += aDiff;
+				return aDiff;
+			}
+		}
+		return 0;
+	}
+
 	void setWeight(_Ty *ptr, unsigned int newWeight) {
 		for (auto &pair : vec) {
 			if (&pair.second == ptr) {
@@ -102,6 +117,16 @@ public:
 			totWeight += diff;
 		}
 	}
+	
+	template <typename _Eng>
+	void addToRandomWeights(unsigned int distWeight, _Eng &engine) {
+		std::uniform_int_distribution<unsigned int>dist (0, vec.size() - 1);
+		for (unsigned int n = 0; n < distWeight; n++) {
+			auto &pair = vec[dist(engine)];
+			pair.first++;
+		}
+		totWeight += distWeight;
+	}
 
 	unsigned int size() const { return vec.size(); }
 	unsigned int weight() const { return totWeight; }
@@ -111,6 +136,14 @@ public:
 			if (pair.first) count++;
 		}
 		return count;
+	}
+
+	WeightedVector(const std::vector<_Ty> &other, unsigned int initWeight = 1)
+	{
+		for (const auto &item : other) {
+			vec.emplace_back(initWeight, item);
+		}
+		totWeight = initWeight * other.size();
 	}
 
 	WeightedVector() :

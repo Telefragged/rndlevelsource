@@ -19,7 +19,6 @@ public:
 	//Returns a vector representing the line where two planes intersect.
 	//Parameters are equations in the form ax + by + cz + d = 0,
 	//as a 1x4 matrix.
-
 	static Plane vectorPlane(const Vector &, const Vector &);
 
 	static Vector intersectLine(const Matrix &, const Matrix &);

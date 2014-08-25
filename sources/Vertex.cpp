@@ -73,11 +73,11 @@ double Vertex::length(const Vertex &v) {
 }
 
 double Vertex::dotProduct(const Vertex &lhs, const Vertex &rhs) {
-	double ret = 0.0;
-	ret += lhs.x() * rhs.x();
-	ret += lhs.y() * rhs.y();
-	ret += lhs.z() * rhs.z();
-	return ret;
+	return (lhs.x() * rhs.x()) + (lhs.y() * rhs.y()) + (lhs.z() * rhs.z());
+}
+
+double Vertex::dotProduct2D(const Vertex &lhs, const Vertex &rhs) {
+	return (lhs.x() * rhs.x()) + (lhs.y() * rhs.y());
 }
 
 Vertex Vertex::normalize(const Vertex &v) {
@@ -106,7 +106,7 @@ Vertex Vertex::crossProduct(const Vertex &lhs, const Vertex &rhs) {
 }
 
 void Vertex::parsestr(const std::string &pstr) {
-	std::string str = trim(pstr, " \t\n()");
+	std::string str = trim(pstr, " \t\r\n()");
 	size_t fspos = str.find_first_of(' '), espos = str.find_last_of(' ');
 	if (fspos == std::string::npos || espos == std::string::npos || fspos == espos) {
 		vertex_[0] = std::numeric_limits<double>::quiet_NaN();

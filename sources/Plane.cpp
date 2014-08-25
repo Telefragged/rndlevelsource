@@ -139,7 +139,7 @@ bool Plane::crossesLine(const Plane &p, const Vector &line) {
 		else return -1;						// left
 	};
 
-	std::vector<int> points; // Hold the three point states
+	std::vector<int> points(3); // Hold the three point states
 
 	// Huge thanks to Eirik Hjorthaug Kiil who helped me squash an annoying bug with the collision detection!
 
@@ -172,7 +172,7 @@ bool Plane::testCollision(const Plane &lhs, const Plane &rhs) {
 	// If planes are parallel beg() is set to NaN by intersectLine()
 	Vertex line = vec.vec();
 	// printf("%s\n", line.toStr().c_str());
-	if(doubleeq(line.x(), 0.0) && doubleeq(line.y(), 0.0) && doubleeq(line.z(), 0.0)) return false;
+	if(!Vertex::isVertex(line)) return false;
 	if(!Vertex::isVertex(vec.beg())) return false;
 	// Determine which planes cross the intersection
 	bool lhscrosses = Plane::crossesLine(lhs, vec);

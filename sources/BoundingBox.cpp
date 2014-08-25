@@ -25,8 +25,8 @@ BoundingBox::BoundingBox(void)
 }
 
 BoundingBox::BoundingBox(const Vector &v) :
-	min(v.beg()),
-	max(v.end())
+	min(Vertex::allmin(v.beg(), v.end())),
+	max(Vertex::allmax(v.beg(), v.end()))
 {
 }
 

@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <sstream>
 #include <string>
+#include <vector>
 
 inline std::string nextword(unsigned int &pos, std::string &str, std::string delim = " \t\n\r") {
 	if(pos >= str.length()) return "";
@@ -102,3 +103,11 @@ inline std::string numToPretty(T num, bool onlyPretty = false, bool appTxt = tru
 	return pretty;
 }
 
+inline std::vector<std::string> splitstr(std::string orig, std::string delim = " \n\r\t") {
+	unsigned int pos = 0;
+	std::vector<std::string> ret;
+	while (pos < orig.length()) {
+		ret.push_back(nextword(pos, orig, delim));
+	}
+	return ret;
+}

@@ -16,6 +16,11 @@ Vector &Vector::operator-=(const Vector &rhs) {
 	return *this;
 }
 
+Vector &Vector::operator*=(double rhs) {
+	_vec *= rhs;
+	return *this;
+}
+
 std::string Vector::toStr() const {
     return std::string() + '('+ _orig.toStr() + ") + t(" + _vec.toStr() + ')';
 }
@@ -36,6 +41,10 @@ Vector::Vector(const Vertex &beg, const Vertex &end) :
 	_orig(beg),
 	_vec(end-beg)
 {
+}
+
+Vector Vector::allMinMax(const Vertex &v1, const Vertex &v2) {
+	return Vector(Vertex::allmin(v1, v2), Vertex::allmax(v1, v2));
 }
 
 Vector::~Vector(void)

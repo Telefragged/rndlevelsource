@@ -1,7 +1,9 @@
 #pragma once
+
 #include <ios>
 #include <iomanip>
 #include "Axis.h"
+#include "DispInfo.h"
 #include "KeyValBase.h"
 #include "Plane.h"
 
@@ -18,8 +20,9 @@ private:
 	unsigned int id_;
 	mutable unsigned int depth_;
 public:
-	Plane p;
+	DispInfo disp;
 	Axis uaxis, vaxis;
+	Plane p;
 
 	unsigned int parse(std::istream &);
 
@@ -52,6 +55,8 @@ inline std::ostream &operator<<(std::ostream &os, const Side &s) {
 	for(const auto &pair : s.keyvals) {
 		os<<std::setw(s.depth())<<""<<"\t"<<KeyValBase::toStr(pair)<<"\n";
 	}
+	s.disp.depth(s.depth() + TABDEPTH);
+	os << s.disp << "\n";
 	os<<std::setw(s.depth())<<""<<"}";
 	return os;
 }

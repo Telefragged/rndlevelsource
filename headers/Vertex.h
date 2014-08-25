@@ -47,6 +47,7 @@ public:
 
     static double length(const Vertex &);
     static double dotProduct(const Vertex &, const Vertex &);
+	static double dotProduct2D(const Vertex &, const Vertex &);
 
     static Vertex normalize(const Vertex &);
     static Vertex crossProduct(const Vertex &, const Vertex &);

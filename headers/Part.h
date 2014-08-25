@@ -6,6 +6,7 @@
 #include "WeightedVector.h"
 
 class BoundingBox;
+class DispInfo;
 
 class Part
 {
@@ -18,33 +19,39 @@ public:
 	//Test collision between parts
 	static bool testCollision(const Part &, const Part &);
 
-	//Parse contents of stream in .vmf format.
-	//Parses until end of stream.
+	// Generate a random room
+	// Thickness determines the brush thickness
+	static Part createRoom(std::mt19937 &eng, const Vector &pos, double thickness);
+
+	// Parse contents of stream in .vmf format
+	// Parses until end of stream
 	unsigned int parse(std::istream &);
-	//Open and parse file in .vmf format.
+	// Open and parse file in .vmf format.
 	unsigned int parse(std::string);
-	//Counts number of entities in the part with the exact same classname
+	// Counts number of entities in the part with the exact same classname
 	unsigned int countEntities(std::string) const;
 
-	//Opens and writes a file in .vmf format.
+	// Opens and writes a file in .vmf format
 	std::streampos toFile(std::string);
 
-	//Returns an AABB with the min and max coordinates of this part.
+	// Returns an AABB with the min and max coordinates of this part
 	BoundingBox bbox() const;
 
-	//Move the part by the internal vector.
+	// Move the part by the internal vector
 	void move(const Vector &);
 
-	//Move the part to specified coordinates.
+	// Move the part to specified coordinates
 	void moveTo(const Vertex &);
 
-	//Performs a rotation around a fixed point.
-	//By default the part rotates around the centre
-	//of its AABB.
+	// Performs a rotation around a fixed point
+	// By default the part rotates around the centre
+	// of its AABB
 	void rotate(const Angle &, const Vertex &pt = Vertex());
 
-	//Re-assigns all entity-, solid- and sideids so that they are unique and in order.
-	//NOTE -- this is called by the parse and += methods.
+	DispInfo &findFirstDisp();
+
+	// Re-assigns all entity-, solid- and sideids so that they are unique and in order
+	// NOTE -- this is called by the parse and += methods
 	void reID();
 
 	Part &operator=(Part &&);
@@ -56,7 +63,7 @@ public:
 
 	Part(void);
 
-	//Open and parse file in .vmf format.
+	// Open and parse file in .vmf format
 	Part(std::string);
 	Part(const Part &);
 	Part(Part &&);

@@ -15,7 +15,10 @@ unsigned int Side::parse(std::istream &stream) {
 	}
 	while (std::getline(stream, curline)) {
 		numparsed++;
-		if(trim(curline) == "}") {
+		if (trim(curline) == "dispinfo") {
+			disp.parse(stream);
+		}
+		else if(trim(curline) == "}") {
 			break;
 		} else {
 			KeyVal parsed(curline);
@@ -57,6 +60,8 @@ void Side::rotate(const Vertex &point, const Matrix &rotmat)
 	p.p3 = p.p3.rotate(point, rotmat);
 	uaxis.v = uaxis.v.rotate(rotmat);
 	vaxis.v = vaxis.v.rotate(rotmat);
+
+	disp.rotate(point, rotmat);
 }
 
 void Side::move(const Vector &v) {

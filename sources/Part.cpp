@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include "Angle.h"
 #include "BoundingBox.h"
+#include "DispInfo.h"
 #include "KeyVal.h"
 #include "Matrix.h"
 #include "Part.h"
@@ -131,6 +132,16 @@ std::streampos Part::toFile(std::string filename) {
 	return fsize;
 }
 
+DispInfo &Part::findFirstDisp() {
+	for (auto &ent : entities)
+		for (auto &sol : ent.solids)
+			for (auto &sid : sol.sides)
+				if (sid.disp.keyvals.size() > 0)
+					return sid.disp;
+
+	return DispInfo();
+}
+
 void Part::reID() {
 	entityID_ = 0;
 	solidID_ = 0;
@@ -183,6 +194,40 @@ Entity &Part::operator[](std::string classname) {
 		it = entities.emplace(entities.end(), classname);
 	}
 	return *it;
+}
+
+Part Part::createRoom(std::mt19937 &eng, const Vector &pos, double thickness)
+{
+	Vertex min = Vertex::allmin(pos.beg(), pos.end());
+	Vertex max = Vertex::allmax(pos.beg(), pos.end());
+
+	Vector floor(min, Vertex(max.x(), max.y(), thickness));
+
+	Vector roof(Vertex(min.x(), min.y(), max.z() - thickness), max);
+
+	Vector southwall(Vertex(min.x(), min.y(), min.z() + thickness),
+		Vertex(max.x(), min.y() + thickness, max.z() - thickness));
+
+	Vector northwall(Vertex(min.x(), max.y() - thickness, min.z() + thickness),
+		Vertex(max.x(), max.y(), max.z() - thickness));
+
+	Vector westwall(Vertex(min.x(), min.y() + thickness, min.z() + thickness),
+		Vertex(min.x() + thickness, max.y() - thickness, max.z() - thickness));
+
+	Vector eastwall(Vertex(max.x() - thickness, min.y() + thickness, min.z() + thickness),
+		Vertex(max.x(), max.y() - thickness, max.z() - thickness));
+
+	Part ret;
+	ret.entities.push_back(Entity::defaultWorldEntity());
+	auto world = &ret.entities.back();
+	world->solids.push_back(Solid::createBox(floor, "tools/toolsnodraw", Solid::texmode::UP, "dev/dev_measuregeneric01b"));
+	world->solids.push_back(Solid::createBox(roof, "tools/toolsnodraw", Solid::texmode::DOWN, "dev/dev_measuregeneric01b"));
+	world->solids.push_back(Solid::createBox(southwall, "tools/toolsnodraw", Solid::texmode::NORTH, "dev/dev_measuregeneric01b"));
+	world->solids.push_back(Solid::createBox(northwall, "tools/toolsnodraw", Solid::texmode::SOUTH, "dev/dev_measuregeneric01b"));
+	world->solids.push_back(Solid::createBox(westwall, "tools/toolsnodraw", Solid::texmode::EAST, "dev/dev_measuregeneric01b"));
+	world->solids.push_back(Solid::createBox(eastwall, "tools/toolsnodraw", Solid::texmode::WEST, "dev/dev_measuregeneric01b"));
+
+	return ret;
 }
 
 Part::Part(void)
