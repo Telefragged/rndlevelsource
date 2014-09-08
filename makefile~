@@ -6,11 +6,11 @@ SRCDIR = ./sources/
 HDRDIR = ./headers/
 OBJDIR = ./debug/
 
-SOURCES = Angle.cpp Axis.cpp BaseNPC.cpp BoundingBox.cpp	\
-CompileTools.cpp Connection.cpp DispInfo.cpp Editor.cpp		\
-Entity.cpp KeyValBase.cpp KeyVal.cpp main.cpp Matrix.cpp	\
-Part.cpp Plane.cpp Quaternion.cpp Side.cpp SimplexNoise.cpp	\
-Solid.cpp Vector.cpp Vertex.cpp World.cpp
+SOURCES = Angle.cpp Axis.cpp BoundingBox.cpp		\
+Connection.cpp DispInfo Editor.cpp Entity.cpp		\
+KeyVal.cpp KeyValBase.cpp main.cpp Matrix.cpp Part.cpp	\
+Plane.cpp Quaternion.cpp Side.cpp Solid.cpp Vector.cpp	\
+Vertex.cpp World.cpp
 
 OBJECTS = $(SOURCES:.cpp=.o)
 
