@@ -6,49 +6,58 @@ template <class T>
 class LinkedNode
 {
 private:
-	T *val;
-	LinkedNode<T> *next;
+	T* val;
+	LinkedNode<T>* next;
 public:
 
-	void setnext(decltype(next) newNext) {
+	void setnext(decltype(next) newNext)
+	{
 		next = newNext;
 	}
 
-	void setval(decltype(val) newVal) {
+	void setval(decltype(val) newVal)
+	{
 		this->val = newVal;
 	}
 
-	void add(LinkedNode<T> *val) {
+	void add(LinkedNode<T>* val)
+	{
 		next = val;
 	}
-	
-	T &value() {
+
+	T& value()
+	{
 		return *val;
 	}
 
-	auto ptr() -> decltype(val) {
+	auto ptr() -> decltype(val)
+	{
 		return val;
 	}
 
-	auto nextnode() -> decltype(next) {
+	auto nextnode() -> decltype(next)
+	{
 		return next;
 	}
 
-	T *operator*() {
+	T* operator*()
+	{
 		return this->ptr();
 	}
 
-	LinkedNode(T *val) {
+	LinkedNode(T* val)
+	{
 		this->val = val;
 		next = nullptr;
 	}
 
-	~LinkedNode(void) {
-		if(val != nullptr) delete val;
+	~LinkedNode(void)
+	{
+		if (val != nullptr) delete val;
 	}
 };
 
-template<class T>
+template <class T>
 class LinkedList
 {
 protected:
@@ -56,16 +65,19 @@ protected:
 	unsigned int size_, prevind_;
 	std::mutex cmnmtx;
 
-	auto getNode(unsigned int index) -> decltype(first) {
-		if(index >= size_) return nullptr;
+	auto getNode(unsigned int index) -> decltype(first)
+	{
+		if (index >= size_) return nullptr;
 		cmnmtx.lock();
 		unsigned int cind = 0;
 		auto cur = first;
-		if(index >= prevind_ && prev != nullptr) {
+		if (index >= prevind_ && prev != nullptr)
+		{
 			cind = prevind_;
 			cur = prev;
 		}
-		while(index != cind) {
+		while (index != cind)
+		{
 			cur = cur->nextnode();
 			cind++;
 		}
@@ -75,12 +87,15 @@ protected:
 		return cur;
 	}
 
-	static unsigned int partition(T **vals, unsigned int beg, unsigned int end, unsigned int pivotind, bool (*cmpfnc)(const T &, const T &)) {
-		T *pivot = vals[pivotind];
+	static unsigned int partition(T** vals, unsigned int beg, unsigned int end, unsigned int pivotind, bool (*cmpfnc)(const T&, const T&))
+	{
+		T* pivot = vals[pivotind];
 		std::swap(vals[pivotind], vals[end]);
 		unsigned int storeind = beg;
-		for(unsigned int n = beg; n < end; n++) {
-			if(cmpfnc(*vals[n], *pivot)) {
+		for (unsigned int n = beg; n < end; n++)
+		{
+			if (cmpfnc(*vals[n], *pivot))
+			{
 				std::swap(vals[n], vals[storeind]);
 				storeind++;
 			}
@@ -89,17 +104,19 @@ protected:
 		return storeind;
 	}
 
-	static void qsort(T **vals, unsigned int beg, unsigned int end, bool (*cmpfnc)(const T &, const T &)) {
-		if(cmpfnc == nullptr || beg >= end) return;
+	static void qsort(T** vals, unsigned int beg, unsigned int end, bool (*cmpfnc)(const T&, const T&))
+	{
+		if (cmpfnc == nullptr || beg >= end) return;
 		unsigned int pivotval = end;
 		unsigned int piv = partition(vals, beg, end, pivotval, cmpfnc);
-		if(piv > 0) qsort(vals, beg, piv-1, cmpfnc);
-		if(piv < end) qsort(vals, piv+1, end, cmpfnc);
+		if (piv > 0) qsort(vals, beg, piv - 1, cmpfnc);
+		if (piv < end) qsort(vals, piv + 1, end, cmpfnc);
 	}
 
 public:
 
-	static void swap(LinkedList<T> &lhs, LinkedList<T> &rhs) {
+	static void swap(LinkedList<T>& lhs, LinkedList<T>& rhs)
+	{
 		std::swap(lhs.first, rhs.first);
 		std::swap(lhs.last, rhs.last);
 		std::swap(lhs.prev, rhs.prev);
@@ -107,8 +124,9 @@ public:
 		std::swap(lhs.prevind_, rhs.prevind_);
 	}
 
-	void quicksort(bool (*cmpfnc)(const T &, const T &) = nullptr) {
-		T **vals = toPtrArray();
+	void quicksort(bool (*cmpfnc)(const T&, const T&) = nullptr)
+	{
+		T** vals = toPtrArray();
 		qsort(vals, 0, size_ - 1, cmpfnc);
 		//unsigned int arrsize = size_;
 		//unassign();
@@ -116,53 +134,89 @@ public:
 		delete [] vals;
 	}
 
-	class iterator {
-		LinkedNode<T> *node;
+	class iterator
+	{
+		LinkedNode<T>* node;
 	public:
-		iterator(LinkedNode<T> *node) {this->node = node;}
+		iterator(LinkedNode<T>* node)
+		{
+			this->node = node;
+		}
 
-		T &operator *() const {return *node->ptr();}
+		T& operator *() const
+		{
+			return *node->ptr();
+		}
 
-		const iterator &operator++() {
+		const iterator& operator++()
+		{
 			node = node->nextnode();
 			return *this;
 		}
 
-		bool operator!=(const iterator& rhs) {
+		bool operator!=(const iterator& rhs)
+		{
 			return this->node != rhs.node;
 		}
-
 	};
 
-	class const_iterator {
-		LinkedNode<T> *node;
+	class const_iterator
+	{
+		LinkedNode<T>* node;
 	public:
-		const_iterator(LinkedNode<T> *node) {this->node = node;}
+		const_iterator(LinkedNode<T>* node)
+		{
+			this->node = node;
+		}
 
-		const T &operator *() const {return *node->ptr();}
+		const T& operator *() const
+		{
+			return *node->ptr();
+		}
 
-		const const_iterator &operator++() {
+		const const_iterator& operator++()
+		{
 			node = node->nextnode();
 			return *this;
 		}
 
-		bool operator!=(const const_iterator& rhs) {
+		bool operator!=(const const_iterator& rhs)
+		{
 			return this->node != rhs.node;
 		}
 	};
 
-	iterator begin() {return iterator(first);}
-	iterator end() {return iterator(nullptr);}
-	const_iterator begin() const {return const_iterator(first);}
-	const_iterator end() const {return const_iterator(nullptr);}
+	iterator begin()
+	{
+		return iterator(first);
+	}
 
-	virtual void put(T *val) {
+	iterator end()
+	{
+		return iterator(nullptr);
+	}
+
+	const_iterator begin() const
+	{
+		return const_iterator(first);
+	}
+
+	const_iterator end() const
+	{
+		return const_iterator(nullptr);
+	}
+
+	virtual void put(T* val)
+	{
 		cmnmtx.lock();
-		if(first == nullptr) {
+		if (first == nullptr)
+		{
 			first = new LinkedNode<T>(val);
 			last = first;
 			prev = first;
-		} else {
+		}
+		else
+		{
 			last->add(new LinkedNode<T>(val));
 			last = last->nextnode();
 		}
@@ -170,34 +224,43 @@ public:
 		cmnmtx.unlock();
 	}
 
-	void put(T *arr, unsigned int len) {
-		for(unsigned int n = 0; n < len; n++) {
+	void put(T* arr, unsigned int len)
+	{
+		for (unsigned int n = 0; n < len; n++)
+		{
 			put(new T(arr[n]));
 		}
 	}
 
-	void put(T **arr, unsigned int len) {
-		for(unsigned int n = 0; n < len; n++) {
+	void put(T** arr, unsigned int len)
+	{
+		for (unsigned int n = 0; n < len; n++)
+		{
 			put(arr[n]);
 		}
 	}
 
-	T &get(unsigned int index) {
-		LinkedNode<T> *n = getNode(index);
-		if(n == nullptr) return T();
+	T& get(unsigned int index)
+	{
+		LinkedNode<T>* n = getNode(index);
+		if (n == nullptr) return T();
 		return n->value();
 	}
 
-	T *getptr(unsigned int index) {
+	T* getptr(unsigned int index)
+	{
 		auto n = getNode(index);
-		if(n == nullptr) return 0;
+		if (n == nullptr) return 0;
 		return n->ptr();
 	}
 
-	bool remove(T *ptr) {
+	bool remove(T* ptr)
+	{
 		unsigned int ind = 0;
-		for(auto &elem : *this) {
-			if(&elem == ptr) {
+		for (auto& elem : *this)
+		{
+			if (&elem == ptr)
+			{
 				remove(ind);
 				return true;
 			}
@@ -206,11 +269,13 @@ public:
 		return false;
 	}
 
-	T *remove(unsigned int index) {
-		if(index >= size()) return nullptr;
-		T *ret = nullptr;
-		if(index == 0) {
-			if(prev == first) prev = prev->nextnode();
+	T* remove(unsigned int index)
+	{
+		if (index >= size()) return nullptr;
+		T* ret = nullptr;
+		if (index == 0)
+		{
+			if (prev == first) prev = prev->nextnode();
 			else prevind_--;
 			ret = first->ptr();
 			auto delnode = first;
@@ -218,8 +283,10 @@ public:
 			delnode->setval(nullptr);
 			delnode->setnext(nullptr);
 			delete delnode;
-		} else {
-			auto prevnode = getNode(index-1);
+		}
+		else
+		{
+			auto prevnode = getNode(index - 1);
 			auto delnode = prevnode->nextnode();
 			ret = delnode->ptr();
 			delnode->setval(nullptr);
@@ -233,67 +300,83 @@ public:
 		return ret;
 	}
 
-	LinkedList<T> &operator+=(T *rhs) {
+	LinkedList<T>& operator+=(T* rhs)
+	{
 		put(rhs);
 		return *this;
 	}
 
-	LinkedList<T> &operator+=(const T &rhs) {
+	LinkedList<T>& operator+=(const T& rhs)
+	{
 		put(new T(rhs));
 		return *this;
 	}
 
-	LinkedList<T> &operator+=(const LinkedList<T> &rhs) {
+	LinkedList<T>& operator+=(const LinkedList<T>& rhs)
+	{
 		unsigned int cap = rhs.size(), count = 0;
-		for(const T &elem : rhs) {
+		for (const T& elem : rhs)
+		{
 			put(new T(const_cast<T &>(elem)));
-			if(++count == cap) break;
+			if (++count == cap) break;
 		}
 		return *this;
 	}
 
-	LinkedList<T> &operator-=(T *rhs) {
+	LinkedList<T>& operator-=(T* rhs)
+	{
 		remove(rhs);
 		return *this;
 	}
 
-	LinkedList<T> &operator-=(const LinkedList<T> &rhs) {
-		if(this == &rhs) {
+	LinkedList<T>& operator-=(const LinkedList<T>& rhs)
+	{
+		if (this == &rhs)
+		{
 			clear();
 			return *this;
 		}
-		for(T &elem : rhs) {
+		for (T& elem : rhs)
+		{
 			this->remove(&elem);
 		}
 		return *this;
 	}
 
-	LinkedList<T> &operator=(const LinkedList<T> &orig) {
-		if(this == &orig) return *this;
+	LinkedList<T>& operator=(const LinkedList<T>& orig)
+	{
+		if (this == &orig) return *this;
 		clear();
-		for(const T &origt : orig) {
+		for (const T& origt : orig)
+		{
 			put(new T(origt));
 		}
 		return *this;
 	}
 
-	LinkedList<T> &operator=(LinkedList<T> &&orig) {
+	LinkedList<T>& operator=(LinkedList<T>&& orig)
+	{
 		swap(*this, orig);
 		return *this;
 	}
 
 	template <class CT>
-	T *get_first_match(CT cmp, bool (*cmpfnc)(const T &lhs, const CT &rhs)) const {
-		for(const T &elem : *this) {
-			if(cmpfnc(elem, cmp)) return const_cast<T *>(&elem);
+	T* get_first_match(CT cmp, bool (*cmpfnc)(const T& lhs, const CT& rhs)) const
+	{
+		for (const T& elem : *this)
+		{
+			if (cmpfnc(elem, cmp)) return const_cast<T *>(&elem);
 		}
 		return nullptr;
 	}
 
 	template <class CT>
-	T *remove_first_match(CT cmp, bool (*cmpfnc)(const T &lhs, const CT &rhs)) {
-		for(T &elem : *this) {
-			if(cmpfnc(elem, cmp)) {
+	T* remove_first_match(CT cmp, bool (*cmpfnc)(const T& lhs, const CT& rhs))
+	{
+		for (T& elem : *this)
+		{
+			if (cmpfnc(elem, cmp))
+			{
 				remove(&elem);
 				return &elem;
 			}
@@ -302,83 +385,100 @@ public:
 	}
 
 	template <class CT>
-	LinkedList<T> get_all_match(CT cmp, bool (*cmpfnc)(const T &lhs, const CT &rhs)) const {
+	LinkedList<T> get_all_match(CT cmp, bool (*cmpfnc)(const T& lhs, const CT& rhs)) const
+	{
 		LinkedList<T> ret;
-		for(T &elem : *this) {
-			if(cmpfnc(elem, cmp)) ret += elem;
+		for (T& elem : *this)
+		{
+			if (cmpfnc(elem, cmp)) ret += elem;
 		}
 		return ret;
 	}
 
 	template <class CT>
-	LinkedList<T> remove_all_match(CT cmp, bool (*cmpfnc)(const T &lhs, const CT &rhs)) {
+	LinkedList<T> remove_all_match(CT cmp, bool (*cmpfnc)(const T& lhs, const CT& rhs))
+	{
 		LinkedList<T> ret;
-		for(T &elem : *this) {
-			if(cmpfnc(elem, cmp)) ret += &elem;
+		for (T& elem : *this)
+		{
+			if (cmpfnc(elem, cmp)) ret += &elem;
 		}
 		(*this) -= ret;
 		return ret;
 	}
 
 	//Return a new list with only the elements that return true in the given function.
-	const LinkedList<T> filterList(bool (*predfnc)(const T &cmp)) {
+	const LinkedList<T> filterList(bool (*predfnc)(const T& cmp))
+	{
 		LinkedList<T> ret;
-		for (const T &elem : *this) {
+		for (const T& elem : *this)
+		{
 			if (predfnc(elem)) ret.put(new T(elem));
 		}
 		return ret;
 	}
 
-	const LinkedList<T> filterList(bool (*predfnc)(const T &cmp, void *extra), void *extra) {
+	const LinkedList<T> filterList(bool (*predfnc)(const T& cmp, void* extra), void* extra)
+	{
 		LinkedList<T> ret;
-		for (const T &elem : *this) {
+		for (const T& elem : *this)
+		{
 			if (predfnc(elem, extra)) ret.put(new T(elem));
 		}
 		return ret;
 	}
 
-	T pop_first() {
+	T pop_first()
+	{
 		T ret = first->value();
-		if(prev == first) prev = prev->nextnode();
+		if (prev == first) prev = prev->nextnode();
 		first = first->nextnode();
 		return ret;
 	}
 
-	T *peek_last() {
-		if(size_ == 0) return nullptr;
+	T* peek_last()
+	{
+		if (size_ == 0) return nullptr;
 		return last->ptr();
 	}
 
-	T *toArray() {
-		if(size_ == 0) return nullptr;
-		T *ret = new T[size_];
-		for(unsigned int n = 0; n < size_; n++) {
+	T* toArray()
+	{
+		if (size_ == 0) return nullptr;
+		T* ret = new T[size_];
+		for (unsigned int n = 0; n < size_; n++)
+		{
 			ret[n] = T(get(n));
 		}
 		return ret;
 	}
 
-	T **toPtrArray() {
-		if(size_ == 0) return nullptr;
-		T **ret = new T*[size_];
-		for(unsigned int n = 0; n < size_; n++) {
+	T** toPtrArray()
+	{
+		if (size_ == 0) return nullptr;
+		T** ret = new T*[size_];
+		for (unsigned int n = 0; n < size_; n++)
+		{
 			ret[n] = getptr(n);
 		}
 		return ret;
 	}
 
-	void replace(T *val, unsigned int index) {
-		if(index < 0 || index >= size()) return;
+	void replace(T* val, unsigned int index)
+	{
+		if (index < 0 || index >= size()) return;
 		auto node = getNode(index);
 		delete node->ptr();
 		node->setval(val);
 	}
 
-	T removeval(unsigned int index) {
-		if(index < 0 || index >= size()) throw index;
+	T removeval(unsigned int index)
+	{
+		if (index < 0 || index >= size()) throw index;
 		T ret;
-		if(index == 0) {
-			if(prev == first) prev = prev->nextnode();
+		if (index == 0)
+		{
+			if (prev == first) prev = prev->nextnode();
 			else prevind_--;
 			ret = T(first->value());
 			auto delnode = first;
@@ -386,8 +486,10 @@ public:
 			delnode->setval(nullptr);
 			delnode->setnext(nullptr);
 			delete delnode;
-		} else {
-			auto prevnode = getNode(index-1);
+		}
+		else
+		{
+			auto prevnode = getNode(index - 1);
 			auto delnode = prevnode->nextnode();
 			ret = T(delnode->value());
 			delnode->setval(nullptr);
@@ -401,42 +503,45 @@ public:
 		return ret;
 	}
 
-	unsigned int size() const {
+	unsigned int size() const
+	{
 		return size_;
 	}
 
-	LinkedList(const LinkedList<T> &orig) :
-        first(nullptr),
-        last(nullptr),
-        prev(nullptr),
-        size_(0),
-        prevind_(0)
+	LinkedList(const LinkedList<T>& orig) :
+		first(nullptr),
+		last(nullptr),
+		prev(nullptr),
+		size_(0),
+		prevind_(0)
 	{
-		for(const T &origt : orig) {
+		for (const T& origt : orig)
+		{
 			put(new T(origt));
 		}
 	}
 
-	LinkedList(LinkedList<T> &&orig) :
-        first(nullptr),
-        last(nullptr),
-        prev(nullptr),
-        size_(0),
-        prevind_(0)
+	LinkedList(LinkedList<T>&& orig) :
+		first(nullptr),
+		last(nullptr),
+		prev(nullptr),
+		size_(0),
+		prevind_(0)
 	{
 		swap(*this, orig);
 	}
 
 	LinkedList() :
-        first(nullptr),
-        last(nullptr),
-        prev(nullptr),
-        size_(0),
-        prevind_(0)
+		first(nullptr),
+		last(nullptr),
+		prev(nullptr),
+		size_(0),
+		prevind_(0)
 	{
 	}
 
-	void unassign() {
+	void unassign()
+	{
 		size_ = 0;
 		prevind_ = 0;
 		first = nullptr;
@@ -444,14 +549,17 @@ public:
 		prev = nullptr;
 	}
 
-	virtual void clear() {
+	virtual void clear()
+	{
 		size_ = 0;
 		prevind_ = 0;
 		LinkedNode<T> *node = first, *nnode = nullptr;
-		while(node != nullptr) {
+		while (node != nullptr)
+		{
 			nnode = node;
 			node = node->nextnode();
-			if(nnode != nullptr) {
+			if (nnode != nullptr)
+			{
 				delete nnode;
 			}
 		}
@@ -460,10 +568,12 @@ public:
 		prev = nullptr;
 	}
 
-	void reverse() {
+	void reverse()
+	{
 		auto curptr = first;
 		decltype(curptr) nextptr = nullptr;
-		while(curptr != nullptr) {
+		while (curptr != nullptr)
+		{
 			auto prevptr = curptr->nextnode();
 			curptr->setnext(nextptr);
 			nextptr = curptr;
@@ -474,7 +584,8 @@ public:
 		prev = first;
 	}
 
-	LinkedList(const T** arr, unsigned int len) {
+	LinkedList(const T** arr, unsigned int len)
+	{
 		size_ = 0;
 		prevind_ = 0;
 		put(arr, len);
@@ -485,3 +596,4 @@ public:
 		clear();
 	}
 };
+

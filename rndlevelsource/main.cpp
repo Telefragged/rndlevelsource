@@ -8,13 +8,15 @@
 
 #define M_E 2.71828182846
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[])
+{
 	mictimer::print_on_destruct = false;
 	mictimer timer("ms main()", 1000.0);
 
 	std::string outfile = "C:/Users/vetle/Documents/Hammer Mappssz/roomwrite.vmf";
 
-	for (int i = 1; i < argc; i++) {
+	for (int i = 1; i < argc; i++)
+	{
 		if (ARGEQ("-outfile")) outfile = argv[++i];
 	}
 
@@ -38,3 +40,4 @@ int main(int argc, char *argv[]) {
 
 	return 0;
 }
+

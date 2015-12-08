@@ -16,3 +16,4 @@ public:
 	CompileTools(void);
 	~CompileTools(void);
 };
+

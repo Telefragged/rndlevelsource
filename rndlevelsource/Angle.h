@@ -1,7 +1,8 @@
 #pragma once
 #include "Vertex.h"
 
-enum {
+enum
+{
 	PITCH = 0,
 	YAW,
 	ROLL
@@ -15,7 +16,7 @@ public:
 	std::string toStr() const override;
 
 	//Returns true if all angles are non-NAN, return false otherwise.
-	static bool isAngle(const Angle &);
+	static bool isAngle(const Angle&);
 
 	inline double pitch() const;
 	inline double yaw() const;
@@ -28,28 +29,31 @@ public:
 	Matrix angleMatrix() const;
 
 	//Calculate rotation matrix from this angle to target angle.
-	Matrix calcRotation(const Angle &) const;
+	Matrix calcRotation(const Angle&) const;
 
 	//Sets the pitch, yaw and roll of the angle to the values represented by the rotation matrix.
-	void fromMatrix(const Matrix &);
+	void fromMatrix(const Matrix&);
 
-	Angle &operator+=(const Angle &);
-	Angle &operator-=(const Angle &);
+	Angle& operator+=(const Angle&);
+	Angle& operator-=(const Angle&);
 	Angle operator-(void) const;
 
 	Angle(void);
-	Angle(const std::string &);
+	Angle(const std::string&);
 	Angle(double pitch, double yaw, double roll);
 
 	virtual ~Angle(void);
 };
 
-inline Angle operator+(Angle lhs, const Angle &rhs) {
-	lhs+=rhs;
+inline Angle operator+(Angle lhs, const Angle& rhs)
+{
+	lhs += rhs;
 	return lhs;
 }
 
-inline Angle operator-(Angle lhs, const Angle &rhs) {
-	lhs-=rhs;
+inline Angle operator-(Angle lhs, const Angle& rhs)
+{
+	lhs -= rhs;
 	return lhs;
 }
+

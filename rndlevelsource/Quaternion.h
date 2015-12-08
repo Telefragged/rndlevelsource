@@ -18,24 +18,26 @@ public:
 	double magnitude() const;
 
 	void normalize();
-	void alignWith(const Quaternion &);
+	void alignWith(const Quaternion&);
 
 	Matrix quaternionMatrix();
 
 	Quaternion conjugate();
 
-	Quaternion &operator*=(const Quaternion &);
+	Quaternion& operator*=(const Quaternion&);
 
-	double &operator[](unsigned int);
+	double& operator[](unsigned int);
 	double operator[](unsigned int) const;
 
 	Quaternion(void);
 	Quaternion(double, double, double, double);
-	Quaternion(const Angle &);
+	Quaternion(const Angle&);
 	~Quaternion(void);
 };
 
-inline Quaternion operator*(Quaternion lhs, const Quaternion &rhs) {
-	lhs*=rhs;
+inline Quaternion operator*(Quaternion lhs, const Quaternion& rhs)
+{
+	lhs *= rhs;
 	return lhs;
 }
+

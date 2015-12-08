@@ -11,82 +11,119 @@ class WeightedVector
 
 public:
 
-	class iterator {
-		
+	class iterator
+	{
 		std::_Vector_iterator<std::_Vector_val<std::_Simple_types<std::pair<unsigned int, _Ty>>>> iter; // Why do I have to do this?
 
 	public:
-		iterator(const decltype(iter) &iter) { this->iter = iter; }
+		iterator(const decltype(iter)& iter)
+		{
+			this->iter = iter;
+		}
 
-		_Ty &operator *() const { return iter->second; }
+		_Ty& operator *() const
+		{
+			return iter->second;
+		}
 
-		const iterator &operator++() {
+		const iterator& operator++()
+		{
 			++iter;
 			return *this;
 		}
 
-		bool operator!=(const iterator& rhs) {
+		bool operator!=(const iterator& rhs)
+		{
 			return this->iter != rhs.iter;
 		}
-
 	};
 
-	class const_iterator {
-
+	class const_iterator
+	{
 		std::_Vector_const_iterator<std::_Vector_val<std::_Simple_types<std::pair<unsigned int, _Ty>>>> iter; // Why do I have to do this?
 
 	public:
-		const_iterator(const decltype(iter) &iter) { this->iter = iter; }
+		const_iterator(const decltype(iter)& iter)
+		{
+			this->iter = iter;
+		}
 
-		const _Ty &operator *() const { return iter->second; }
+		const _Ty& operator *() const
+		{
+			return iter->second;
+		}
 
-		const_iterator &operator++() {
+		const_iterator& operator++()
+		{
 			++iter;
 			return *this;
 		}
 
-		bool operator!=(const const_iterator& rhs) const {
+		bool operator!=(const const_iterator& rhs) const
+		{
 			return this->iter != rhs.iter;
 		}
-
 	};
 
-	iterator begin() { return iterator(vec.begin()); }
-	iterator end() { return iterator(vec.end()); }
-	const_iterator begin() const { return const_iterator(vec.cbegin()); }
-	const_iterator end() const { return const_iterator(vec.cend()); }
+	iterator begin()
+	{
+		return iterator(vec.begin());
+	}
 
-	void push_back(const _Ty &elem, unsigned int weight = 1) {
+	iterator end()
+	{
+		return iterator(vec.end());
+	}
+
+	const_iterator begin() const
+	{
+		return const_iterator(vec.cbegin());
+	}
+
+	const_iterator end() const
+	{
+		return const_iterator(vec.cend());
+	}
+
+	void push_back(const _Ty& elem, unsigned int weight = 1)
+	{
 		totWeight += weight;
 		vec.push_back(std::pair<unsigned int, _Ty>(weight, elem));
 	}
 
-	void push_back(_Ty &&elem, unsigned int weight = 1) {
+	void push_back(_Ty&& elem, unsigned int weight = 1)
+	{
 		totWeight += weight;
 		vec.push_back(std::pair<unsigned int, _Ty>(weight, elem));
 	}
 
-	_Ty *getWeighted(unsigned int weight) {
+	_Ty* getWeighted(unsigned int weight)
+	{
 		if (weight >= totWeight) return nullptr;
 		unsigned int cWeight = 0;
-		for (auto &pair : vec) {
-			if (pair.first + cWeight > weight) 
+		for (auto& pair : vec)
+		{
+			if (pair.first + cWeight > weight)
 				return &pair.second;
 			cWeight += pair.first;
 		}
 		return nullptr;
 	}
 
-	_Ty *getIndexed(unsigned int index) {
+	_Ty* getIndexed(unsigned int index)
+	{
 		if (index >= vec.size()) return nullptr;
 		return &vec.at(index);
 	}
 
 	// Modify weight of the object pointed at by ptr.
 	// Returns how much the weight actually changed by ( Weight can't be less than 0 )
-	int changeWeight(_Ty *ptr, int diff) {
-		for (auto &pair : vec) {
-			if (&pair.second == ptr) {
+	int changeWeight(_Ty* ptr, int diff)
+	{
+		for (auto& pair : vec)
+		{
+			if (&pair.second == ptr)
+			{
 				int aDiff = (-diff > int(pair.first)) ? -int(pair.first) : diff;
 				totWeight += aDiff;
 				pair.first += aDiff;
@@ -96,9 +133,12 @@ public:
 		return 0;
 	}
 
-	void setWeight(_Ty *ptr, unsigned int newWeight) {
-		for (auto &pair : vec) {
-			if (&pair.second == ptr) {
+	void setWeight(_Ty* ptr, unsigned int newWeight)
+	{
+		for (auto& pair : vec)
+		{
+			if (&pair.second == ptr)
+			{
 				totWeight -= (pair.first - newWeight);
 				pair.first = newWeight;
 				return;
@@ -106,9 +146,12 @@ public:
 		}
 	}
 
-	void addToAllWeights(int diff) {
-		for (auto &pair : vec){
-			if (-diff > pair.first) {
+	void addToAllWeights(int diff)
+	{
+		for (auto& pair : vec)
+		{
+			if (-diff > pair.first)
+			{
 				totWeight -= pair.first;
 				pair.first = 0;
 				continue;
@@ -117,30 +160,43 @@ public:
 			totWeight += diff;
 		}
 	}
-	
+
 	template <typename _Eng>
-	void addToRandomWeights(unsigned int distWeight, _Eng &engine) {
-		std::uniform_int_distribution<unsigned int>dist (0, vec.size() - 1);
-		for (unsigned int n = 0; n < distWeight; n++) {
-			auto &pair = vec[dist(engine)];
+	void addToRandomWeights(unsigned int distWeight, _Eng& engine)
+	{
+		std::uniform_int_distribution<unsigned int> dist(0, vec.size() - 1);
+		for (unsigned int n = 0; n < distWeight; n++)
+		{
+			auto& pair = vec[dist(engine)];
 			pair.first++;
 		}
 		totWeight += distWeight;
 	}
 
-	unsigned int size() const { return vec.size(); }
-	unsigned int weight() const { return totWeight; }
-	unsigned int reachable() const {
+	unsigned int size() const
+	{
+		return vec.size();
+	}
+
+	unsigned int weight() const
+	{
+		return totWeight;
+	}
+
+	unsigned int reachable() const
+	{
 		unsigned int count = 0;
-		for (const auto &pair : vec) {
+		for (const auto& pair : vec)
+		{
 			if (pair.first) count++;
 		}
 		return count;
 	}
 
-	WeightedVector(const std::vector<_Ty> &other, unsigned int initWeight = 1)
+	WeightedVector(const std::vector<_Ty>& other, unsigned int initWeight = 1)
 	{
-		for (const auto &item : other) {
+		for (const auto& item : other)
+		{
 			vec.emplace_back(initWeight, item);
 		}
 		totWeight = initWeight * other.size();
@@ -155,3 +211,4 @@ public:
 	{
 	}
 };
+

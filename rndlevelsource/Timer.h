@@ -42,23 +42,28 @@ private:
 public:
 	static bool print_on_destruct;
 	static double prevTime;
-	void start() {
+
+	void start()
+	{
 		stime = timeclass::now();
 		active = true;
 	}
 
-	void reset() {
+	void reset()
+	{
 		stime = timeclass::now();
 	}
 
-	void stop() {
+	void stop()
+	{
 		etime = timeclass::now();
 		active = false;
 	}
 
-	auto getTime() -> decltype(std::chrono::duration_cast<rettm>(etime - stime)) {
+	auto getTime() -> decltype(std::chrono::duration_cast<rettm>(etime - stime))
+	{
 		timeclass::time_point rtime = etime;
-		if(active) rtime = timeclass::now();
+		if (active) rtime = timeclass::now();
 		return std::chrono::duration_cast<rettm>(rtime - stime);
 	}
 
@@ -70,8 +75,9 @@ public:
 		stime = timeclass::now();
 		etime = timeclass::now();
 	}
-	
-	Timer(std::string print, double mod = 1.0, double mint = 0.0){
+
+	Timer(std::string print, double mod = 1.0, double mint = 0.0)
+	{
 		this->mod = mod;
 		this->mint = mint;
 		active = false;
@@ -85,16 +91,17 @@ public:
 	{
 		prevTime = double(getTime().count());
 		double printtime = prevTime / mod;
-		if(print_on_destruct && printtime >= mint) printf("%.3f%s\n", printtime, _print.c_str());
+		if (print_on_destruct && printtime >= mint) printf("%.3f%s\n", printtime, _print.c_str());
 	}
 };
 
-template<class rettm>
+template <class rettm>
 bool Timer<rettm>::print_on_destruct = false;
 
-template<class rettm>
+template <class rettm>
 double Timer<rettm>::prevTime = 0.0;
 
 typedef Timer<std::chrono::milliseconds> mstimer;
 typedef Timer<std::chrono::microseconds> mictimer;
 typedef Timer<std::chrono::nanoseconds> nstimer;
+

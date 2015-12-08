@@ -12,24 +12,32 @@
 #include "Part.h"
 #include "Vector.h"
 
-unsigned int Part::parse(std::istream &stream) {
+unsigned int Part::parse(std::istream& stream)
+{
 	unsigned int numparsed = 0;
 	std::string curline;
 	//while(trim(curline) != "world") {
 	//	std::getline(file, curline);
 	//	numparsed++;
 	//}
-	while(std::getline(stream, curline)) {
+	while (std::getline(stream, curline))
+	{
 		numparsed++;
-		if(trim(curline) == "world") {
+		if (trim(curline) == "world")
+		{
 			auto it = entities.emplace(entities.end(), "world");
 			numparsed += it->parse(stream);
-		} else if(trim(curline) == "entity") {
+		}
+		else if (trim(curline) == "entity")
+		{
 			Entity entity;
-			numparsed+=entity.parse(stream);
-			if(entity["classname"].substr(0, 12) == "rnd_connect_") {
+			numparsed += entity.parse(stream);
+			if (entity["classname"].substr(0, 12) == "rnd_connect_")
+			{
 				connections.push_back(std::move(entity));
-			} else {
+			}
+			else
+			{
 				entities.push_back(std::move(entity));
 			}
 		}
@@ -38,14 +46,16 @@ unsigned int Part::parse(std::istream &stream) {
 	return numparsed;
 }
 
-unsigned int Part::parse(std::string filepath) {
+unsigned int Part::parse(std::string filepath)
+{
 	std::ifstream file(filepath);
-	if(!file.good()) {
+	if (!file.good())
+	{
 		printf("Failed to open file: %s\n", filepath.c_str());
 		return 0;
 	}
-	size_t bufsize = 128*1024;
-	char *buf = new char[bufsize];
+	size_t bufsize = 128 * 1024;
+	char* buf = new char[bufsize];
 	file.rdbuf()->pubsetbuf(buf, bufsize);
 	unsigned int ret = parse(file);
 	file.close();
@@ -53,15 +63,17 @@ unsigned int Part::parse(std::string filepath) {
 	return ret;
 }
 
-unsigned int Part::countEntities(std::string classname) const {
+unsigned int Part::countEntities(std::string classname) const
+{
 	unsigned int count = 0;
 	for (const Entity& entity : entities)
-		if (entity["classname"] == classname) 
+		if (entity["classname"] == classname)
 			count++;
 	return count;
 }
 
-BoundingBox Part::bbox() const {
+BoundingBox Part::bbox() const
+{
 	BoundingBox ret;
 	auto it = std::find_if(entities.cbegin(), entities.cend(), &Entity::entworldcmp);
 	if (it == entities.cend()) return ret;
@@ -69,28 +81,34 @@ BoundingBox Part::bbox() const {
 	return ret;
 }
 
-bool Part::testCollision(const Part &lhs, const Part &rhs) {
+bool Part::testCollision(const Part& lhs, const Part& rhs)
+{
 	BoundingBox lhbbox = lhs.bbox(), rhbbox = rhs.bbox();
-	if(BoundingBox::testCollision(lhbbox, rhbbox)) {
+	if (BoundingBox::testCollision(lhbbox, rhbbox))
+	{
 		auto lhsit = std::find_if(lhs.entities.cbegin(), lhs.entities.cend(), &Entity::entworldcmp),
 			rhsit = std::find_if(rhs.entities.cbegin(), rhs.entities.cend(), &Entity::entworldcmp);
-		if(lhsit == lhs.entities.cend() || rhsit == rhs.entities.cend()) return false;
+		if (lhsit == lhs.entities.cend() || rhsit == rhs.entities.cend()) return false;
 		return Entity::testCollision(*lhsit, *rhsit);
 	}
 	return false;
 }
 
-void Part::move(const Vector &vec) {
-	if(!Vertex::isVertex(vec.vec())) return;
-	for(Entity &e : entities) {
+void Part::move(const Vector& vec)
+{
+	if (!Vertex::isVertex(vec.vec())) return;
+	for (Entity& e : entities)
+	{
 		e.move(vec);
 	}
-	for(auto &c : connections) {
+	for (auto& c : connections)
+	{
 		c.move(vec);
 	}
 }
 
-void Part::moveTo(const Vertex &pt) {
+void Part::moveTo(const Vertex& pt)
+{
 	using namespace std;
 	using namespace std::placeholders;
 
@@ -104,54 +122,62 @@ void Part::moveTo(const Vertex &pt) {
 	move(mov);
 }
 
-void Part::rotate(const Angle &angle, const Vertex &pt) {
+void Part::rotate(const Angle& angle, const Vertex& pt)
+{
 	auto it = std::find_if(entities.begin(), entities.end(), &Entity::entworldcmp);
 	Vertex orig;
-	if(Vertex::isVertex(pt)) orig = pt;
-	else if(it == entities.end()) orig = Vertex(0, 0, 0);
+	if (Vertex::isVertex(pt)) orig = pt;
+	else if (it == entities.end()) orig = Vertex(0, 0, 0);
 	else orig = it->origin();
 	Angle rotangle(-angle[PITCH], angle[YAW], angle[ROLL]); //Invert pitch for compliance with hammer.
 	Matrix rotmat = rotangle.angleMatrix();
-	for(Entity &e : entities) {
+	for (Entity& e : entities)
+	{
 		e.rotate(rotmat, orig);
 	}
-	for(auto &c : connections) {
+	for (auto& c : connections)
+	{
 		c.rotate(rotmat, orig);
 	}
 }
 
-std::streampos Part::toFile(std::string filename) {
+std::streampos Part::toFile(std::string filename)
+{
 	std::ofstream file(filename, std::ios::trunc);
-	std::size_t bufsize = 128*1024;
-	char *buf = new char[bufsize];
+	std::size_t bufsize = 128 * 1024;
+	char* buf = new char[bufsize];
 	file.rdbuf()->pubsetbuf(buf, bufsize);
-	file<<*this;
+	file << *this;
 	std::streampos fsize = file.tellp();
 	file.close();
 	delete [] buf;
 	return fsize;
 }
 
-DispInfo &Part::findFirstDisp() {
-	for (auto &ent : entities)
-		for (auto &sol : ent.solids)
-			for (auto &sid : sol.sides)
+DispInfo& Part::findFirstDisp()
+{
+	for (auto& ent : entities)
+		for (auto& sol : ent.solids)
+			for (auto& sid : sol.sides)
 				if (sid.disp.keyvals.size() > 0)
 					return sid.disp;
 
 	return DispInfo();
 }
 
-void Part::reID() {
+void Part::reID()
+{
 	entityID_ = 0;
 	solidID_ = 0;
 	sideID_ = 0;
-	for(Entity &e : entities) {
+	for (Entity& e : entities)
+	{
 		e.reID(&entityID_, &solidID_, &sideID_);
 	}
 }
 
-Part &Part::operator=(Part &&orig) {
+Part& Part::operator=(Part&& orig)
+{
 	std::swap(this->entityID_, orig.entityID_);
 	std::swap(this->solidID_, orig.solidID_);
 	std::swap(this->sideID_, orig.sideID_);
@@ -162,24 +188,28 @@ Part &Part::operator=(Part &&orig) {
 }
 
 //Merges world entities and copies all other entities
-Part &Part::operator+=(const Part &rhs) {
+Part& Part::operator+=(const Part& rhs)
+{
 	//Entity *tWorld = entities.get_first_match<std::string>
 	//	("worldspawn", Entity::entclasscmp),
 	//	*origWorld = rhs.entities.get_first_match<std::string>
 	//	("worldspawn", Entity::entclasscmp);
 	auto cit = std::find_if(entities.begin(), entities.end(), &Entity::entworldcmp);
 	auto origit = std::find_if(rhs.entities.cbegin(), rhs.entities.cend(), &Entity::entworldcmp);
-	if(cit != entities.end() && origit != rhs.entities.cend()) {
+	if (cit != entities.end() && origit != rhs.entities.cend())
+	{
 		cit->mergeSolids(*origit);
 	}
-	else if(cit == entities.end() && origit != rhs.entities.cend()) {
+	else if (cit == entities.end() && origit != rhs.entities.cend())
+	{
 		entities.push_back(*origit);
 	}
 	unsigned int cap = std::numeric_limits<unsigned int>::max(), count = 0;
-	if(this == &rhs) cap = entities.size(); //Safety against self-addition.
-	for(const Entity &entity : rhs.entities) {
-		if(count++ == cap) break;
-		if(entity["classname"] == "worldspawn") continue;
+	if (this == &rhs) cap = entities.size(); //Safety against self-addition.
+	for (const Entity& entity : rhs.entities)
+	{
+		if (count++ == cap) break;
+		if (entity["classname"] == "worldspawn") continue;
 		entities.push_back(entity);
 	}
 	reID(); // Faster to call this here than make lots of copies everywhere.
@@ -188,15 +218,17 @@ Part &Part::operator+=(const Part &rhs) {
 
 //Returns reference to a entity with classname equal to argument.
 //If no such entity exists, the function will create one and return its reference.
-Entity &Part::operator[](std::string classname) {
+Entity& Part::operator[](std::string classname)
+{
 	auto it = std::find_if(entities.begin(), entities.end(), std::bind(&Entity::entclasscmp, std::placeholders::_1, classname));
-	if(it == entities.end()) {
+	if (it == entities.end())
+	{
 		it = entities.emplace(entities.end(), classname);
 	}
 	return *it;
 }
 
-Part Part::createRoom(std::mt19937 &eng, const Vector &pos, double thickness)
+Part Part::createRoom(std::mt19937& eng, const Vector& pos, double thickness)
 {
 	Vertex min = Vertex::allmin(pos.beg(), pos.end());
 	Vertex max = Vertex::allmax(pos.beg(), pos.end());
@@ -206,16 +238,16 @@ Part Part::createRoom(std::mt19937 &eng, const Vector &pos, double thickness)
 	Vector roof(Vertex(min.x(), min.y(), max.z() - thickness), max);
 
 	Vector southwall(Vertex(min.x(), min.y(), min.z() + thickness),
-		Vertex(max.x(), min.y() + thickness, max.z() - thickness));
+	                 Vertex(max.x(), min.y() + thickness, max.z() - thickness));
 
 	Vector northwall(Vertex(min.x(), max.y() - thickness, min.z() + thickness),
-		Vertex(max.x(), max.y(), max.z() - thickness));
+	                 Vertex(max.x(), max.y(), max.z() - thickness));
 
 	Vector westwall(Vertex(min.x(), min.y() + thickness, min.z() + thickness),
-		Vertex(min.x() + thickness, max.y() - thickness, max.z() - thickness));
+	                Vertex(min.x() + thickness, max.y() - thickness, max.z() - thickness));
 
 	Vector eastwall(Vertex(max.x() - thickness, min.y() + thickness, min.z() + thickness),
-		Vertex(max.x(), max.y() - thickness, max.z() - thickness));
+	                Vertex(max.x(), max.y() - thickness, max.z() - thickness));
 
 	Part ret;
 	ret.entities.push_back(Entity::defaultWorldEntity());
@@ -242,7 +274,7 @@ Part::Part(std::string filepath) : Part()
 	parse(filepath);
 }
 
-Part::Part(const Part &orig) :
+Part::Part(const Part& orig) :
 	entityID_(orig.entityID_),
 	solidID_(orig.solidID_),
 	sideID_(orig.sideID_),
@@ -251,7 +283,7 @@ Part::Part(const Part &orig) :
 {
 }
 
-Part::Part(Part &&orig) :
+Part::Part(Part&& orig) :
 	entityID_(orig.entityID_),
 	solidID_(orig.solidID_),
 	sideID_(orig.sideID_),
@@ -263,3 +295,4 @@ Part::Part(Part &&orig) :
 Part::~Part(void)
 {
 }
+

@@ -9,13 +9,13 @@ class SimplexNoise
 {
 private:
 	static const Vertex grad[];
-	std::array<unsigned char,512>perm;
+	std::array<unsigned char, 512> perm;
 
 public:
 
 	double getNoise(double x, double y);
 
-	SimplexNoise(std::mt19937 &);
+	SimplexNoise(std::mt19937&);
 	~SimplexNoise();
 };
 
@@ -29,6 +29,7 @@ public:
 
 	double getNoise(double x, double y);
 
-	SimplexFractal(std::mt19937 &, size_t octaves, double lacunarity);
+	SimplexFractal(std::mt19937&, size_t octaves, double lacunarity);
 	~SimplexFractal();
 };
+

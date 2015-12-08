@@ -11,18 +11,19 @@ public:
 	std::string toStr(char enclose = '\"') const;
 	int toInt();
 	double toDouble();
-	
+
 	std::string keyc() const;
 	std::string valc() const;
-	
+
 	// void fromInt(int);
 	// void fromDouble(double);
 
-	static bool keycmp(const KeyVal &, const std::string &);
-	static bool keyregex(const KeyVal &, const std::string &);
+	static bool keycmp(const KeyVal&, const std::string&);
+	static bool keyregex(const KeyVal&, const std::string&);
 
 	KeyVal(void);
-	KeyVal(const std::string &);
+	KeyVal(const std::string&);
 	KeyVal(std::string, std::string);
 	~KeyVal(void);
 };
+

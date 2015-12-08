@@ -9,13 +9,29 @@
 #define DEG2RAD(_x) _x*(M_PI/180.0)
 #define RAD2DEG(_x) _x*(180.0/M_PI)
 
-double Quaternion::x() const {return xyz_.x();}
-double Quaternion::y() const {return xyz_.y();}
-double Quaternion::z() const {return xyz_.z();}
-double Quaternion::w() const {return w_;}
+double Quaternion::x() const
+{
+	return xyz_.x();
+}
+
+double Quaternion::y() const
+{
+	return xyz_.y();
+}
+
+double Quaternion::z() const
+{
+	return xyz_.z();
+}
+
+double Quaternion::w() const
+{
+	return w_;
+}
 
 //pop pop!!
-double Quaternion::magnitude() const {
+double Quaternion::magnitude() const
+{
 	return sqrt(
 		(x() * x()) +
 		(y() * y()) +
@@ -23,7 +39,8 @@ double Quaternion::magnitude() const {
 		(w() * w()));
 }
 
-void Quaternion::normalize() {
+void Quaternion::normalize()
+{
 	double mag = magnitude();
 	xyz_.x(xyz_.x() / mag);
 	xyz_.y(xyz_.y() / mag);
@@ -31,9 +48,10 @@ void Quaternion::normalize() {
 	w_ = w_ / mag;
 }
 
-Matrix Quaternion::quaternionMatrix() {
-    //Quaternion has to be a unit quaternion
-    //for this to produce a correct result.
+Matrix Quaternion::quaternionMatrix()
+{
+	//Quaternion has to be a unit quaternion
+	//for this to produce a correct result.
 	Matrix matrix(3, 3);
 
 	matrix[0][0] = 1.0 - 2.0 * y() * y() - 2.0 * z() * z();
@@ -51,7 +69,8 @@ Matrix Quaternion::quaternionMatrix() {
 	return matrix;
 }
 
-Quaternion Quaternion::conjugate() {
+Quaternion Quaternion::conjugate()
+{
 	return Quaternion(-x(), -y(), -z(), w());
 }
 
@@ -60,7 +79,8 @@ Quaternion::Quaternion(void)
 	w_ = std::numeric_limits<double>::quiet_NaN();
 }
 
-Quaternion &Quaternion::operator*=(const Quaternion &rhs) {
+Quaternion& Quaternion::operator*=(const Quaternion& rhs)
+{
 	Quaternion lhs(*this); //temporary quaternion to preserve old values
 
 	xyz_.x((lhs.w() * rhs.x()) + (lhs.x() * rhs.w()) + (lhs.y() * rhs.z()) - (lhs.z() * rhs.y()));
@@ -71,8 +91,10 @@ Quaternion &Quaternion::operator*=(const Quaternion &rhs) {
 	return *this;
 }
 
-double Quaternion::operator[](unsigned int pos) const {
-	switch(pos) {
+double Quaternion::operator[](unsigned int pos) const
+{
+	switch (pos)
+	{
 	case 1:
 	case 2:
 	case 3:
@@ -87,8 +109,10 @@ double Quaternion::operator[](unsigned int pos) const {
 	return std::numeric_limits<double>::quiet_NaN();
 }
 
-double &Quaternion::operator[](unsigned int pos) {
-	switch(pos) {
+double& Quaternion::operator[](unsigned int pos)
+{
+	switch (pos)
+	{
 	case 1:
 	case 2:
 	case 3:
@@ -105,26 +129,27 @@ Quaternion::Quaternion(double x, double y, double z, double w) :
 {
 }
 
-Quaternion::Quaternion(const Angle &a) {
+Quaternion::Quaternion(const Angle& a)
+{
 	double sy, sr, sp, cy, cr, cp;
 
-	sp = sin( DEG2RAD(a.y()) * 0.5);
-	cp = cos( DEG2RAD(a.y()) * 0.5);
-	sr = sin( DEG2RAD(a.x()) * 0.5);
-	cr = cos( DEG2RAD(a.x()) * 0.5);
-	sy = sin( DEG2RAD(a.z()) * 0.5);
-	cy = cos( DEG2RAD(a.z()) * 0.5);
+	sp = sin(DEG2RAD(a.y()) * 0.5);
+	cp = cos(DEG2RAD(a.y()) * 0.5);
+	sr = sin(DEG2RAD(a.x()) * 0.5);
+	cr = cos(DEG2RAD(a.x()) * 0.5);
+	sy = sin(DEG2RAD(a.z()) * 0.5);
+	cy = cos(DEG2RAD(a.z()) * 0.5);
 
 	double srXcp = sy * cr, crXsp = cy * sr;
-	xyz_.x(srXcp*cp-crXsp*sp); // X
-	xyz_.y(crXsp*cp+srXcp*sp); // Y
+	xyz_.x(srXcp * cp - crXsp * sp); // X
+	xyz_.y(crXsp * cp + srXcp * sp); // Y
 
 	double crXcp = cy * cr, srXsp = sy * sr;
-	xyz_.z(crXcp*sp-srXsp*cp); // Z
-	w_ = crXcp*cp+srXsp*sp; // W (real component)
-
+	xyz_.z(crXcp * sp - srXsp * cp); // Z
+	w_ = crXcp * cp + srXsp * sp; // W (real component)
 }
 
 Quaternion::~Quaternion(void)
 {
 }
+

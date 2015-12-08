@@ -9,3 +9,4 @@ BaseNPC::BaseNPC()
 BaseNPC::~BaseNPC()
 {
 }
+

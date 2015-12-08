@@ -16,37 +16,41 @@ public:
 	Vertex end() const;
 	//The internal vector.
 	Vertex vec() const;
-	void vec(const Vertex &);
+	void vec(const Vertex&);
 	//Rotate the internal vector.
 	//The origin is not changed.
-	void rotate(const Matrix &);
+	void rotate(const Matrix&);
 
-	Vector &operator+=(const Vector &);
-	Vector &operator-=(const Vector &);
+	Vector& operator+=(const Vector&);
+	Vector& operator-=(const Vector&);
 
-	Vector &operator*=(double);
+	Vector& operator*=(double);
 
-	static Vector allMinMax(const Vertex &, const Vertex &);
+	static Vector allMinMax(const Vertex&, const Vertex&);
 
-    std::string toStr() const;
+	std::string toStr() const;
 
 	Vector(void);
-	Vector(const Vertex &);
-	Vector(const Vertex &, const Vertex &);
+	Vector(const Vertex&);
+	Vector(const Vertex&, const Vertex&);
 	~Vector(void);
 };
 
-inline Vector operator+(Vector lhs, const Vector &rhs) {
+inline Vector operator+(Vector lhs, const Vector& rhs)
+{
 	lhs += rhs;
 	return lhs;
 }
 
-inline Vector operator-(Vector lhs, const Vector &rhs) {
+inline Vector operator-(Vector lhs, const Vector& rhs)
+{
 	lhs -= rhs;
 	return lhs;
 }
 
-inline Vector operator*(Vector lhs, double rhs) {
+inline Vector operator*(Vector lhs, double rhs)
+{
 	lhs *= rhs;
 	return lhs;
 }
+

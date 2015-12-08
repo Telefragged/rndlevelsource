@@ -7,43 +7,52 @@
 #include <iostream>
 
 SingleDisp::SingleDisp()
-	: normal(0,0,1)
-	, distance(0)
-	, offset(0,0,0)
-	, offset_normal(0,0,1)
-	, alpha(0)
+	: normal(0, 0, 1)
+	  , distance(0)
+	  , offset(0, 0, 0)
+	  , offset_normal(0, 0, 1)
+	  , alpha(0)
 {
 }
 
-unsigned int DispInfo::parse(std::istream &stream) {
+unsigned int DispInfo::parse(std::istream& stream)
+{
 	unsigned int numparsed = 0;
 	std::string curline;
-	while (trim(curline) != "{") {
+	while (trim(curline) != "{")
+	{
 		std::getline(stream, curline);
 		numparsed++;
 	}
 	unsigned int depth = 1;
-	std::map < std::string, std::map < std::string, std::string >> tempKeys;
-	while (std::getline(stream, curline)) {
+	std::map<std::string, std::map<std::string, std::string>> tempKeys;
+	while (std::getline(stream, curline))
+	{
 		numparsed++;
-		if (trim(curline) == "}") {
+		if (trim(curline) == "}")
+		{
 			std::cout << "IS THIS REAL LIFE??\n";
 			if (--depth == 0) break;
 		}
-		else if (trim(curline) != "" && trim(curline)[0] != '\"') {
+		else if (trim(curline) != "" && trim(curline)[0] != '\"')
+		{
 			auto cpos = stream.tellg();
 			std::string peekline;
 			std::getline(stream, peekline);
 			stream.seekg(cpos);
-			if (trim(peekline) == "{") {
+			if (trim(peekline) == "{")
+			{
 				std::string groupName = trim(curline);
 				std::map<std::string, std::string> group;
-				while (std::getline(stream, curline)) {
+				while (std::getline(stream, curline))
+				{
 					numparsed++;
-					if (trim(curline) == "}") {
+					if (trim(curline) == "}")
+					{
 						break;
 					}
-					else {
+					else
+					{
 						KeyVal k(curline);
 						group[k.key] = k.val;
 					}
@@ -51,10 +60,12 @@ unsigned int DispInfo::parse(std::istream &stream) {
 				tempKeys[groupName] = std::move(group);
 			}
 		}
-		else if (trim(curline) == "{") {
+		else if (trim(curline) == "{")
+		{
 			++depth;
 		}
-		else {
+		else
+		{
 			KeyVal parsed(curline);
 			keyvals[parsed.key] = parsed.val;
 		}
@@ -64,17 +75,19 @@ unsigned int DispInfo::parse(std::istream &stream) {
 	int size = (int)std::pow(2, power) + 1;
 	info = std::vector<std::vector<SingleDisp>>(size, std::vector<SingleDisp>(size, SingleDisp()));
 
-	for (int row = 0; row < size; row++) {
+	for (int row = 0; row < size; row++)
+	{
 		std::string rowID = "row";
 		rowID += std::to_string(row);
-		auto &norm = splitstr(tempKeys["normals"][rowID]);
-		auto &dist = splitstr(tempKeys["distances"][rowID]);
-		auto &off = splitstr(tempKeys["offsets"][rowID]);
-		auto &off_norm = splitstr(tempKeys["offset_normals"][rowID]);
-		auto &alpha = splitstr(tempKeys["alphas"][rowID]);
+		auto& norm = splitstr(tempKeys["normals"][rowID]);
+		auto& dist = splitstr(tempKeys["distances"][rowID]);
+		auto& off = splitstr(tempKeys["offsets"][rowID]);
+		auto& off_norm = splitstr(tempKeys["offset_normals"][rowID]);
+		auto& alpha = splitstr(tempKeys["alphas"][rowID]);
 
-		for (int col = 0; col < size; col++) {
-			auto &curInfo = info[row][col];
+		for (int col = 0; col < size; col++)
+		{
+			auto& curInfo = info[row][col];
 			size_t vertInd = 3 * col;
 			curInfo.normal = Vertex(norm[vertInd] + ' ' + norm[vertInd + 1] + ' ' + norm[vertInd + 2]);
 			curInfo.distance = atof(dist[col].c_str());
@@ -82,14 +95,14 @@ unsigned int DispInfo::parse(std::istream &stream) {
 			curInfo.offset_normal = Vertex(off_norm[vertInd] + ' ' + off_norm[vertInd + 1] + ' ' + off_norm[vertInd + 2]);
 			curInfo.alpha = (char)atoi(alpha[col].c_str());
 		}
-
 	}
-	
+
 	return numparsed;
 }
 
-void DispInfo::setHeight(int x, int y, double height) {
-	auto &disp = info[y][x];
+void DispInfo::setHeight(int x, int y, double height)
+{
+	auto& disp = info[y][x];
 	disp.distance = std::abs(height);
 	if (height < 0.0)
 		disp.normal = Vertex(0, 0, -1);
@@ -97,7 +110,7 @@ void DispInfo::setHeight(int x, int y, double height) {
 		disp.normal = Vertex(0, 0, 1);
 }
 
-void DispInfo::rotate(const Vertex &point, const Matrix &rotmat)
+void DispInfo::rotate(const Vertex& point, const Matrix& rotmat)
 {
 	//mictimer rotatetimer("ms Side::rotate()", 1000.0);
 
@@ -107,12 +120,12 @@ void DispInfo::rotate(const Vertex &point, const Matrix &rotmat)
 	startpos = startpos.rotate(point, rotmat);
 	(*this)["startposition"] = std::string("[") + startpos.toStr() + "]";
 
-	for (auto &vec : info)
-		for (auto &disp : vec)
+	for (auto& vec : info)
+		for (auto& disp : vec)
 			disp.offset_normal = disp.offset_normal.rotate(rotmat);
 }
 
 DispInfo::DispInfo()
 {
-	
 }
+

@@ -19,18 +19,19 @@ public:
 	//Returns a vector representing the line where two planes intersect.
 	//Parameters are equations in the form ax + by + cz + d = 0,
 	//as a 1x4 matrix.
-	static Plane vectorPlane(const Vector &, const Vector &);
+	static Plane vectorPlane(const Vector&, const Vector&);
 
-	static Vector intersectLine(const Matrix &, const Matrix &);
+	static Vector intersectLine(const Matrix&, const Matrix&);
 
-	static double dist(const Vertex &, const Vector &);
-	static double dist(const Vertex &, const Vertex &);
+	static double dist(const Vertex&, const Vector&);
+	static double dist(const Vertex&, const Vertex&);
 
-	static bool crossesLine(const Plane &, const Vector &);
-	static bool testCollision(const Plane &, const Plane &);
+	static bool crossesLine(const Plane&, const Vector&);
+	static bool testCollision(const Plane&, const Plane&);
 
 	void parsestr(std::string);
 
 	Plane(void);
 	~Plane(void);
 };
+

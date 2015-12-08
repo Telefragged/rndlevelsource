@@ -4,27 +4,29 @@
 
 const Vertex SimplexNoise::grad[] =
 {
-	{ 1, 1, 0 }, { -1, 1, 0 }, { 1, -1, 0 }, { -1, -1, 0 },
-	{ 1, 0, 1 }, { -1, 0, 1 }, { 1, 0, -1 }, { -1, 0, -1 },
-	{ 0, 1, 1 }, { 0, -1, 1 }, { 0, 1, -1 }, { 0, -1, -1 }
+	{1, 1, 0},{-1, 1, 0},{1, -1, 0},{-1, -1, 0},
+	{1, 0, 1},{-1, 0, 1},{1, 0, -1},{-1, 0, -1},
+	{0, 1, 1},{0, -1, 1},{0, 1, -1},{0, -1, -1}
 };
 
-SimplexNoise::SimplexNoise(std::mt19937 &eng)
+SimplexNoise::SimplexNoise(std::mt19937& eng)
 {
-	for (int n = 0; n < 256; n++) {
+	for (int n = 0; n < 256; n++)
+	{
 		perm[n] = (char)n;
 	}
 
 	std::shuffle(perm.begin(), perm.begin() + 256, eng);
 
-	for (int n = 256; n < 512; n++) {
+	for (int n = 256; n < 512; n++)
+	{
 		perm[n] = perm[n & 255];
 	}
 }
 
 double SimplexNoise::getNoise(double x, double y)
 {
-	const double skew2D = 0.5*(std::sqrt(3.0) - 1.0);
+	const double skew2D = 0.5 * (std::sqrt(3.0) - 1.0);
 	const double unskew2D = (3.0 - std::sqrt(3.0)) / 6.0;
 
 	double s = (x + y) * skew2D;
@@ -57,9 +59,11 @@ double SimplexNoise::getNoise(double x, double y)
 
 	std::array<double, 3> contribs;
 
-	for (int n = 0; n < 3; n++) {
+	for (int n = 0; n < 3; n++)
+	{
 		Vertex point;
-		switch (n) {
+		switch (n)
+		{
 		case 0:
 			point = first;
 			break;
@@ -73,7 +77,8 @@ double SimplexNoise::getNoise(double x, double y)
 		double temp = 0.5 - (point.x() * point.x()) - (point.y() * point.y());
 		if (temp < 0.0)
 			contribs[n] = 0;
-		else {
+		else
+		{
 			temp *= temp;
 			contribs[n] = temp * temp * Vertex::dotProduct2D(grad[gradInd[n]], point);
 		}
@@ -88,33 +93,35 @@ SimplexNoise::~SimplexNoise(void)
 }
 
 
-
 double SimplexFractal::getNoise(double x, double y)
 {
 	double result = 0.0;
 
-	for (size_t n = 0; n < octaves_.size(); n++) {
+	for (size_t n = 0; n < octaves_.size(); n++)
+	{
 		double freq = std::pow(2, n);
 		double amp = std::pow(lacunarity_, n);
 
 		result += octaves_[n].getNoise(x * freq, y * freq) * amp;
 	}
-	
+
 	return result;
 }
 
-SimplexFractal::SimplexFractal(std::mt19937 &eng, size_t octaves, double lacunarity) {
+SimplexFractal::SimplexFractal(std::mt19937& eng, size_t octaves, double lacunarity)
+{
 	if (lacunarity < 0 || lacunarity > 1.0) lacunarity = 0.5;
 	lacunarity_ = lacunarity;
 
 	octaves_.reserve(octaves);
 
-	for (size_t n = 0; n < octaves; n++) {
+	for (size_t n = 0; n < octaves; n++)
+	{
 		octaves_.emplace_back(eng);
 	}
 }
 
 SimplexFractal::~SimplexFractal()
 {
-
 }
+

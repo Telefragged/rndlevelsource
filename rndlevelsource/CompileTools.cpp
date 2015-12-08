@@ -6,18 +6,21 @@
 #include <Windows.h>
 #endif
 
-std::string CompileTools::getabspath(std::string partialpath) {
+std::string CompileTools::getabspath(std::string partialpath)
+{
 	std::string ret;
 	char buf[256];
 	ret = buf;
 	return ret;
 }
 
-std::string CompileTools::removeext(std::string file) {
+std::string CompileTools::removeext(std::string file)
+{
 	return file.substr(0, file.find_last_of('.'));
 }
 
-void CompileTools::runtools(std::string file, std::string game) {
+void CompileTools::runtools(std::string file, std::string game)
+{
 #if defined (_WIN)
 	std::string outfileabs = CompileTools::getabspath(file);
 	std::string outfilebsp = removeext(outfileabs) + ".bsp";
@@ -33,7 +36,8 @@ void CompileTools::runtools(std::string file, std::string game) {
 #endif
 }
 
-void CompileTools::exec(std::string binpath, std::string param, bool showoutput) {
+void CompileTools::exec(std::string binpath, std::string param, bool showoutput)
+{
 #if defined (_WIN)
 	STARTUPINFO info={sizeof(info)};
 	PROCESS_INFORMATION processInfo;
@@ -64,7 +68,8 @@ void CompileTools::exec(std::string binpath, std::string param, bool showoutput)
 #endif
 }
 
-void CompileTools::cleanup(std::string vmfpath) {
+void CompileTools::cleanup(std::string vmfpath)
+{
 #if defined (_WIN)
 	std::string outfilevmf = CompileTools::getabspath(vmfpath);
 	std::string outfilenoext = CompileTools::removeext(outfilevmf);
@@ -79,7 +84,8 @@ void CompileTools::cleanup(std::string vmfpath) {
 #endif
 }
 
-void CompileTools::copyfile(std::string existing, std::string newfile, bool confirm) {
+void CompileTools::copyfile(std::string existing, std::string newfile, bool confirm)
+{
 #if defined (_WIN)
 	printf("Copy: %s -> %s\n", existing.c_str(), newfile.c_str());
 	BOOL result = CopyFile(existing.c_str(), newfile.c_str(), (int)confirm);
@@ -110,3 +116,4 @@ CompileTools::CompileTools(void)
 CompileTools::~CompileTools(void)
 {
 }
+

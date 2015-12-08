@@ -9,9 +9,9 @@ public:
 	Vertex v;
 	double trans;
 	double scale;
-	
-	void parsestr(std::string &);
-	void translate(const Vertex &);
+
+	void parsestr(std::string&);
+	void translate(const Vertex&);
 
 	std::string toStr() const;
 

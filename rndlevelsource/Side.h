@@ -24,39 +24,53 @@ public:
 	Axis uaxis, vaxis;
 	Plane p;
 
-	unsigned int parse(std::istream &);
+	unsigned int parse(std::istream&);
 
-	unsigned int id() const {return id_;}
-	unsigned int depth() const {return depth_;}
-	void depth(unsigned int newDepth) const {depth_ = newDepth;}
+	unsigned int id() const
+	{
+		return id_;
+	}
+
+	unsigned int depth() const
+	{
+		return depth_;
+	}
+
+	void depth(unsigned int newDepth) const
+	{
+		depth_ = newDepth;
+	}
 
 	BoundingBox bbox() const;
 
 	void popuvars();
-	void rotate(const Vertex &, const Matrix &);
-	void move(const Vector &);
-	void reID(unsigned int *);
+	void rotate(const Vertex&, const Matrix&);
+	void move(const Vector&);
+	void reID(unsigned int*);
 
-	static bool testCollision(const Side &, const Side &);
+	static bool testCollision(const Side&, const Side&);
 
-	friend std::ostream &operator<<(std::ostream&, const Side &s);
+	friend std::ostream& operator<<(std::ostream&, const Side& s);
 
 	Side(void);
 	~Side(void);
 };
 
-inline std::ostream &operator<<(std::ostream &os, const Side &s) {
-	os<<std::setw(s.depth())<<""<<"side\n";
-	os<<std::setw(s.depth())<<""<<"{\n";
-	os<<std::setw(s.depth())<<""<<"\t\"id\" \""<<s.id_<<"\"\n";
-	os<<std::setw(s.depth())<<""<<"\t\"Plane\" \""<<s.p.toStr()<<"\"\n";
-	os<<std::setw(s.depth())<<""<<"\t\"uaxis\" \""<<s.uaxis.toStr()<<"\"\n";
-	os<<std::setw(s.depth())<<""<<"\t\"vaxis\" \""<<s.vaxis.toStr()<<"\"\n";
-	for(const auto &pair : s.keyvals) {
-		os<<std::setw(s.depth())<<""<<"\t"<<KeyValBase::toStr(pair)<<"\n";
+inline std::ostream& operator<<(std::ostream& os, const Side& s)
+{
+	os << std::setw(s.depth()) << "" << "side\n";
+	os << std::setw(s.depth()) << "" << "{\n";
+	os << std::setw(s.depth()) << "" << "\t\"id\" \"" << s.id_ << "\"\n";
+	os << std::setw(s.depth()) << "" << "\t\"Plane\" \"" << s.p.toStr() << "\"\n";
+	os << std::setw(s.depth()) << "" << "\t\"uaxis\" \"" << s.uaxis.toStr() << "\"\n";
+	os << std::setw(s.depth()) << "" << "\t\"vaxis\" \"" << s.vaxis.toStr() << "\"\n";
+	for (const auto& pair : s.keyvals)
+	{
+		os << std::setw(s.depth()) << "" << "\t" << KeyValBase::toStr(pair) << "\n";
 	}
 	s.disp.depth(s.depth() + TABDEPTH);
 	os << s.disp << "\n";
-	os<<std::setw(s.depth())<<""<<"}";
+	os << std::setw(s.depth()) << "" << "}";
 	return os;
 }
+
