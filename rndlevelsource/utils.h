@@ -1,7 +1,6 @@
 #pragma once
 #include <limits>
 #include <math.h>
-#include <stdlib.h>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -21,12 +20,8 @@ inline std::string trim(const std::string &str, const std::string delim = " \t\n
 	return str.substr(bpos, epos-bpos+1);
 }
 
-inline std::string reverse_string(std::string input) {
-	std::string output;
-	for(int j = input.length()-1; j >= 0; j--) {
-		output += input.at(j);
-	}
-	return output;
+inline std::string reverse_string(const std::string &input) {
+	return std::string(input.crbegin(), input.crend());
 }
 
 inline bool doubleeq(double lhs, double rhs, double epsilon = 1e-6) {

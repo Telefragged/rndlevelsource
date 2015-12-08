@@ -63,7 +63,7 @@ public:
     Vertex(void);
     Vertex(const std::string &);
     Vertex(double, double, double);
-    ~Vertex(void);
+    virtual ~Vertex(void);
 };
 
 inline Vertex operator+(Vertex lhs, const Vertex &rhs) {

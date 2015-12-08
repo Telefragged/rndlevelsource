@@ -23,6 +23,8 @@
 # Extra
 *.vmf
 *.bsp
+*.opensdf
+*.sdf
 
 /nbproject/
 /debug/

@@ -8,8 +8,8 @@
 
 #define M_PI 3.14159265358979323846
 
-#define DEG2RAD(X) X*(M_PI/180.0)
-#define RAD2DEG(X) X*(180.0/M_PI)
+#define DEG2RAD(X) (X*(M_PI/180.0))
+#define RAD2DEG(X) (X*(180.0/M_PI))
 
 //void inline sincos( double radians, float *sine, float *cosine ) {
 //	#if defined( _WIN32 )
@@ -39,32 +39,37 @@ Angle::Angle(void) : Vertex()
 {
 }
 
-Angle::Angle(std::string str) : Vertex(str)
+Angle::Angle(const std::string& str) : Vertex(str)
 {
 }
 
-void Angle::x(double x) {vertex_[0] = x;}
-void Angle::y(double y) {vertex_[1] = y;}
-void Angle::z(double z) {vertex_[2] = z;}
+double Angle::pitch() const
+{
+	return x();
+}
 
-double Angle::x() const {return vertex_[0];}
-double Angle::y() const {return vertex_[1];}
-double Angle::z() const {return vertex_[2];}
+double Angle::yaw() const
+{
+	return y();
+}
 
-double Angle::pitch() const {return x();}
-double Angle::yaw() const{return y();}
-double Angle::roll() const{return z();}
+double Angle::roll() const
+{
+	return z();
+}
 
-Vertex Angle::toVertex() const {
+Vertex Angle::toVertex() const
+{
 	Vertex ret;
-	double yawrad = vertex_[YAW] * (M_PI/180.0), rollrad = vertex_[ROLL] * (M_PI/180.0);
-	ret.x( cos(yawrad) * cos(rollrad) );
-	ret.y( sin(yawrad) * cos(rollrad) );
-	ret.z( sin(rollrad) );
+	double yawrad = vertex_[YAW] * (M_PI / 180.0), rollrad = vertex_[ROLL] * (M_PI / 180.0);
+	ret.x(cos(yawrad) * cos(rollrad));
+	ret.y(sin(yawrad) * cos(rollrad));
+	ret.z(sin(rollrad));
 	return ret;
 }
 
-Matrix Angle::angleMatrix() const {
+Matrix Angle::angleMatrix() const
+{
 	double sinpitch = sin(DEG2RAD((*this)[PITCH])),
 		cospitch = cos(DEG2RAD((*this)[PITCH])),
 		sinyaw = sin(DEG2RAD((*this)[YAW])),
@@ -74,27 +79,28 @@ Matrix Angle::angleMatrix() const {
 
 	Matrix matrix(3, 3);
 
-	matrix[0][0] = cospitch*cosyaw;
-	matrix[1][0] = cospitch*sinyaw;
+	matrix[0][0] = cospitch * cosyaw;
+	matrix[1][0] = cospitch * sinyaw;
 	matrix[2][0] = -sinpitch;
 
-	double crcy = cosroll*cosyaw;
-	double crsy = cosroll*sinyaw;
-	double srcy = sinroll*cosyaw;
-	double srsy = sinroll*sinyaw;
+	double crcy = cosroll * cosyaw;
+	double crsy = cosroll * sinyaw;
+	double srcy = sinroll * cosyaw;
+	double srsy = sinroll * sinyaw;
 
-	matrix[0][1] = sinpitch*srcy-crsy;
-	matrix[1][1] = sinpitch*srsy+crcy;
-	matrix[2][1] = sinroll*cospitch;
+	matrix[0][1] = sinpitch * srcy - crsy;
+	matrix[1][1] = sinpitch * srsy + crcy;
+	matrix[2][1] = sinroll * cospitch;
 
-	matrix[0][2] = (sinpitch*crcy+srsy);
-	matrix[1][2] = (sinpitch*crsy-srcy);
-	matrix[2][2] = cosroll*cospitch;
+	matrix[0][2] = (sinpitch * crcy + srsy);
+	matrix[1][2] = (sinpitch * crsy - srcy);
+	matrix[2][2] = cosroll * cospitch;
 
 	return matrix;
 }
 
-Matrix Angle::calcRotation(const Angle &target) {
+Matrix Angle::calcRotation(const Angle& target) const
+{
 	Quaternion curQuat(*this);
 	Quaternion targetQuat(target);
 	curQuat.normalize();
@@ -104,7 +110,8 @@ Matrix Angle::calcRotation(const Angle &target) {
 	return rot.quaternionMatrix();
 }
 
-void Angle::fromMatrix(const Matrix &matrix) {
+void Angle::fromMatrix(const Matrix& matrix)
+{
 	assert(matrix.x() == 3 && matrix.y() == 3);
 	double forward[3];
 	double left[3];
@@ -119,52 +126,60 @@ void Angle::fromMatrix(const Matrix &matrix) {
 	left[2] = matrix[2][1];
 	up[2] = matrix[2][2];
 
-	double xyDist = sqrt( forward[0] * forward[0] + forward[1] * forward[1] );
+	double xyDist = sqrt(forward[0] * forward[0] + forward[1] * forward[1]);
 
-	if ( xyDist > 0.0001 ) {
+	if (xyDist > 0.0001)
+	{
 		(*this)[PITCH] = RAD2DEG( atan2( -forward[2], xyDist ) );
 		(*this)[YAW] = RAD2DEG( atan2( forward[1], forward[0] ) );
 		(*this)[ROLL] = RAD2DEG( atan2( left[2], up[2] ) );
-	} else { // gimbal lock
+	}
+	else
+	{ // gimbal lock
 		(*this)[PITCH] = RAD2DEG( atan2( -forward[2], xyDist ) );
 		(*this)[YAW] = RAD2DEG( atan2( -left[0], left[1] ) );
 		(*this)[ROLL] = 0;
 	}
 }
 
-std::string Angle::toStr() const {
+std::string Angle::toStr() const
+{
 	std::ostringstream os;
-	os<<(*this)[PITCH]<<" "
-	<<(*this)[YAW]<<" "
-	<<(*this)[ROLL];
+	os << (*this)[PITCH] << " "
+		<< (*this)[YAW] << " "
+		<< (*this)[ROLL];
 	return os.str();
 }
 
-bool Angle::isAngle(const Angle &a) {
+bool Angle::isAngle(const Angle& a)
+{
 	return (a.x() == a.x() && a.y() == a.y() && a.z() == a.z());
 }
 
-Angle &Angle::operator+=(const Angle &rhs) {
+Angle& Angle::operator+=(const Angle& rhs)
+{
 	this->vertex_[0] += rhs.vertex_[0];
 	this->vertex_[1] += rhs.vertex_[1];
 	this->vertex_[2] += rhs.vertex_[2];
 	return *this;
 }
 
-Angle &Angle::operator-=(const Angle &rhs) {
+Angle& Angle::operator-=(const Angle& rhs)
+{
 	this->vertex_[0] -= rhs.vertex_[0];
 	this->vertex_[1] -= rhs.vertex_[1];
 	this->vertex_[2] -= rhs.vertex_[2];
 	return *this;
 }
 
-Angle Angle::operator-() {
+Angle Angle::operator-() const
+{
 	Angle ret;
-	if(x() > 0) ret.x(x() - 180.0);
+	if (x() > 0) ret.x(x() - 180.0);
 	else ret.x(x() + 180.0);
-	if(y() > 0) ret.y(y() - 180.0);
+	if (y() > 0) ret.y(y() - 180.0);
 	else ret.y(y() + 180.0);
-	if(z() > 0) ret.z(z() - 180.0);
+	if (z() > 0) ret.z(z() - 180.0);
 	else ret.z(z() + 180.0);
 	return ret;
 }
@@ -179,3 +194,4 @@ Angle::Angle(double x, double y, double z)
 Angle::~Angle(void)
 {
 }
+

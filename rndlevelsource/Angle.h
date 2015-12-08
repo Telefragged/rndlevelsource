@@ -12,18 +12,10 @@ class Angle :
 {
 public:
 	//Returns a string representing the angle object.
-	std::string toStr() const;
+	std::string toStr() const override;
 
 	//Returns true if all angles are non-NAN, return false otherwise.
 	static bool isAngle(const Angle &);
-
-	void x(double x);
-	void y(double y);
-	void z(double z);
-
-	double x() const;
-	double y() const;
-	double z() const;
 
 	inline double pitch() const;
 	inline double yaw() const;
@@ -36,19 +28,20 @@ public:
 	Matrix angleMatrix() const;
 
 	//Calculate rotation matrix from this angle to target angle.
-	Matrix calcRotation(const Angle &);
+	Matrix calcRotation(const Angle &) const;
 
 	//Sets the pitch, yaw and roll of the angle to the values represented by the rotation matrix.
 	void fromMatrix(const Matrix &);
 
 	Angle &operator+=(const Angle &);
 	Angle &operator-=(const Angle &);
-	Angle operator-(void);
+	Angle operator-(void) const;
 
 	Angle(void);
-	Angle(std::string);
+	Angle(const std::string &);
 	Angle(double pitch, double yaw, double roll);
-	~Angle(void);
+
+	virtual ~Angle(void);
 };
 
 inline Angle operator+(Angle lhs, const Angle &rhs) {

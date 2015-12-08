@@ -1,7 +1,6 @@
 #pragma once
 #include <vector>
 #include "Part.h"
-#include "WeightedVector.h"
 
 typedef std::tuple<Part, unsigned int, unsigned int, const Connection *, const Connection *> parttuple;
 

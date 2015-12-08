@@ -13,7 +13,7 @@ public:
 	//Returns true if lhs collides with rhs. Returns false otherwise.
 	static bool testCollision(const BoundingBox &lhs, const BoundingBox &rhs);
 	
-	std::string toStr();
+	std::string toStr() const;
 
 	BoundingBox(void);
 	BoundingBox(const Vector &);

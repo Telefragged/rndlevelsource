@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include <assert.h>
 #include <algorithm>
 #include "Angle.h"
 #include "BoundingBox.h"

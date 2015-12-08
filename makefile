@@ -3,7 +3,6 @@ DEBUGFLAGS = -g -std=c++11
 RELEASEFLAGS = -s -std=c++11 -O3 -Wall
 BUILDFLAGS = $(DEBUGFLAGS)
 SRCDIR = ./sources/
-HDRDIR = ./headers/
 OBJDIR = ./debug/
 
 SOURCES = Angle.cpp Axis.cpp BaseNPC.cpp BoundingBox.cpp	\

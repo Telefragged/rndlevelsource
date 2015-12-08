@@ -13,7 +13,8 @@ bool BoundingBox::testCollision(const BoundingBox &lhs, const BoundingBox &rhs) 
 		&& lhs.min.z() < rhs.max.z());
 }
 
-std::string BoundingBox::toStr() {
+std::string BoundingBox::toStr() const
+{
 	std::ostringstream os;
 	os<<"("<<min.x()<<", "<<min.y()<<", "<<min.z()<<")"
 	<<" ("<<max.x()<<", "<<max.y()<<", "<<max.z()<<")";
