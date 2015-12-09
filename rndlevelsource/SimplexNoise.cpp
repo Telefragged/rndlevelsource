@@ -16,7 +16,7 @@ SimplexNoise::SimplexNoise(std::mt19937& eng)
 		perm[n] = (char)n;
 	}
 
-	std::shuffle(perm.begin(), perm.begin() + 256, eng);
+	shuffle(perm.begin(), perm.begin() + 256, eng);
 
 	for (int n = 256; n < 512; n++)
 	{
@@ -26,12 +26,12 @@ SimplexNoise::SimplexNoise(std::mt19937& eng)
 
 double SimplexNoise::getNoise(double x, double y)
 {
-	const double skew2D = 0.5 * (std::sqrt(3.0) - 1.0);
-	const double unskew2D = (3.0 - std::sqrt(3.0)) / 6.0;
+	const double skew2D = 0.5 * (sqrt(3.0) - 1.0);
+	const double unskew2D = (3.0 - sqrt(3.0)) / 6.0;
 
 	double s = (x + y) * skew2D;
-	int i = static_cast<int>(std::floor(s + x));
-	int j = static_cast<int>(std::floor(s + y));
+	int i = static_cast<int>(floor(s + x));
+	int j = static_cast<int>(floor(s + y));
 	double t = (i + j) * unskew2D;
 
 	double origx = i - t;
@@ -99,8 +99,8 @@ double SimplexFractal::getNoise(double x, double y)
 
 	for (size_t n = 0; n < octaves_.size(); n++)
 	{
-		double freq = std::pow(2, n);
-		double amp = std::pow(lacunarity_, n);
+		double freq = pow(2, n);
+		double amp = pow(lacunarity_, n);
 
 		result += octaves_[n].getNoise(x * freq, y * freq) * amp;
 	}

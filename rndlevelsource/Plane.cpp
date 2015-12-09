@@ -42,11 +42,15 @@ Matrix Plane::equation() const
 
 Plane Plane::vectorPlane(const Vector& line1, const Vector& line2)
 {
-	if (Vertex::parallel(line1.vec(), line2.vec())) return Plane();
+	if (Vertex::parallel(line1.vec(), line2.vec()))
+		return Plane();
+
 	Vertex p1 = line1.beg();
 	Vertex p2 = line1.end();
 	Vertex p3 = line2.beg();
-	if (Vertex::equals(p3, p1) || Vertex::equals(p3, p2)) p3 = line2.end();
+	if (Vertex::equals(p3, p1) || Vertex::equals(p3, p2))
+		p3 = line2.end();
+
 	Plane ret;
 	ret.p1 = p1;
 	ret.p2 = p2;
@@ -59,7 +63,7 @@ Vector Plane::intersectLine(const Matrix& lhs, const Matrix& rhs)
 	Vertex lhsnorm(lhs[0][0], lhs[0][1], lhs[0][2]);
 	Vertex rhsnorm(rhs[0][0], rhs[0][1], rhs[0][2]);
 	// Check if planes are parallel
-	if (Vertex::parallel(lhsnorm, rhsnorm)) return Vector(Vertex());
+	if (Vertex::parallel(lhsnorm, rhsnorm)) return Vector();
 	Vertex interline = Vertex::crossProduct(lhsnorm, rhsnorm).normalize();
 	double eqarr[2][3];
 	char parcase = -1; // stores how points are stored and read
@@ -116,8 +120,8 @@ Vector Plane::intersectLine(const Matrix& lhs, const Matrix& rhs)
 		pt = Vertex(0.0, res[0][0], res[1][0]);
 		break;
 	}
-	Vector vec(pt);
-	vec.vec(interline);
+	Vector vec(interline);
+	vec.beg(pt);
 	// printf("Res: (%s) +t(%s)\n", vec.beg().toStr().c_str(), vec.vec().toStr().c_str());
 	return vec;
 }
@@ -137,12 +141,12 @@ double Plane::dist(const Vertex& pt, const Vertex& to)
 bool Plane::crossesLine(const Plane& p, const Vector& line)
 {
 	// We make the assumption that the line lies on the plane.
-	Vector line2(line.beg());
-	line2.vec(Vertex::normalize(p.normal()));
+	Vector line2(Vertex::normalize(p.normal()));
+	line2.beg(line.beg());
 	// Construct plane given the argument line and the argument plane normal.
 	// If the line lies on the plane, the constructed plane
 	// is perpendicular to the argument plane.
-	Plane pnorm = Plane::vectorPlane(line, line2);
+	Plane pnorm = vectorPlane(line, line2);
 	Vertex row1 = pnorm.p3 - pnorm.p1,
 		row2 = pnorm.p2 - pnorm.p1;
 	// Construct matrix with vectors AB and AC on the new plane
@@ -176,7 +180,7 @@ bool Plane::crossesLine(const Plane& p, const Vector& line)
 	detmat.setRow(2, p.p3 - pnorm.p1);
 	points.push_back(determineSide(detmat.det()));
 
-	auto it = std::remove(points.begin(), points.end(), 0); // remove the zeroes as we don't care if a point lies on a plane
+	auto it = remove(points.begin(), points.end(), 0); // remove the zeroes as we don't care if a point lies on a plane
 
 	int prev = 0;
 
@@ -201,8 +205,8 @@ bool Plane::testCollision(const Plane& lhs, const Plane& rhs)
 	if (!Vertex::isVertex(line)) return false;
 	if (!Vertex::isVertex(vec.beg())) return false;
 	// Determine which planes cross the intersection
-	bool lhscrosses = Plane::crossesLine(lhs, vec);
-	bool rhscrosses = Plane::crossesLine(rhs, vec);
+	bool lhscrosses = crossesLine(lhs, vec);
+	bool rhscrosses = crossesLine(rhs, vec);
 	// If both planes cross the line then the planes collide
 	if (lhscrosses && rhscrosses)
 	{

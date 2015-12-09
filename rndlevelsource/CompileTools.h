@@ -11,7 +11,7 @@ public:
 	static void copyfile(std::string original, std::string copy, bool confirm = false);
 	static void cleanup(std::string);
 
-	void runtools(std::string vmffile, std::string gamedir);
+	static void runtools(std::string vmffile, std::string gamedir);
 
 	CompileTools(void);
 	~CompileTools(void);

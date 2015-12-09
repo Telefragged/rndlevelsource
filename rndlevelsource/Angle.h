@@ -18,9 +18,9 @@ public:
 	//Returns true if all angles are non-NAN, return false otherwise.
 	static bool isAngle(const Angle&);
 
-	inline double pitch() const;
-	inline double yaw() const;
-	inline double roll() const;
+	double pitch() const;
+	double yaw() const;
+	double roll() const;
 
 	//Returns a (non-normalized) vector representing the angle.
 	Vertex toVertex() const;

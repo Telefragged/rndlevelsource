@@ -32,7 +32,7 @@ public:
 	unsigned int countEntities(std::string) const;
 
 	// Opens and writes a file in .vmf format
-	std::streampos toFile(std::string);
+	std::streampos toFile(std::string) const;
 
 	// Returns an AABB with the min and max coordinates of this part
 	BoundingBox bbox() const;
@@ -48,26 +48,21 @@ public:
 	// of its AABB
 	void rotate(const Angle&, const Vertex& pt = Vertex());
 
-	DispInfo& findFirstDisp();
-
 	// Re-assigns all entity-, solid- and sideids so that they are unique and in order
 	// NOTE -- this is called by the parse and += methods
 	void reID();
 
-	Part& operator=(Part&&);
 	Part& operator+=(const Part&);
 	Entity& operator[](std::string);
 
 	friend std::ostream& operator<<(std::ostream&, const Part&);
 	friend std::istream& operator>>(std::istream&, Part&);
 
-	Part(void);
+	Part();
 
 	// Open and parse file in .vmf format
 	Part(std::string);
-	Part(const Part&);
-	Part(Part&&);
-	~Part(void);
+	~Part();
 };
 
 inline std::ostream& operator<<(std::ostream& os, const Part& p)

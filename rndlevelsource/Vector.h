@@ -12,6 +12,7 @@ private:
 public:
 	//The origin of the vector in XYZ space
 	Vertex beg() const;
+	void beg(const Vertex&);
 	//The end point in XYZ space.
 	Vertex end() const;
 	//The internal vector.
@@ -30,10 +31,11 @@ public:
 
 	std::string toStr() const;
 
-	Vector(void);
+	Vector();
 	Vector(const Vertex&);
+	Vector(double, double, double);
 	Vector(const Vertex&, const Vertex&);
-	~Vector(void);
+	~Vector();
 };
 
 inline Vector operator+(Vector lhs, const Vector& rhs)

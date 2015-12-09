@@ -55,14 +55,14 @@ double Vertex::z() const
 	return vertex_[2];
 }
 
-Vertex Vertex::rotate(const Matrix& rotmat)
+Vertex Vertex::rotate(const Matrix& rotmat) const
 {
 	Matrix th = this->toMat();
 	Matrix res = rotmat * th;
 	return Vertex(res.get(0, 0), res.get(1, 0), res.get(2, 0));
 }
 
-Vertex Vertex::rotate(const Vertex& point, const Matrix& rotmat)
+Vertex Vertex::rotate(const Vertex& point, const Matrix& rotmat) const
 {
 	Vector vec(point, *this);
 	vec.rotate(rotmat);
@@ -91,9 +91,9 @@ void Vertex::rotateInPlace(const Matrix& rotmat)
 double Vertex::length() const
 {
 	return sqrt(
-		(x() * x())
-		+ (y() * y())
-		+ (z() * z()));
+		  x() * x()
+		+ y() * y()
+		+ z() * z());
 }
 
 double Vertex::length(const Vertex& v)
@@ -134,9 +134,9 @@ Vertex Vertex::normalize() const
 Vertex Vertex::crossProduct(const Vertex& lhs, const Vertex& rhs)
 {
 	return Vertex(
-		(lhs.vertex_[1] * rhs.vertex_[2]) - (lhs.vertex_[2] * rhs.vertex_[1]),
-		(lhs.vertex_[2] * rhs.vertex_[0]) - (lhs.vertex_[0] * rhs.vertex_[2]),
-		(lhs.vertex_[0] * rhs.vertex_[1]) - (lhs.vertex_[1] * rhs.vertex_[0]));
+		lhs.vertex_[1] * rhs.vertex_[2] - lhs.vertex_[2] * rhs.vertex_[1],
+		lhs.vertex_[2] * rhs.vertex_[0] - lhs.vertex_[0] * rhs.vertex_[2],
+		lhs.vertex_[0] * rhs.vertex_[1] - lhs.vertex_[1] * rhs.vertex_[0]);
 }
 
 void Vertex::parsestr(const std::string& pstr)
@@ -195,24 +195,24 @@ bool Vertex::parallel(const Vertex& lhs, const Vertex& rhs)
 {
 	//crossproduct of parallel vectors is (0, 0, 0)
 	Vertex pvert = crossProduct(normalize(lhs), normalize(rhs));
-	return (doubleeq(pvert.x(), 0.0))
-		&& (doubleeq(pvert.y(), 0.0))
-		&& (doubleeq(pvert.z(), 0.0));
+	return doubleeq(pvert.x(), 0.0)
+		&& doubleeq(pvert.y(), 0.0)
+		&& doubleeq(pvert.z(), 0.0);
 }
 
 bool Vertex::equals(const Vertex& lhs, const Vertex& rhs)
 {
-	return (doubleeq(lhs.x(), rhs.x()))
-		&& (doubleeq(lhs.y(), rhs.y()))
-		&& (doubleeq(lhs.z(), rhs.z()));
+	return doubleeq(lhs.x(), rhs.x())
+		&& doubleeq(lhs.y(), rhs.y())
+		&& doubleeq(lhs.z(), rhs.z());
 }
 
 double Vertex::dotProduct(const Vertex& rhs) const
 {
 	return
-		(x() * rhs.x()) +
-		(y() * rhs.y()) +
-		(z() * rhs.z());
+		x() * rhs.x() +
+		y() * rhs.y() +
+		z() * rhs.z();
 }
 
 Vertex Vertex::crossProduct(const Vertex& rhs) const

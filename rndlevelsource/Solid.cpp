@@ -60,7 +60,7 @@ Solid Solid::createBox(const Vector& vec, std::string texture, int texturemode, 
 		{
 		case 0:
 			// top face / UP (XY plane)
-			if (texturemode & texmode::UP) side["material"] = othertexture;
+			if (texturemode & UP) side["material"] = othertexture;
 			plane.p1 = tpos[0];
 			plane.p2 = tpos[1];
 			plane.p3 = tpos[2];
@@ -69,7 +69,7 @@ Solid Solid::createBox(const Vector& vec, std::string texture, int texturemode, 
 			break;
 		case 1:
 			// bottom face / DOWN (XY plane)
-			if (texturemode & texmode::DOWN) side["material"] = othertexture;
+			if (texturemode & DOWN) side["material"] = othertexture;
 			plane.p1 = bpos[3];
 			plane.p2 = bpos[2];
 			plane.p3 = bpos[1];
@@ -78,7 +78,7 @@ Solid Solid::createBox(const Vector& vec, std::string texture, int texturemode, 
 			break;
 		case 2:
 			// front face / SOUTH (XZ plane)
-			if (texturemode & texmode::SOUTH) side["material"] = othertexture;
+			if (texturemode & SOUTH) side["material"] = othertexture;
 			plane.p1 = tpos[3];
 			plane.p2 = tpos[2];
 			plane.p3 = bpos[2];
@@ -87,7 +87,7 @@ Solid Solid::createBox(const Vector& vec, std::string texture, int texturemode, 
 			break;
 		case 3:
 			// back face / NORTH (XZ plane)
-			if (texturemode & texmode::NORTH) side["material"] = othertexture;
+			if (texturemode & NORTH) side["material"] = othertexture;
 			plane.p1 = tpos[1];
 			plane.p2 = tpos[0];
 			plane.p3 = bpos[0];
@@ -96,7 +96,7 @@ Solid Solid::createBox(const Vector& vec, std::string texture, int texturemode, 
 			break;
 		case 4:
 			// left face / WEST (YZ plane)
-			if (texturemode & texmode::WEST) side["material"] = othertexture;
+			if (texturemode & WEST) side["material"] = othertexture;
 			plane.p1 = tpos[0];
 			plane.p2 = tpos[3];
 			plane.p3 = bpos[3];
@@ -105,7 +105,7 @@ Solid Solid::createBox(const Vector& vec, std::string texture, int texturemode, 
 			break;
 		case 5:
 			// right face / EAST (YZ plane)
-			if (texturemode & texmode::EAST) side["material"] = othertexture;
+			if (texturemode & EAST) side["material"] = othertexture;
 			plane.p1 = tpos[2];
 			plane.p2 = tpos[1];
 			plane.p3 = bpos[1];
@@ -210,11 +210,11 @@ unsigned int Solid::parse(std::istream& stream)
 	std::string curline;
 	while (trim(curline) != "{")
 	{
-		std::getline(stream, curline);
+		getline(stream, curline);
 		numparsed++;
 	}
 	unsigned int depth = 1;
-	while (std::getline(stream, curline))
+	while (getline(stream, curline))
 	{
 		numparsed++;
 		if (trim(curline) == "side")
@@ -263,6 +263,16 @@ void Solid::reID(unsigned int* solidID, unsigned int* sideID)
 	{
 		side.reID(sideID);
 	}
+}
+
+unsigned Solid::depth() const
+{
+	return depth_;
+}
+
+void Solid::depth(unsigned int newDepth) const
+{
+	depth_ = newDepth;
 }
 
 BoundingBox Solid::bbox() const

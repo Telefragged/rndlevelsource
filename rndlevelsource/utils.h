@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-inline std::string nextword(unsigned int& pos, std::string& str, std::string delim = " \t\n\r")
+inline std::string nextword(unsigned int& pos, const std::string& str, std::string delim = " \t\n\r")
 {
 	if (pos >= str.length()) return "";
 	size_t spos = pos;
@@ -115,7 +115,7 @@ inline std::string numToPretty(T num, bool onlyPretty = false, bool appTxt = tru
 	return pretty;
 }
 
-inline std::vector<std::string> splitstr(std::string orig, std::string delim = " \n\r\t")
+inline std::vector<std::string> splitstr(const std::string &orig, std::string delim = " \n\r\t")
 {
 	unsigned int pos = 0;
 	std::vector<std::string> ret;

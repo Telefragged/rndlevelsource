@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Axis.h"
 
-void Axis::parsestr(std::string& pstr)
+void Axis::parsestr(const std::string& pstr)
 {
 	size_t epos = pstr.find_first_of(']') + 1;
 	if (epos == std::string::npos)

@@ -58,7 +58,7 @@ inline std::ostream& operator<<(std::ostream& os, const DispInfo& d)
 		os << std::setw(d.depth()) << "" << "\t" << KeyValBase::toStr(pair) << "\n";
 	}
 
-	int sz = (int)std::pow(2, atoi(d["power"].c_str())) + 1;
+	int sz = (int)pow(2, atoi(d["power"].c_str())) + 1;
 
 	os << std::setw(d.depth()) << "" << "\tnormals\n";
 	os << std::setw(d.depth()) << "" << "\t{\n";

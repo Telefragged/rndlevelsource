@@ -10,7 +10,7 @@ public:
 	double trans;
 	double scale;
 
-	void parsestr(std::string&);
+	void parsestr(const std::string&);
 	void translate(const Vertex&);
 
 	std::string toStr() const;

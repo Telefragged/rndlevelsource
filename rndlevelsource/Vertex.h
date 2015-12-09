@@ -21,8 +21,8 @@ public:
 
 	void parsestr(const std::string&);
 
-	Vertex rotate(const Matrix&);
-	Vertex rotate(const Vertex&, const Matrix&);
+	Vertex rotate(const Matrix&) const;
+	Vertex rotate(const Vertex&, const Matrix&) const;
 
 	void rotateInPlace(const Matrix&);
 	void rotateInPlace(const Vertex&, const Matrix&);

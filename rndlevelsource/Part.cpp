@@ -7,7 +7,6 @@
 #include "Angle.h"
 #include "BoundingBox.h"
 #include "DispInfo.h"
-#include "KeyVal.h"
 #include "Matrix.h"
 #include "Part.h"
 #include "Vector.h"
@@ -20,7 +19,7 @@ unsigned int Part::parse(std::istream& stream)
 	//	std::getline(file, curline);
 	//	numparsed++;
 	//}
-	while (std::getline(stream, curline))
+	while (getline(stream, curline))
 	{
 		numparsed++;
 		if (trim(curline) == "world")
@@ -50,16 +49,10 @@ unsigned int Part::parse(std::string filepath)
 {
 	std::ifstream file(filepath);
 	if (!file.good())
-	{
-		printf("Failed to open file: %s\n", filepath.c_str());
-		return 0;
-	}
-	size_t bufsize = 128 * 1024;
-	char* buf = new char[bufsize];
-	file.rdbuf()->pubsetbuf(buf, bufsize);
+		throw std::exception(("Failed to open file: " + filepath).c_str());
+
 	unsigned int ret = parse(file);
 	file.close();
-	delete [] buf;
 	return ret;
 }
 
@@ -75,7 +68,7 @@ unsigned int Part::countEntities(std::string classname) const
 BoundingBox Part::bbox() const
 {
 	BoundingBox ret;
-	auto it = std::find_if(entities.cbegin(), entities.cend(), &Entity::entworldcmp);
+	auto it = find_if(entities.cbegin(), entities.cend(), &Entity::entworldcmp);
 	if (it == entities.cend()) return ret;
 	ret = it->bbox();
 	return ret;
@@ -86,8 +79,8 @@ bool Part::testCollision(const Part& lhs, const Part& rhs)
 	BoundingBox lhbbox = lhs.bbox(), rhbbox = rhs.bbox();
 	if (BoundingBox::testCollision(lhbbox, rhbbox))
 	{
-		auto lhsit = std::find_if(lhs.entities.cbegin(), lhs.entities.cend(), &Entity::entworldcmp),
-			rhsit = std::find_if(rhs.entities.cbegin(), rhs.entities.cend(), &Entity::entworldcmp);
+		auto lhsit = find_if(lhs.entities.cbegin(), lhs.entities.cend(), &Entity::entworldcmp),
+			rhsit = find_if(rhs.entities.cbegin(), rhs.entities.cend(), &Entity::entworldcmp);
 		if (lhsit == lhs.entities.cend() || rhsit == rhs.entities.cend()) return false;
 		return Entity::testCollision(*lhsit, *rhsit);
 	}
@@ -110,7 +103,7 @@ void Part::move(const Vector& vec)
 void Part::moveTo(const Vertex& pt)
 {
 	using namespace std;
-	using namespace std::placeholders;
+	using namespace placeholders;
 
 	auto it = find_if(entities.begin(), entities.end(), &Entity::entworldcmp);
 	Vertex wOrig;
@@ -124,27 +117,27 @@ void Part::moveTo(const Vertex& pt)
 
 void Part::rotate(const Angle& angle, const Vertex& pt)
 {
-	auto it = std::find_if(entities.begin(), entities.end(), &Entity::entworldcmp);
+	auto it = find_if(entities.begin(), entities.end(), &Entity::entworldcmp);
 	Vertex orig;
 	if (Vertex::isVertex(pt)) orig = pt;
 	else if (it == entities.end()) orig = Vertex(0, 0, 0);
 	else orig = it->origin();
-	Angle rotangle(-angle[PITCH], angle[YAW], angle[ROLL]); //Invert pitch for compliance with hammer.
+	Angle rotangle(-angle.pitch(), angle.yaw(), angle.roll()); //Invert pitch for compliance with hammer.
 	Matrix rotmat = rotangle.angleMatrix();
 	for (Entity& e : entities)
 	{
 		e.rotate(rotmat, orig);
 	}
-	for (auto& c : connections)
+	for (Connection& c : connections)
 	{
 		c.rotate(rotmat, orig);
 	}
 }
 
-std::streampos Part::toFile(std::string filename)
+std::streampos Part::toFile(std::string filename) const
 {
 	std::ofstream file(filename, std::ios::trunc);
-	std::size_t bufsize = 128 * 1024;
+	size_t bufsize = 128 * 1024;
 	char* buf = new char[bufsize];
 	file.rdbuf()->pubsetbuf(buf, bufsize);
 	file << *this;
@@ -152,17 +145,6 @@ std::streampos Part::toFile(std::string filename)
 	file.close();
 	delete [] buf;
 	return fsize;
-}
-
-DispInfo& Part::findFirstDisp()
-{
-	for (auto& ent : entities)
-		for (auto& sol : ent.solids)
-			for (auto& sid : sol.sides)
-				if (sid.disp.keyvals.size() > 0)
-					return sid.disp;
-
-	return DispInfo();
 }
 
 void Part::reID()
@@ -176,17 +158,6 @@ void Part::reID()
 	}
 }
 
-Part& Part::operator=(Part&& orig)
-{
-	std::swap(this->entityID_, orig.entityID_);
-	std::swap(this->solidID_, orig.solidID_);
-	std::swap(this->sideID_, orig.sideID_);
-	this->entities = std::move(orig.entities);
-	this->connections = std::move(orig.connections);
-	reID();
-	return *this;
-}
-
 //Merges world entities and copies all other entities
 Part& Part::operator+=(const Part& rhs)
 {
@@ -194,8 +165,8 @@ Part& Part::operator+=(const Part& rhs)
 	//	("worldspawn", Entity::entclasscmp),
 	//	*origWorld = rhs.entities.get_first_match<std::string>
 	//	("worldspawn", Entity::entclasscmp);
-	auto cit = std::find_if(entities.begin(), entities.end(), &Entity::entworldcmp);
-	auto origit = std::find_if(rhs.entities.cbegin(), rhs.entities.cend(), &Entity::entworldcmp);
+	auto cit = find_if(entities.begin(), entities.end(), &Entity::entworldcmp);
+	auto origit = find_if(rhs.entities.cbegin(), rhs.entities.cend(), &Entity::entworldcmp);
 	if (cit != entities.end() && origit != rhs.entities.cend())
 	{
 		cit->mergeSolids(*origit);
@@ -220,7 +191,7 @@ Part& Part::operator+=(const Part& rhs)
 //If no such entity exists, the function will create one and return its reference.
 Entity& Part::operator[](std::string classname)
 {
-	auto it = std::find_if(entities.begin(), entities.end(), std::bind(&Entity::entclasscmp, std::placeholders::_1, classname));
+	auto it = find_if(entities.begin(), entities.end(), bind(&Entity::entclasscmp, std::placeholders::_1, classname));
 	if (it == entities.end())
 	{
 		it = entities.emplace(entities.end(), classname);
@@ -262,6 +233,7 @@ Part Part::createRoom(std::mt19937& eng, const Vector& pos, double thickness)
 	return ret;
 }
 
+
 Part::Part(void)
 {
 	entityID_ = 0;
@@ -274,23 +246,6 @@ Part::Part(std::string filepath) : Part()
 	parse(filepath);
 }
 
-Part::Part(const Part& orig) :
-	entityID_(orig.entityID_),
-	solidID_(orig.solidID_),
-	sideID_(orig.sideID_),
-	entities(orig.entities),
-	connections(orig.connections)
-{
-}
-
-Part::Part(Part&& orig) :
-	entityID_(orig.entityID_),
-	solidID_(orig.solidID_),
-	sideID_(orig.sideID_),
-	entities(std::move(orig.entities)),
-	connections(std::move(orig.connections))
-{
-}
 
 Part::~Part(void)
 {

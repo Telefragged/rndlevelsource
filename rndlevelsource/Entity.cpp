@@ -13,11 +13,11 @@ unsigned int Entity::parse(std::istream& stream)
 	std::string curline;
 	while (trim(curline) != "{")
 	{
-		std::getline(stream, curline);
+		getline(stream, curline);
 		numparsed++;
 	}
 	unsigned int depth = 1;
-	while (std::getline(stream, curline))
+	while (getline(stream, curline))
 	{
 		numparsed++;
 		if (trim(curline) == "solid")

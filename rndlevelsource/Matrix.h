@@ -8,8 +8,8 @@ class Vertex;
 class Matrix
 {
 private:
-	unsigned int xsize, ysize;
-	double** arr;
+	unsigned int xsize_, ysize_;
+	double* arr_;
 
 public:
 	class matrow
@@ -21,9 +21,9 @@ public:
 		{
 		}
 
-		double& operator[](unsigned int col)
+		double& operator[](unsigned int col) const
 		{
-			return parent.arr[row][col];
+			return parent.arr_[row + col * parent.xsize_];
 		}
 	};
 
@@ -38,7 +38,7 @@ public:
 
 		double operator[](unsigned int col) const
 		{
-			return parent.arr[row][col];
+			return parent.arr_[row + col * parent.xsize_];
 		}
 	};
 
@@ -98,7 +98,6 @@ public:
 
 	static Matrix gaussElim(Matrix mat);
 
-	Matrix(double**, unsigned int, unsigned int);
 	Matrix(unsigned int, unsigned int, double sval = 0.0);
 	Matrix(const Matrix&);
 	Matrix(Matrix&&);
@@ -126,15 +125,14 @@ inline Matrix operator*(Matrix lhs, double rhs)
 template <unsigned int X, unsigned int Y>
 inline Matrix toMat(double (&arr)[X][Y])
 {
-	double** marr = new double*[X];
+	Matrix ret(X, Y);
 	for (unsigned int n = 0; n < X; n++)
 	{
-		marr[n] = new double[Y];
 		for (unsigned int m = 0; m < Y; m++)
 		{
-			marr[n][m] = arr[n][m];
+			ret[n][m] = arr[n][m];
 		}
 	}
-	return Matrix(marr, X, Y);
+	return ret;
 }
 

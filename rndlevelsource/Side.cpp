@@ -12,10 +12,10 @@ unsigned int Side::parse(std::istream& stream)
 	std::string curline;
 	while (trim(curline) != "{")
 	{
-		std::getline(stream, curline);
+		getline(stream, curline);
 		numparsed++;
 	}
-	while (std::getline(stream, curline))
+	while (getline(stream, curline))
 	{
 		numparsed++;
 		if (trim(curline) == "dispinfo")
@@ -45,22 +45,22 @@ void Side::popuvars()
 {
 	if (keyvals.count("id") > 0)
 	{
-		this->id_ = atoi(keyvals.at("id").c_str());
+		this->id_ = atoi(keyvals["id"].c_str());
 		keyvals.erase("id");
 	}
 	if (keyvals.count("plane") > 0)
 	{
-		this->p.parsestr(keyvals.at("plane"));
+		this->p.parsestr(keyvals["plane"]);
 		keyvals.erase("plane");
 	}
 	if (keyvals.count("uaxis") > 0)
 	{
-		this->uaxis.parsestr(keyvals.at("uaxis"));
+		this->uaxis.parsestr(keyvals["uaxis"]);
 		keyvals.erase("uaxis");
 	}
 	if (keyvals.count("vaxis") > 0)
 	{
-		this->vaxis.parsestr(keyvals.at("vaxis"));
+		this->vaxis.parsestr(keyvals["vaxis"]);
 		keyvals.erase("vaxis");
 	}
 }
@@ -102,7 +102,7 @@ bool Side::testCollision(const Side& lhs, const Side& rhs)
 	return Plane::testCollision(lhs.p, rhs.p);
 }
 
-Side::Side(void) : id_(0)
+Side::Side(void) : id_(0), depth_(0)
 {
 }
 

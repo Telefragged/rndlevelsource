@@ -10,50 +10,46 @@
 
 double Matrix::get(unsigned int x, unsigned int y) const
 {
-	if (x >= xsize || y >= ysize) return std::numeric_limits<double>::quiet_NaN();
-	return arr[x][y];
+	if (x >= xsize_ || y >= ysize_) return std::numeric_limits<double>::quiet_NaN();
+	return arr_[x + y * xsize_];
 }
 
 void Matrix::set(unsigned int x, unsigned int y, double newval)
 {
-	if (x >= xsize || y >= ysize) return;
-	arr[x][y] = newval;
+	if (x >= xsize_ || y >= ysize_) return;
+	arr_[x + y * xsize_] = newval;
 }
 
 unsigned int Matrix::x() const
 {
-	return xsize;
+	return xsize_;
 }
 
 unsigned int Matrix::y() const
 {
-	return ysize;
+	return ysize_;
 }
 
 unsigned int Matrix::rows() const
 {
-	return xsize;
+	return xsize_;
 }
 
 unsigned int Matrix::cols() const
 {
-	return ysize;
+	return ysize_;
 }
 
 void Matrix::copyfrom(const Matrix& orig)
 {
 	if (&orig == this) return;
 	clear();
-	xsize = orig.x();
-	ysize = orig.y();
-	arr = new double*[xsize];
-	for (unsigned int n = 0; n < xsize; n++)
+	xsize_ = orig.x();
+	ysize_ = orig.y();
+	arr_ = new double[xsize_ * ysize_];
+	for (unsigned int n = 0; n < xsize_ * ysize_; n++)
 	{
-		arr[n] = new double[ysize];
-		for (unsigned int m = 0; m < ysize; m++)
-		{
-			arr[n][m] = orig.get(n, m);
-		}
+		arr_[n] = orig.arr_[n];
 	}
 }
 
@@ -75,9 +71,9 @@ void Matrix::setCol(unsigned int col, const Vertex& v)
 
 void Matrix::swap(Matrix& lhs, Matrix& rhs)
 {
-	std::swap(lhs.arr, rhs.arr);
-	std::swap(lhs.xsize, rhs.xsize);
-	std::swap(lhs.ysize, rhs.ysize);
+	std::swap(lhs.arr_, rhs.arr_);
+	std::swap(lhs.xsize_, rhs.xsize_);
+	std::swap(lhs.ysize_, rhs.ysize_);
 }
 
 Matrix Matrix::rotmatx(double deg)
@@ -154,7 +150,7 @@ Matrix& Matrix::operator=(const Matrix& rhs)
 
 Matrix& Matrix::operator=(Matrix&& rhs)
 {
-	Matrix::swap(*this, rhs);
+	swap(*this, rhs);
 	return *this;
 }
 
@@ -168,7 +164,9 @@ Matrix& Matrix::operator*=(const Matrix& rhs)
 
 Matrix& Matrix::operator*=(double rhs)
 {
-	for (unsigned int n = 0; n < x(); n++) for (unsigned int m = 0; m < y(); m++) arr[n][m] *= rhs;
+	for (unsigned int n = 0; n < xsize_ * ysize_; n++)
+			arr_[n] *= rhs;
+
 	return *this;
 }
 
@@ -218,20 +216,17 @@ std::string Matrix::toStr() const
 
 void Matrix::clear()
 {
-	if (arr == nullptr)
+	if (arr_ == nullptr)
 	{
-		xsize = 0;
-		ysize = 0;
+		xsize_ = 0;
+		ysize_ = 0;
 		return;
 	}
-	for (unsigned int n = 0; n < xsize; n++)
-	{
-		if (arr[n] != nullptr) delete [] arr[n];
-	}
-	if (arr != nullptr) delete [] arr;
-	arr = nullptr;
-	xsize = 0;
-	ysize = 0;
+	if (arr_ != nullptr) delete [] arr_;
+
+	arr_ = nullptr;
+	xsize_ = 0;
+	ysize_ = 0;
 }
 
 void Matrix::printpretty() const
@@ -329,13 +324,13 @@ inline Matrix colGetSkip(const Matrix& mat, unsigned int from, unsigned int skip
 double Matrix::det() const
 {
 	if (cols() != rows()) return std::numeric_limits<double>::quiet_NaN();
-	if (cols() == 2) return (arr[0][0] * arr[1][1]) - (arr[0][1] * arr[1][0]);
+	if (cols() == 2) return get(0, 0) * get(1, 1) - get(0, 1) * get(1, 0);
 	double ret = 0.0;
 	int sign = 1;
 	for (unsigned int n = 0; n < cols(); n++)
 	{
 		Matrix newmat(cols() - 1, rows() - 1);
-		double mod = arr[0][n] * sign;
+		double mod = get(0, n) * sign;
 		sign *= -1;
 		unsigned int colput = 0;
 		for (unsigned int m = 0; m < cols(); m++)
@@ -383,43 +378,32 @@ Matrix Matrix::gaussElim(Matrix mat)
 	return ret;
 }
 
-Matrix::Matrix(double** matarr, unsigned int xs, unsigned int ys) :
-	xsize(xs),
-	ysize(ys),
-	arr(matarr)
-{
-}
-
 Matrix::Matrix(const Matrix& orig) :
-	xsize(0),
-	ysize(0),
-	arr(nullptr)
+	xsize_(0),
+	ysize_(0),
+	arr_(nullptr)
 {
 	this->copyfrom(orig);
 }
 
 Matrix::Matrix(Matrix&& orig) :
-	xsize(0),
-	ysize(0),
-	arr(nullptr)
+	xsize_(0),
+	ysize_(0),
+	arr_(nullptr)
 {
-	Matrix::swap(*this, orig);
+	swap(*this, orig);
 }
 
 Matrix::Matrix(unsigned int xs, unsigned int ys, double sval) :
-	xsize(xs),
-	ysize(ys),
-	arr(nullptr)
+	xsize_(xs),
+	ysize_(ys),
+	arr_(nullptr)
 {
 	if (xs == 0 || ys == 0) return;
-	arr = new double*[xs];
+	arr_ = new double[xs * ys];
 	for (unsigned int n = 0; n < xs; n++)
 	{
-		arr[n] = new double[ys];
-		for (unsigned int m = 0; m < ys; m++)
-		{
-			arr[n][m] = sval;
-		}
+			arr_[n] = sval;
 	}
 }
 

@@ -105,27 +105,27 @@ Part* World::getPart(unsigned int index)
 void World::buildWorld()
 {
 	std::vector<Part> startParts(master.size()), interParts(master.size()), endParts(master.size());
-	auto startIter = std::copy_if(master.begin(), master.end(), startParts.begin(), [](const Part& part)
-	                              {
-		                              //startParts test
-		                              return (part.countEntities("info_player_start") > 0) && (part.connections.size() >= 1);
-	                              });
+	auto startIter = std::copy_if(master.cbegin(), master.cend(), startParts.begin(), [](const Part& part)
+	                {
+		                //startParts test
+		                return (part.countEntities("info_player_start") > 0) && (part.connections.size() >= 1);
+	                });
 
-	auto interIter = std::copy_if(master.begin(), master.end(), interParts.begin(), [](const Part& part)
-	                              {
-		                              //interParts test
-		                              return (part.countEntities("info_player_start") == 0) && (part.connections.size() >= 2);
-	                              });
+	auto interIter = std::copy_if(master.cbegin(), master.cend(), interParts.begin(), [](const Part& part)
+					{
+						//interParts test
+						return (part.countEntities("info_player_start") == 0) && (part.connections.size() >= 2);
+					});
 
-	auto endIter = std::copy_if(master.begin(), master.end(), endParts.begin(), [](const Part& part)
-	                            {
-		                            //endParts test
-		                            return (part.countEntities("info_player_start") == 0) && (part.connections.size() == 1);
-	                            });
+	auto endIter = std::copy_if(master.cbegin(), master.cend(), endParts.begin(), [](const Part& part)
+					{
+						//endParts test
+						return (part.countEntities("info_player_start") == 0) && (part.connections.size() == 1);
+					});
 
-	startParts.resize(std::distance(startParts.begin(), startIter));
-	interParts.resize(std::distance(interParts.begin(), interIter));
-	endParts.resize(std::distance(endParts.begin(), endIter));
+	startParts.resize(distance(startParts.begin(), startIter));
+	interParts.resize(distance(interParts.begin(), interIter));
+	endParts.resize(distance(endParts.begin(), endIter));
 
 	WeightedVector<Part> weightedInter(interParts, 5);
 
@@ -140,7 +140,7 @@ void World::buildWorld()
 		std::uniform_int_distribution<unsigned int> interDist(0, weightedInter.weight() - 1);
 		auto* part = weightedInter.getWeighted(interDist(eng_));
 		int weight = weightedInter.changeWeight(part, -int(5 * weightedInter.size()));
-		weightedInter.addToRandomWeights(std::abs(weight), eng_);
+		weightedInter.addToRandomWeights(abs(weight), eng_);
 		addPart(*part);
 	}
 

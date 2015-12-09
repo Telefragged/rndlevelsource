@@ -2,7 +2,7 @@
 #include "CompileTools.h"
 #include <stdlib.h>
 
-#if defined (_WIN32)
+#if defined _WIN32
 #include <Windows.h>
 #endif
 
@@ -21,16 +21,16 @@ std::string CompileTools::removeext(std::string file)
 
 void CompileTools::runtools(std::string file, std::string game)
 {
-#if defined (_WIN)
-	std::string outfileabs = CompileTools::getabspath(file);
+#if defined (_WIN32)
+	std::string outfileabs = getabspath(file);
 	std::string outfilebsp = removeext(outfileabs) + ".bsp";
-	CompileTools::exec("F:\\Program Files (x86)\\Steam\\steamapps\\common\\Half-Life 2\\bin\\vbsp.exe",
+	exec("F:\\Program Files (x86)\\Steam\\steamapps\\common\\Half-Life 2\\bin\\vbsp.exe",
 		std::string() + "-game \"" + game + "\" \"" + outfileabs + "\"");
-	CompileTools::exec("F:\\Program Files (x86)\\Steam\\steamapps\\common\\Half-Life 2\\bin\\vvis.exe",
+	exec("F:\\Program Files (x86)\\Steam\\steamapps\\common\\Half-Life 2\\bin\\vvis.exe",
 		std::string() + "\"" + outfilebsp + "\"");
-	CompileTools::exec("F:\\Program Files (x86)\\Steam\\steamapps\\common\\Half-Life 2\\bin\\vrad.exe",
+	exec("F:\\Program Files (x86)\\Steam\\steamapps\\common\\Half-Life 2\\bin\\vrad.exe",
 		std::string() + "-game \"" + game + "\" \"" + outfilebsp + "\"");
-	CompileTools::copyfile(outfilebsp,
+	copyfile(outfilebsp,
 		"F:\\Program Files (x86)\\Steam\\steamapps\\common\\Half-Life 2\\ep2\\maps\\roomwrite.bsp",
 		false);
 #endif
@@ -38,7 +38,7 @@ void CompileTools::runtools(std::string file, std::string game)
 
 void CompileTools::exec(std::string binpath, std::string param, bool showoutput)
 {
-#if defined (_WIN)
+#if defined (_WIN32)
 	STARTUPINFO info={sizeof(info)};
 	PROCESS_INFORMATION processInfo;
 	char params[8192];
@@ -48,14 +48,14 @@ void CompileTools::exec(std::string binpath, std::string param, bool showoutput)
 	DWORD creationflags = 0;
 	if(!showoutput) creationflags = CREATE_NO_WINDOW;
 	BOOL result = CreateProcess(
-		NULL,
+		nullptr,
 		params,
-		NULL,
-		NULL,
+		nullptr,
+		nullptr,
 		TRUE,
 		creationflags,
-		NULL,
-		NULL,
+		nullptr,
+		nullptr,
 		&info,
 		&processInfo);
 	if(result) {
@@ -70,9 +70,9 @@ void CompileTools::exec(std::string binpath, std::string param, bool showoutput)
 
 void CompileTools::cleanup(std::string vmfpath)
 {
-#if defined (_WIN)
-	std::string outfilevmf = CompileTools::getabspath(vmfpath);
-	std::string outfilenoext = CompileTools::removeext(outfilevmf);
+#if defined (_WIN32)
+	std::string outfilevmf = getabspath(vmfpath);
+	std::string outfilenoext = removeext(outfilevmf);
 	printf("Removing files %s.*\n", outfilenoext.c_str());
 	std::string outfilebsp = outfilenoext + ".bsp";
 	std::string outfilelog = outfilenoext + ".log";
@@ -86,20 +86,16 @@ void CompileTools::cleanup(std::string vmfpath)
 
 void CompileTools::copyfile(std::string existing, std::string newfile, bool confirm)
 {
-#if defined (_WIN)
+#if defined (_WIN32)
 	printf("Copy: %s -> %s\n", existing.c_str(), newfile.c_str());
-	BOOL result = CopyFile(existing.c_str(), newfile.c_str(), (int)confirm);
+	BOOL result = CopyFile(existing.c_str(), newfile.c_str(), confirm);
 	if(!result && confirm) {
-		char result = 0;
-		while(result != 'y' && result != 'n' && result != 'Y' && result != 'N') {
-			printf("Overwrite %s? (y/n):", newfile.c_str());
-			scanf_s("%c", &result);
+		char res = 0;
+		while(res != 'y' && res != 'n' && res != 'Y' && res != 'N') {
+			printf("Overwrite %s? (y/n): ", newfile.c_str());
+			scanf_s("%c", &res, sizeof(char));
 		}
-		switch(result) {
-		case('n'):
-		case('N'):
-			return;
-			break;
+		switch(res) {
 		case('y'):
 		case('Y'):
 			CopyFile(existing.c_str(), newfile.c_str(), FALSE);

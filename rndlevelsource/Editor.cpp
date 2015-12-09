@@ -7,10 +7,10 @@ unsigned int Editor::parse(std::istream& stream)
 	std::string curline;
 	while (trim(curline) != "{")
 	{
-		std::getline(stream, curline);
+		getline(stream, curline);
 		numparsed++;
 	}
-	while (std::getline(stream, curline))
+	while (getline(stream, curline))
 	{
 		numparsed++;
 		if (trim(curline) == "}")

@@ -25,6 +25,7 @@
 *.bsp
 *.opensdf
 *.sdf
+*.vcxproj.user
 
 /nbproject/
 /debug/

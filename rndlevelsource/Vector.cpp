@@ -27,18 +27,22 @@ Vector& Vector::operator*=(double rhs)
 
 std::string Vector::toStr() const
 {
-	return std::string() + '(' + _orig.toStr() + ") + t(" + _vec.toStr() + ')';
+	return '(' + _orig.toStr() + ") + t(" + _vec.toStr() + ')';
 }
 
-Vector::Vector(void) :
-	_orig(0.0, 0.0, 0.0),
-	_vec(0.0, 0.0, 0.0)
+Vector::Vector()
 {
 }
 
 Vector::Vector(const Vertex& vert) :
-	_orig(vert),
-	_vec(0.0, 0.0, 0.0)
+	_orig(0, 0, 0),
+	_vec(vert)
+{
+}
+
+Vector::Vector(double x, double y, double z) :
+	_orig(0, 0, 0),
+	_vec(x, y, z)
 {
 }
 
@@ -60,6 +64,11 @@ Vector::~Vector(void)
 Vertex Vector::beg() const
 {
 	return _orig;
+}
+
+void Vector::beg(const Vertex &beg)
+{
+	_orig = beg;
 }
 
 Vertex Vector::end() const

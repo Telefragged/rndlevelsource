@@ -21,12 +21,12 @@ unsigned int DispInfo::parse(std::istream& stream)
 	std::string curline;
 	while (trim(curline) != "{")
 	{
-		std::getline(stream, curline);
+		getline(stream, curline);
 		numparsed++;
 	}
 	unsigned int depth = 1;
 	std::map<std::string, std::map<std::string, std::string>> tempKeys;
-	while (std::getline(stream, curline))
+	while (getline(stream, curline))
 	{
 		numparsed++;
 		if (trim(curline) == "}")
@@ -38,13 +38,13 @@ unsigned int DispInfo::parse(std::istream& stream)
 		{
 			auto cpos = stream.tellg();
 			std::string peekline;
-			std::getline(stream, peekline);
+			getline(stream, peekline);
 			stream.seekg(cpos);
 			if (trim(peekline) == "{")
 			{
 				std::string groupName = trim(curline);
 				std::map<std::string, std::string> group;
-				while (std::getline(stream, curline))
+				while (getline(stream, curline))
 				{
 					numparsed++;
 					if (trim(curline) == "}")
@@ -57,7 +57,7 @@ unsigned int DispInfo::parse(std::istream& stream)
 						group[k.key] = k.val;
 					}
 				}
-				tempKeys[groupName] = std::move(group);
+				tempKeys[groupName] = move(group);
 			}
 		}
 		else if (trim(curline) == "{")
@@ -72,18 +72,18 @@ unsigned int DispInfo::parse(std::istream& stream)
 	}
 
 	int power = atoi(keyvals["power"].c_str());
-	int size = (int)std::pow(2, power) + 1;
+	int size = (int)pow(2, power) + 1;
 	info = std::vector<std::vector<SingleDisp>>(size, std::vector<SingleDisp>(size, SingleDisp()));
 
 	for (int row = 0; row < size; row++)
 	{
 		std::string rowID = "row";
 		rowID += std::to_string(row);
-		auto& norm = splitstr(tempKeys["normals"][rowID]);
-		auto& dist = splitstr(tempKeys["distances"][rowID]);
-		auto& off = splitstr(tempKeys["offsets"][rowID]);
-		auto& off_norm = splitstr(tempKeys["offset_normals"][rowID]);
-		auto& alpha = splitstr(tempKeys["alphas"][rowID]);
+		auto norm = splitstr(tempKeys["normals"][rowID]);
+		auto dist = splitstr(tempKeys["distances"][rowID]);
+		auto off = splitstr(tempKeys["offsets"][rowID]);
+		auto off_norm = splitstr(tempKeys["offset_normals"][rowID]);
+		auto alpha = splitstr(tempKeys["alphas"][rowID]);
 
 		for (int col = 0; col < size; col++)
 		{
@@ -103,7 +103,7 @@ unsigned int DispInfo::parse(std::istream& stream)
 void DispInfo::setHeight(int x, int y, double height)
 {
 	auto& disp = info[y][x];
-	disp.distance = std::abs(height);
+	disp.distance = abs(height);
 	if (height < 0.0)
 		disp.normal = Vertex(0, 0, -1);
 	else
@@ -125,7 +125,7 @@ void DispInfo::rotate(const Vertex& point, const Matrix& rotmat)
 			disp.offset_normal = disp.offset_normal.rotate(rotmat);
 }
 
-DispInfo::DispInfo()
+DispInfo::DispInfo(): depth_(0)
 {
 }
 

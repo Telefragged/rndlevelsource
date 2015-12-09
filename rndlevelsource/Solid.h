@@ -43,21 +43,14 @@ public:
 	void move(const Vector&);
 	void reID(unsigned int*, unsigned int*);
 
-	unsigned int depth() const
-	{
-		return depth_;
-	}
+	unsigned int depth() const;
 
-	void depth(unsigned int newDepth) const
-	{
-		depth_ = newDepth;
-	}
+	void depth(unsigned int newDepth) const;
 
 	BoundingBox bbox() const;
 
 	friend std::ostream& operator<<(std::ostream&, const Solid&);
 
-	Solid(std::istream&);
 	Solid(void);
 	~Solid(void);
 };
