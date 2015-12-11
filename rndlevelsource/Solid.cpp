@@ -2,6 +2,7 @@
 #include "BoundingBox.h"
 #include "Solid.h"
 #include "Vector.h"
+#include "Matrix.h"
 
 bool Solid::testCollision(const Solid& lhs, const Solid& rhs)
 {
@@ -18,10 +19,10 @@ bool Solid::testCollision(const Solid& lhs, const Solid& rhs)
 	return false;
 }
 
-Solid Solid::createBox(const Vector& vec, std::string texture, int texturemode, std::string othertexture)
+Solid Solid::createBox(const Vector& size, std::string texture, int texturemode, std::string othertexture)
 {
-	Vertex spos = Vertex::allmin(vec.beg(), vec.end());
-	Vertex epos = Vertex::allmax(vec.beg(), vec.end());
+	Vertex spos = Vertex::allmin(size.beg(), size.end());
+	Vertex epos = Vertex::allmax(size.beg(), size.end());
 	Vertex tpos[4]; //Topmost coordinates. (max z)
 	Vertex bpos[4]; //Bottommost coordinates. (min z)
 	//clockwise from the top left position on the XY plane.
@@ -114,8 +115,8 @@ Solid Solid::createBox(const Vector& vec, std::string texture, int texturemode, 
 			break;
 		}
 		//translation for pos (0, 0, 0) is 0.0, so we translate it to the start of the vector.
-		//uaxis.translate(vec.beg());
-		//vaxis.translate(vec.beg());
+		//uaxis.translate(size.beg());
+		//vaxis.translate(size.beg());
 		side.p = plane;
 		side.uaxis = uaxis;
 		side.vaxis = vaxis;
@@ -136,7 +137,7 @@ std::vector<Solid> Solid::carveBox(const Vector& size, const Solid& initial)
 
 	if (!BoundingBox::testCollision(sVolume, cVolume))
 	{
-		std::vector<Solid>{initial};
+		return std::vector<Solid>{initial};
 	}
 
 	std::vector<Solid> ret;
@@ -199,6 +200,20 @@ std::vector<Solid> Solid::carveBox(const Vector& size, const Solid& initial)
 		Vector box(min, max);
 		maxBound.y(min.y());
 		ret.push_back(createBox(box));
+	}
+
+	return ret;
+}
+
+std::vector<Solid> Solid::slice(const Solid& solid, const Plane& plane)
+{
+	std::vector<Solid> ret;
+
+	for(auto &side : solid.sides)
+	{
+		auto intersect = Plane::intersectLine(side.p, plane);
+
+		std::cout << intersect.toStr() << "\n";
 	}
 
 	return ret;

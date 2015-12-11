@@ -7,7 +7,7 @@
 
 void Plane::parsestr(std::string pstr)
 {
-	unsigned int spos = 0, epos = 0;
+	unsigned int spos, epos = 0;
 	spos = pstr.find_first_of('(', epos);
 	epos = pstr.find_first_of(')', epos) + 1;
 	p1.parsestr(pstr.substr(spos, epos));
@@ -58,72 +58,47 @@ Plane Plane::vectorPlane(const Vector& line1, const Vector& line2)
 	return ret;
 }
 
-Vector Plane::intersectLine(const Matrix& lhs, const Matrix& rhs)
+Vector Plane::intersectLine(const Plane& lhs, const Plane& rhs)
 {
-	Vertex lhsnorm(lhs[0][0], lhs[0][1], lhs[0][2]);
-	Vertex rhsnorm(rhs[0][0], rhs[0][1], rhs[0][2]);
-	// Check if planes are parallel
-	if (Vertex::parallel(lhsnorm, rhsnorm)) return Vector();
-	Vertex interline = Vertex::crossProduct(lhsnorm, rhsnorm).normalize();
-	double eqarr[2][3];
-	char parcase = -1; // stores how points are stored and read
-	// Test if the intersection line is parallel to the XY, XZ and YZ planes.
-	if (!doubleeq(Vertex::dotProduct(interline, Vertex(0, 0, 1)), 0.0))
+	auto lhsEq = lhs.equation();
+	auto rhsEq = rhs.equation();
+
+	Vertex lhsNorm(lhsEq[0][0], lhsEq[0][1], lhsEq[0][2]);
+	Vertex rhsNorm(rhsEq[0][0], rhsEq[0][1], rhsEq[0][2]);
+
+	double lhsDist = lhsEq[0][3];
+	double rhsDist = rhsEq[0][3];
+
+	Vertex interLine = Vertex::crossProduct(lhsNorm, rhsNorm);
+
+	Vertex commonPoint;
+
+	if(!doubleeq(interLine.x(), 0))
 	{
-		// line will cross XY plane, z will be = 0
-		eqarr[0][0] = lhs[0][0];
-		eqarr[0][1] = lhs[0][1];
-		eqarr[0][2] = lhs[0][3];
-		eqarr[1][0] = rhs[0][0];
-		eqarr[1][1] = rhs[0][1];
-		eqarr[1][2] = rhs[0][3];
-		parcase = 0;
+		commonPoint.x(0);
+		commonPoint.y((rhsNorm.z() * lhsDist - lhsNorm.z() * rhsDist) / interLine.x());
+		commonPoint.z((-rhsNorm.y() * lhsDist + lhsNorm.y() * rhsDist) / interLine.x());
 	}
-	else if (!doubleeq(Vertex::dotProduct(interline, Vertex(0, 1, 0)), 0.0))
+	else if (!doubleeq(interLine.y(), 0))
 	{
-		// line will cross XZ plane, y will be = 0
-		eqarr[0][0] = lhs[0][0];
-		eqarr[0][1] = lhs[0][2];
-		eqarr[0][2] = lhs[0][3];
-		eqarr[1][0] = rhs[0][0];
-		eqarr[1][1] = rhs[0][2];
-		eqarr[1][2] = rhs[0][3];
-		parcase = 1;
+		commonPoint.x((rhsNorm.z() * lhsDist - lhsNorm.z() * rhsDist) / interLine.y());
+		commonPoint.y(0);
+		commonPoint.z((-rhsNorm.x() * lhsDist + lhsNorm.x() * rhsDist) / interLine.y());
+	}
+	else if (!doubleeq(interLine.z(), 0))
+	{
+		commonPoint.x((rhsNorm.y() * lhsDist - lhsNorm.y() * rhsDist) / interLine.z());
+		commonPoint.y((-rhsNorm.x() * lhsDist + lhsNorm.x() * rhsDist) / interLine.z());
+		commonPoint.z(0);
 	}
 	else
 	{
-		// line will cross YZ plane, x will be = 0
-		eqarr[0][0] = lhs[0][1];
-		eqarr[0][1] = lhs[0][2];
-		eqarr[0][2] = lhs[0][3];
-		eqarr[1][0] = rhs[0][1];
-		eqarr[1][1] = rhs[0][2];
-		eqarr[1][2] = rhs[0][3];
-		parcase = 2;
+		return Vector();
 	}
-	Matrix eq = toMat(eqarr);
-	Matrix res = Matrix::gaussElim(eq);
-	if (res.rows() == 0) return Vector(Vertex());
-	Vertex pt;
-	switch (parcase)
-	{
-	case 0:
-		// z = 0;
-		pt = Vertex(res[0][0], res[1][0], 0.0);
-		break;
-	case 1:
-		// y = 0;
-		pt = Vertex(res[0][0], 0.0, res[1][0]);
-		break;
-	case 2:
-		// x = 0;
-		pt = Vertex(0.0, res[0][0], res[1][0]);
-		break;
-	}
-	Vector vec(interline);
-	vec.beg(pt);
-	// printf("Res: (%s) +t(%s)\n", vec.beg().toStr().c_str(), vec.vec().toStr().c_str());
-	return vec;
+	
+	Vector ret(interLine.normalize());
+	ret.beg(commonPoint);
+	return ret;
 }
 
 double Plane::dist(const Vertex& pt, const Vector& line)
@@ -198,7 +173,7 @@ bool Plane::crossesLine(const Plane& p, const Vector& line)
 bool Plane::testCollision(const Plane& lhs, const Plane& rhs)
 {
 	// Line where the infinite planes meet
-	Vector vec = intersectLine(lhs.equation(), rhs.equation());
+	Vector vec = intersectLine(lhs, rhs);
 	// If planes are parallel beg() is set to NaN by intersectLine()
 	Vertex line = vec.vec();
 	// printf("%s\n", line.toStr().c_str());
@@ -228,7 +203,15 @@ Plane::Plane(void)
 {
 }
 
-Plane::~Plane(void)
+Plane::Plane(const std::string &str)
+{
+	this->parsestr(str);
+}
+
+Plane::Plane(const Vertex &p1, const Vertex &p2, const Vertex &p3) : p1(p1), p2(p2), p3(p3)
 {
 }
 
+Plane::~Plane(void)
+{
+}

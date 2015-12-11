@@ -20,9 +20,6 @@ private:
 
 public:
 
-	std::vector<Side> sides;
-	static bool testCollision(const Solid&, const Solid&);
-
 	enum texmode
 	{
 		UP = 0x0001,
@@ -34,9 +31,15 @@ public:
 		INSIDE = 0x0040
 	};
 
+	std::vector<Side> sides;
+
+	static bool testCollision(const Solid&, const Solid&);
+
 	static Solid createBox(const Vector&, std::string texture = "tools/toolsnodraw", int texturemode = 0, std::string othertexture = "tools/toolsnodraw");
 
 	static std::vector<Solid> carveBox(const Vector& size, const Solid& initial);
+
+	static std::vector<Solid> slice(const Solid &solid, const Plane &plane);
 
 	unsigned int parse(std::istream&);
 	void rotate(const Vertex&, const Matrix&);

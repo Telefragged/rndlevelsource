@@ -21,7 +21,7 @@ public:
 	//as a 1x4 matrix.
 	static Plane vectorPlane(const Vector&, const Vector&);
 
-	static Vector intersectLine(const Matrix&, const Matrix&);
+	static Vector intersectLine(const Plane&, const Plane&);
 
 	static double dist(const Vertex&, const Vector&);
 	static double dist(const Vertex&, const Vertex&);
@@ -32,6 +32,8 @@ public:
 	void parsestr(std::string);
 
 	Plane(void);
+	Plane(const std::string &);
+	Plane(const Vertex &, const Vertex &, const Vertex &);
 	~Plane(void);
 };
 

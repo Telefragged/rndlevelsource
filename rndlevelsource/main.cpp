@@ -1,8 +1,5 @@
-#include <random>
 #include <iostream>
 #include "Part.h"
-#include "Matrix.h"
-#include "Angle.h"
 #include "Vector.h"
 
 int main(int argc, char* argv[])
@@ -11,11 +8,11 @@ int main(int argc, char* argv[])
 
 	//std::mt19937 eng(rd());
 
-	Part part("test.vmf");
+	Solid s = Solid::createBox({{64, 64, 64}});
 
-	part.rotate({ 0, 90, 0 });
+	Solid::slice(s, { "(32, 0, 0) (0, 32, 0) (0, 0, 32)" });
 
-	std::cout << part;
+	std::cin.get();
 
 	return 0;
 }

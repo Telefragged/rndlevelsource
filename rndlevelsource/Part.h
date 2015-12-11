@@ -26,7 +26,7 @@ public:
 	// Parse contents of stream in .vmf format
 	// Parses until end of stream
 	unsigned int parse(std::istream&);
-	// Open and parse file in .vmf format.
+	// Open and parse file in .vmf (valve map format) format.
 	unsigned int parse(std::string);
 	// Counts number of entities in the part with the exact same classname
 	unsigned int countEntities(std::string) const;
