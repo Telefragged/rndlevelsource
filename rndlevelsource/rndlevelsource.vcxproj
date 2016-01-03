@@ -68,7 +68,20 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IncludePath>$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>F:\boost\boost_1_60_0;F:\mpfr\lib\x64\Release;F:\mpir;$(IncludePath)</IncludePath>
+    <LibraryPath>F:\boost\boost_1_60_0\lib\x64;F:\mpfr\lib\x64\Debug;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>F:\boost\boost_1_60_0;F:\mpfr\lib\x64\Release;F:\mpir;$(IncludePath)</IncludePath>
+    <LibraryPath>F:\boost\boost_1_60_0\lib\x64;F:\mpfr\lib\x64\Release;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -86,6 +99,7 @@
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
+      <AdditionalDependencies>mpfr.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
@@ -114,9 +128,10 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>mpfr.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateDebugInformation>No</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -136,6 +151,7 @@
     <ClInclude Include="Matrix.h" />
     <ClInclude Include="Part.h" />
     <ClInclude Include="Plane.h" />
+    <ClInclude Include="Polygon.h" />
     <ClInclude Include="Quaternion.h" />
     <ClInclude Include="Side.h" />
     <ClInclude Include="SimplexNoise.h" />
@@ -162,9 +178,13 @@
     <ClCompile Include="KeyVal.cpp" />
     <ClCompile Include="KeyValBase.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Matrix.cpp" />
+    <ClCompile Include="Matrix.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="Part.cpp" />
     <ClCompile Include="Plane.cpp" />
+    <ClCompile Include="Polygon.cpp" />
     <ClCompile Include="Quaternion.cpp" />
     <ClCompile Include="Side.cpp" />
     <ClCompile Include="SimplexNoise.cpp" />

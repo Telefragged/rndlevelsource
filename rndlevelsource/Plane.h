@@ -1,7 +1,7 @@
 #pragma once
 #include "Vertex.h"
+#include "Matrix.h"
 
-class Matrix;
 class Vector;
 
 class Plane
@@ -14,20 +14,22 @@ public:
 
 	//Equation for this plane in form x + y + z + d = 0,
 	//returned as a 1x4 matrix.
-	Matrix equation() const;
+	Matrix<double, 1, 4> equation() const;
+
+	char evaluate(const Vertex&) const;
 
 	//Returns a vector representing the line where two planes intersect.
 	//Parameters are equations in the form ax + by + cz + d = 0,
 	//as a 1x4 matrix.
 	static Plane vectorPlane(const Vector&, const Vector&);
+	static Plane flip(const Plane&);
 
 	static Vector intersectLine(const Plane&, const Plane&);
+	static Vertex intersectPoint(const Plane&, const Vector&);
 
-	static double dist(const Vertex&, const Vector&);
+	static double dist(const Plane&, const Vertex&);
+	static double dist(const Vector&, const Vertex&);
 	static double dist(const Vertex&, const Vertex&);
-
-	static bool crossesLine(const Plane&, const Vector&);
-	static bool testCollision(const Plane&, const Plane&);
 
 	void parsestr(std::string);
 

@@ -1,156 +1,48 @@
 #include "stdafx.h"
 #include "Matrix.h"
 #include <math.h>
-#include <assert.h>
 #include <limits>
 #include <sstream>
 #include "Vertex.h"
 
 #define M_PI 3.14159265358979323846
 
-double Matrix::get(unsigned int x, unsigned int y) const
-{
-	if (x >= xsize_ || y >= ysize_) return std::numeric_limits<double>::quiet_NaN();
-	return arr_[x + y * xsize_];
-}
-
-void Matrix::set(unsigned int x, unsigned int y, double newval)
-{
-	if (x >= xsize_ || y >= ysize_) return;
-	arr_[x + y * xsize_] = newval;
-}
-
-unsigned int Matrix::x() const
-{
-	return xsize_;
-}
-
-unsigned int Matrix::y() const
-{
-	return ysize_;
-}
-
-unsigned int Matrix::rows() const
-{
-	return xsize_;
-}
-
-unsigned int Matrix::cols() const
-{
-	return ysize_;
-}
-
-void Matrix::copyfrom(const Matrix& orig)
-{
-	if (&orig == this) return;
-	clear();
-	xsize_ = orig.x();
-	ysize_ = orig.y();
-	arr_ = new double[xsize_ * ysize_];
-	for (unsigned int n = 0; n < xsize_ * ysize_; n++)
-	{
-		arr_[n] = orig.arr_[n];
-	}
-}
-
-void Matrix::setRow(unsigned int row, const Vertex& v)
-{
-	if (row >= x() || y() != 3) return;
-	set(row, 0, v.x());
-	set(row, 1, v.y());
-	set(row, 2, v.z());
-}
-
-void Matrix::setCol(unsigned int col, const Vertex& v)
-{
-	if (col >= y() || x() != 3) return;
-	set(0, col, v.x());
-	set(1, col, v.y());
-	set(2, col, v.z());
-}
-
-void Matrix::swap(Matrix& lhs, Matrix& rhs)
-{
-	std::swap(lhs.arr_, rhs.arr_);
-	std::swap(lhs.xsize_, rhs.xsize_);
-	std::swap(lhs.ysize_, rhs.ysize_);
-}
-
-Matrix Matrix::rotmatx(double deg)
-{
-	double rad = deg * (M_PI / 180.0);
-	double sinth = sin(rad), costh = cos(rad);
-	double rotarr[3][3] = {
-		{1.0, 0.0, 0.0},
-		{0.0, costh, -sinth},
-		{0.0, sinth, costh}};
-	return toMat(rotarr);
-}
-
-Matrix Matrix::rotmaty(double deg)
-{
-	double rad = deg * (M_PI / 180.0);
-	double sinth = sin(rad), costh = cos(rad);
-	double rotarr[3][3] = {
-		{costh, 0.0, sinth},
-		{0.0, 1.0, 0.0},
-		{-sinth, 0.0, costh}};
-	return toMat(rotarr);
-}
-
-Matrix Matrix::rotmatz(double deg)
-{
-	double rad = deg * (M_PI / 180.0);
-	double sinth = sin(rad), costh = cos(rad);
-	double rotarr[3][3] = {
-		{costh, -sinth, 0.0},
-		{sinth, costh, 0.0},
-		{0.0, 0.0, 1.0}};
-	return toMat(rotarr);
-}
-
-Matrix Matrix::rotmatxPassive(double deg)
-{
-	double rad = deg * (M_PI / 180.0);
-	double sinth = sin(rad), costh = cos(rad);
-	double rotarr[3][3] = {
-		{1.0, 0.0, 0.0},
-		{0.0, costh, sinth},
-		{0.0, -sinth, costh}};
-	return toMat(rotarr);
-}
-
-Matrix Matrix::rotmatyPassive(double deg)
-{
-	double rad = deg * (M_PI / 180.0);
-	double sinth = sin(rad), costh = cos(rad);
-	double rotarr[3][3] = {
-		{costh, 0.0, -sinth},
-		{0.0, 1.0, 0.0},
-		{sinth, 0.0, costh}};
-	return toMat(rotarr);
-}
-
-Matrix Matrix::rotmatzPassive(double deg)
-{
-	double rad = deg * (M_PI / 180.0);
-	double sinth = sin(rad), costh = cos(rad);
-	double rotarr[3][3] = {
-		{costh, sinth, 0.0},
-		{-sinth, costh, 0.0},
-		{0.0, 0.0, 1.0}};
-	return toMat(rotarr);
-}
+//Matrix Matrix::rotmatxPassive(double deg)
+//{
+//	double rad = deg * (M_PI / 180.0);
+//	double sinth = sin(rad), costh = cos(rad);
+//	double rotarr[3][3] = {
+//		{1.0, 0.0, 0.0},
+//		{0.0, costh, sinth},
+//		{0.0, -sinth, costh}};
+//	return toMat(rotarr);
+//}
+//
+//Matrix Matrix::rotmatyPassive(double deg)
+//{
+//	double rad = deg * (M_PI / 180.0);
+//	double sinth = sin(rad), costh = cos(rad);
+//	double rotarr[3][3] = {
+//		{costh, 0.0, -sinth},
+//		{0.0, 1.0, 0.0},
+//		{sinth, 0.0, costh}};
+//	return toMat(rotarr);
+//}
+//
+//Matrix Matrix::rotmatzPassive(double deg)
+//{
+//	double rad = deg * (M_PI / 180.0);
+//	double sinth = sin(rad), costh = cos(rad);
+//	double rotarr[3][3] = {
+//		{costh, sinth, 0.0},
+//		{-sinth, costh, 0.0},
+//		{0.0, 0.0, 1.0}};
+//	return toMat(rotarr);
+//}
 
 Matrix& Matrix::operator=(const Matrix& rhs)
 {
 	this->copyfrom(rhs);
-	return *this;
-}
-
-Matrix& Matrix::operator=(Matrix&& rhs)
-{
-	swap(*this, rhs);
 	return *this;
 }
 
@@ -172,7 +64,6 @@ Matrix& Matrix::operator*=(double rhs)
 
 inline double dotmult(const Matrix& rowmat, const Matrix& colmat, unsigned int row, unsigned int col)
 {
-	if (rowmat.y() != colmat.x()) return std::numeric_limits<double>::quiet_NaN();
 	double res = 0.0;
 	for (unsigned int n = 0; n < rowmat.y(); n++)
 	{
@@ -212,33 +103,6 @@ std::string Matrix::toStr() const
 	}
 	os << "}";
 	return os.str();
-}
-
-void Matrix::clear()
-{
-	if (arr_ == nullptr)
-	{
-		xsize_ = 0;
-		ysize_ = 0;
-		return;
-	}
-	if (arr_ != nullptr) delete [] arr_;
-
-	arr_ = nullptr;
-	xsize_ = 0;
-	ysize_ = 0;
-}
-
-void Matrix::printpretty() const
-{
-	for (unsigned int n = 0; n < x(); n++)
-	{
-		for (unsigned int m = 0; m < y(); m++)
-		{
-			printf("%6.3f ", get(n, m));
-		}
-		printf("\n");
-	}
 }
 
 inline void rowSet(Matrix& mat, const Matrix& row, unsigned int to)

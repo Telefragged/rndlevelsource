@@ -50,7 +50,7 @@ void Side::popuvars()
 	}
 	if (keyvals.count("plane") > 0)
 	{
-		this->p.parsestr(keyvals["plane"]);
+		this->polygon = Polygon({keyvals["plane"]});
 		keyvals.erase("plane");
 	}
 	if (keyvals.count("uaxis") > 0)
@@ -65,12 +65,10 @@ void Side::popuvars()
 	}
 }
 
-void Side::rotate(const Vertex& point, const Matrix& rotmat)
+void Side::rotate(const Vertex& point, const Matrix3d& rotmat)
 {
 	//mictimer rotatetimer("ms Side::rotate()", 1000.0);
-	p.p1 = p.p1.rotate(point, rotmat);
-	p.p2 = p.p2.rotate(point, rotmat);
-	p.p3 = p.p3.rotate(point, rotmat);
+	polygon.rotate(point, rotmat);
 	uaxis.v = uaxis.v.rotate(rotmat);
 	vaxis.v = vaxis.v.rotate(rotmat);
 
@@ -80,26 +78,36 @@ void Side::rotate(const Vertex& point, const Matrix& rotmat)
 void Side::move(const Vector& v)
 {
 	Vertex mov = v.vec();
-	p.p1 += mov;
-	p.p2 += mov;
-	p.p3 += mov;
+	polygon.move(mov);
 	uaxis.translate(mov);
 	vaxis.translate(mov);
+}
+
+Plane Side::plane() const
+{
+	if (polygon.points.size() <= 2)
+		throw std::exception("Not enough data to construct plane from polygon");
+	return Plane(polygon.points[0], polygon.points[1], polygon.points[2]);
 }
 
 BoundingBox Side::bbox() const
 {
 	Vertex min, max;
-	min = Vertex::allmin(p.p1, p.p2);
-	min = Vertex::allmin(min, p.p3);
-	max = Vertex::allmax(p.p1, p.p2);
-	max = Vertex::allmax(max, p.p3);
+
+	min = max = polygon.points[0];
+
+	for (size_t i = 1; i < polygon.points.size(); i++)
+	{
+		min = Vertex::allmin(min, polygon.points[i]);
+		max = Vertex::allmax(max, polygon.points[i]);
+	}
+
 	return BoundingBox(min, max);
 }
 
 bool Side::testCollision(const Side& lhs, const Side& rhs)
 {
-	return Plane::testCollision(lhs.p, rhs.p);
+	return false;
 }
 
 Side::Side(void) : id_(0), depth_(0)

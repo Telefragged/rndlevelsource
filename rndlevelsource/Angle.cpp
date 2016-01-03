@@ -68,7 +68,7 @@ Vertex Angle::toVertex() const
 	return ret;
 }
 
-Matrix Angle::angleMatrix() const
+Matrix3d Angle::angleMatrix() const
 {
 	double sinpitch = sin(DEG2RAD((*this)[PITCH])),
 		cospitch = cos(DEG2RAD((*this)[PITCH])),
@@ -77,7 +77,7 @@ Matrix Angle::angleMatrix() const
 		sinroll = sin(DEG2RAD((*this)[ROLL])),
 		cosroll = cos(DEG2RAD((*this)[ROLL]));
 
-	Matrix matrix(3, 3);
+	Matrix3d matrix;
 
 	matrix[0][0] = cospitch * cosyaw;
 	matrix[1][0] = cospitch * sinyaw;
@@ -99,7 +99,7 @@ Matrix Angle::angleMatrix() const
 	return matrix;
 }
 
-Matrix Angle::calcRotation(const Angle& target) const
+Matrix3d Angle::calcRotation(const Angle& target) const
 {
 	Quaternion curQuat(*this);
 	Quaternion targetQuat(target);
@@ -110,13 +110,12 @@ Matrix Angle::calcRotation(const Angle& target) const
 	return rot.quaternionMatrix();
 }
 
-void Angle::fromMatrix(const Matrix& matrix)
+void Angle::fromMatrix(const Matrix3d& matrix)
 {
 	assert(matrix.x() == 3 && matrix.y() == 3);
 	double forward[3];
 	double left[3];
 	double up[3];
-
 
 	forward[0] = matrix[0][0];
 	forward[1] = matrix[1][0];

@@ -101,7 +101,7 @@ bool Timer<rettm>::print_on_destruct = false;
 template <class rettm>
 double Timer<rettm>::prevTime = 0.0;
 
-typedef Timer<std::chrono::milliseconds> mstimer;
-typedef Timer<std::chrono::microseconds> mictimer;
-typedef Timer<std::chrono::nanoseconds> nstimer;
+typedef Timer<std::chrono::milliseconds> militimer;
+typedef Timer<std::chrono::microseconds> microtimer;
+typedef Timer<std::chrono::nanoseconds> nanotimer;
 

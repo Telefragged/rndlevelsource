@@ -49,7 +49,7 @@ unsigned int Part::parse(std::string filepath)
 {
 	std::ifstream file(filepath);
 	if (!file.good())
-		throw std::exception(("Failed to open file: " + filepath).c_str());
+		throw std::exception("Failed to open file");
 
 	unsigned int ret = parse(file);
 	file.close();
@@ -111,23 +111,30 @@ void Part::moveTo(const Vertex& pt)
 		wOrig = Vertex(0, 0, 0);
 	else
 		wOrig = it->origin();
-	Vector mov(wOrig, pt);
+	Vector mov = Vector::diff(wOrig, pt);
 	move(mov);
 }
 
 void Part::rotate(const Angle& angle, const Vertex& pt)
 {
 	auto it = find_if(entities.begin(), entities.end(), &Entity::entworldcmp);
+
 	Vertex orig;
-	if (Vertex::isVertex(pt)) orig = pt;
-	else if (it == entities.end()) orig = Vertex(0, 0, 0);
-	else orig = it->origin();
+	if (Vertex::isVertex(pt))
+		orig = pt;
+	else if (it == entities.end())
+		orig = Vertex(0, 0, 0);
+	else
+		orig = it->origin();
+
 	Angle rotangle(-angle.pitch(), angle.yaw(), angle.roll()); //Invert pitch for compliance with hammer.
-	Matrix rotmat = rotangle.angleMatrix();
+	auto rotmat = rotangle.angleMatrix();
+
 	for (Entity& e : entities)
 	{
 		e.rotate(rotmat, orig);
 	}
+
 	for (Connection& c : connections)
 	{
 		c.rotate(rotmat, orig);
@@ -175,7 +182,7 @@ Part& Part::operator+=(const Part& rhs)
 	{
 		entities.push_back(*origit);
 	}
-	unsigned int cap = std::numeric_limits<unsigned int>::max(), count = 0;
+	size_t cap = std::numeric_limits<unsigned int>::max(), count = 0;
 	if (this == &rhs) cap = entities.size(); //Safety against self-addition.
 	for (const Entity& entity : rhs.entities)
 	{
@@ -198,41 +205,6 @@ Entity& Part::operator[](std::string classname)
 	}
 	return *it;
 }
-
-Part Part::createRoom(std::mt19937& eng, const Vector& pos, double thickness)
-{
-	Vertex min = Vertex::allmin(pos.beg(), pos.end());
-	Vertex max = Vertex::allmax(pos.beg(), pos.end());
-
-	Vector floor(min, Vertex(max.x(), max.y(), thickness));
-
-	Vector roof(Vertex(min.x(), min.y(), max.z() - thickness), max);
-
-	Vector southwall(Vertex(min.x(), min.y(), min.z() + thickness),
-	                 Vertex(max.x(), min.y() + thickness, max.z() - thickness));
-
-	Vector northwall(Vertex(min.x(), max.y() - thickness, min.z() + thickness),
-	                 Vertex(max.x(), max.y(), max.z() - thickness));
-
-	Vector westwall(Vertex(min.x(), min.y() + thickness, min.z() + thickness),
-	                Vertex(min.x() + thickness, max.y() - thickness, max.z() - thickness));
-
-	Vector eastwall(Vertex(max.x() - thickness, min.y() + thickness, min.z() + thickness),
-	                Vertex(max.x(), max.y() - thickness, max.z() - thickness));
-
-	Part ret;
-	ret.entities.push_back(Entity::defaultWorldEntity());
-	auto world = &ret.entities.back();
-	world->solids.push_back(Solid::createBox(floor, "tools/toolsnodraw", Solid::texmode::UP, "dev/dev_measuregeneric01b"));
-	world->solids.push_back(Solid::createBox(roof, "tools/toolsnodraw", Solid::texmode::DOWN, "dev/dev_measuregeneric01b"));
-	world->solids.push_back(Solid::createBox(southwall, "tools/toolsnodraw", Solid::texmode::NORTH, "dev/dev_measuregeneric01b"));
-	world->solids.push_back(Solid::createBox(northwall, "tools/toolsnodraw", Solid::texmode::SOUTH, "dev/dev_measuregeneric01b"));
-	world->solids.push_back(Solid::createBox(westwall, "tools/toolsnodraw", Solid::texmode::EAST, "dev/dev_measuregeneric01b"));
-	world->solids.push_back(Solid::createBox(eastwall, "tools/toolsnodraw", Solid::texmode::WEST, "dev/dev_measuregeneric01b"));
-
-	return ret;
-}
-
 
 Part::Part(void)
 {

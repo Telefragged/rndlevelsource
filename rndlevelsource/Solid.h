@@ -1,12 +1,12 @@
 #pragma
-#include <ios>
 #include <vector>
 #include "Editor.h"
 #include "KeyValBase.h"
 #include "Side.h"
+#include "Polygon.h"
+#include "Matrix.h"
 
 class BoundingBox;
-class Matrix;
 class Vector;
 class Vertex;
 
@@ -35,16 +35,13 @@ public:
 
 	static bool testCollision(const Solid&, const Solid&);
 
-	static Solid createBox(const Vector&, std::string texture = "tools/toolsnodraw", int texturemode = 0, std::string othertexture = "tools/toolsnodraw");
-
-	static std::vector<Solid> carveBox(const Vector& size, const Solid& initial);
-
-	static std::vector<Solid> slice(const Solid &solid, const Plane &plane);
+	bool slice(const Plane& plane, Solid& front, Solid& back) const;
 
 	unsigned int parse(std::istream&);
-	void rotate(const Vertex&, const Matrix&);
+	void rotate(const Vertex&, const Matrix3d&);
 	void move(const Vector&);
 	void reID(unsigned int*, unsigned int*);
+	void addSide(const Side& side);
 
 	unsigned int depth() const;
 
@@ -55,6 +52,7 @@ public:
 	friend std::ostream& operator<<(std::ostream&, const Solid&);
 
 	Solid(void);
+	Solid(const std::vector<Plane>& planes);
 	~Solid(void);
 };
 
@@ -73,4 +71,3 @@ inline std::ostream& operator<<(std::ostream& os, const Solid& s)
 	os << std::setw(s.depth()) << "" << "}";
 	return os;
 }
-

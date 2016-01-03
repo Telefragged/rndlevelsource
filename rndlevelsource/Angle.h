@@ -26,17 +26,17 @@ public:
 	Vertex toVertex() const;
 
 	//Returns a rotation matrix defined by the pitch, yaw and roll of the angle.
-	Matrix angleMatrix() const;
+	Matrix<double, 3, 3> angleMatrix() const;
 
 	//Calculate rotation matrix from this angle to target angle.
-	Matrix calcRotation(const Angle&) const;
+	Matrix<double, 3, 3> calcRotation(const Angle&) const;
 
 	//Sets the pitch, yaw and roll of the angle to the values represented by the rotation matrix.
-	void fromMatrix(const Matrix&);
+	void fromMatrix(const Matrix<double, 3, 3>&);
 
 	Angle& operator+=(const Angle&);
 	Angle& operator-=(const Angle&);
-	Angle operator-(void) const;
+	Angle operator-() const;
 
 	Angle(void);
 	Angle(const std::string&);

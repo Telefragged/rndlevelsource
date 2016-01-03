@@ -7,7 +7,7 @@ template <class _Ty>
 class WeightedVector
 {
 	std::vector<std::pair<unsigned int, _Ty>> vec;
-	unsigned int totWeight;
+	size_t totalWeight;
 
 public:
 
@@ -87,19 +87,19 @@ public:
 
 	void push_back(const _Ty& elem, unsigned int weight = 1)
 	{
-		totWeight += weight;
+		totalWeight += weight;
 		vec.push_back(std::pair<unsigned int, _Ty>(weight, elem));
 	}
 
 	void push_back(_Ty&& elem, unsigned int weight = 1)
 	{
-		totWeight += weight;
+		totalWeight += weight;
 		vec.push_back(std::pair<unsigned int, _Ty>(weight, elem));
 	}
 
-	_Ty* getWeighted(unsigned int weight)
+	_Ty* getWeighted(size_t weight)
 	{
-		if (weight >= totWeight) return nullptr;
+		if (weight >= totalWeight) return nullptr;
 		unsigned int cWeight = 0;
 		for (auto& pair : vec)
 		{
@@ -125,7 +125,7 @@ public:
 			if (&pair.second == ptr)
 			{
 				int aDiff = (-diff > int(pair.first)) ? -int(pair.first) : diff;
-				totWeight += aDiff;
+				totalWeight += aDiff;
 				pair.first += aDiff;
 				return aDiff;
 			}
@@ -139,7 +139,7 @@ public:
 		{
 			if (&pair.second == ptr)
 			{
-				totWeight -= (pair.first - newWeight);
+				totalWeight -= (pair.first - newWeight);
 				pair.first = newWeight;
 				return;
 			}
@@ -152,35 +152,35 @@ public:
 		{
 			if (-diff > pair.first)
 			{
-				totWeight -= pair.first;
+				totalWeight -= pair.first;
 				pair.first = 0;
 				continue;
 			}
 			pair.first += diff;
-			totWeight += diff;
+			totalWeight += diff;
 		}
 	}
 
 	template <typename _Eng>
 	void addToRandomWeights(unsigned int distWeight, _Eng& engine)
 	{
-		std::uniform_int_distribution<unsigned int> dist(0, vec.size() - 1);
+		std::uniform_int_distribution<size_t> dist(0, vec.size() - 1);
 		for (unsigned int n = 0; n < distWeight; n++)
 		{
 			auto& pair = vec[dist(engine)];
-			pair.first++;
+			++pair.first;
 		}
-		totWeight += distWeight;
+		totalWeight += distWeight;
 	}
 
-	unsigned int size() const
+	size_t size() const
 	{
 		return vec.size();
 	}
 
-	unsigned int weight() const
+	size_t weight() const
 	{
-		return totWeight;
+		return totalWeight;
 	}
 
 	unsigned int reachable() const
@@ -199,11 +199,11 @@ public:
 		{
 			vec.emplace_back(initWeight, item);
 		}
-		totWeight = initWeight * other.size();
+		totalWeight = initWeight * other.size();
 	}
 
 	WeightedVector() :
-		totWeight(0)
+		totalWeight(0)
 	{
 	}
 

@@ -1,138 +1,255 @@
 #pragma once
 
+#include <array>
 #include <ios>
 #include <string>
+#include <initializer_list>
 
-class Vertex;
+#define M_PI 3.14159265358979323846
 
+template <class _Ty, size_t _X, size_t _Y>
 class Matrix
 {
 private:
-	unsigned int xsize_, ysize_;
-	double* arr_;
+	std::array<_Ty, _X * _Y> arr_;
 
 public:
+
+	static const size_t size = _X * _Y;
+
 	class matrow
 	{
-		unsigned int row;
-		Matrix& parent;
+		size_t row;
+		Matrix<_Ty,_X, _Y>& parent;
+
 	public:
-		matrow(unsigned int r, Matrix& p) : row(r), parent(p)
+		matrow(size_t r, Matrix<_Ty, _X, _Y>& p) : row(r), parent(p)
 		{
 		}
 
-		double& operator[](unsigned int col) const
+		_Ty& operator[](size_t col) const
 		{
-			return parent.arr_[row + col * parent.xsize_];
+			return parent.arr_[row + col * parent.x()];
 		}
 	};
 
 	class const_matrow
 	{
-		unsigned int row;
-		const Matrix& parent;
+		size_t row;
+		const Matrix<_Ty, _X, _Y>& parent;
+
 	public:
-		const_matrow(unsigned int r, const Matrix& p) : row(r), parent(p)
+		const_matrow(size_t r, const Matrix<_Ty, _X, _Y>& p) : row(r), parent(p)
 		{
 		}
 
-		double operator[](unsigned int col) const
+		_Ty operator[](size_t col) const
 		{
-			return parent.arr_[row + col * parent.xsize_];
+			return parent.arr_[row + col * parent.x()];
 		}
 	};
 
-	matrow operator[](unsigned int row)
+	matrow operator[](size_t row)
 	{
 		return matrow(row, *this);
 	}
 
-	const_matrow operator[](unsigned int row) const
+	const_matrow operator[](size_t row) const
 	{
 		return const_matrow(row, *this);
 	}
 
-	unsigned int x() const;
-	unsigned int y() const;
-	unsigned int rows() const;
-	unsigned int cols() const;
+	constexpr size_t x() const { return _X; }
+	constexpr size_t y() const { return _Y; }
+	constexpr size_t rows() const { return _X; }
+	constexpr size_t cols() const { return _Y; }
 
-	double get(unsigned int, unsigned int) const;
-	void set(unsigned int, unsigned int, double);
-	void setRow(unsigned int, const Vertex&);
-	void setCol(unsigned int, const Vertex&);
+	_Ty get(size_t x, size_t y) const
+	{
+		if (x >= this->x() || y >= this->y())
+			throw std::exception("Out of range");
 
-	void clear();
-	void copyfrom(const Matrix&);
-	void printpretty() const;
+		return arr_[x + y * this->x()];
+	}
 
-	static void swap(Matrix&, Matrix&);
+	void set(size_t x, size_t y, _Ty value)
+	{
+		if (x >= this->x() || y >= this->y())
+			throw std::exception("Out of range");
+
+		arr_[x + y * this->x()] = value;
+	}
+
+	void setRow(size_t row, const Matrix<_Ty, _X, 1>& v)
+	{
+		for (size_t col = 0; col < cols(); col++)
+		set(row, col, v.x());
+	}
+
+	void setCol(size_t col, const Matrix<_Ty, _X, 1>& v)
+	{
+		for (size_t row = 0; row < rows(); row++)
+			set(row, col, v.x());
+	}
+
+	static void swap(Matrix<_Ty, _X, _Y>& lhs, Matrix<_Ty, _X, _Y>& rhs)
+	{
+		std::swap(lhs.arr_, rhs.arr_);
+	}
 
 	//Returns a matrix that will transform a collumn vector by deg degrees around the x-axis.
-	static Matrix rotmatx(double deg);
-	//Returns a matrix that will transform a collumn vector by deg degrees around the y-axis.
-	static Matrix rotmaty(double deg);
-	//Returns a matrix that will transform a collumn vector by deg degrees around the z-axis.
-	static Matrix rotmatz(double deg);
+	static Matrix<_Ty, 3, 3> rotmatx(_Ty deg)
+	{
+		static_assert(_X == 3 && _Y == 3, "Please use with 3x3 matrix");
 
-	//Returns a matrix that will transform a row vector by deg degrees around the x-axis.
-	static Matrix rotmatxPassive(double deg);
-	//Returns a matrix that will transform a row vector by deg degrees around the y-axis.
-	static Matrix rotmatyPassive(double deg);
-	//Returns a matrix that will transform a row vector by deg degrees around the z-axis.
-	static Matrix rotmatzPassive(double deg);
+		_Ty rad = deg * (M_PI / 180.0);
+		_Ty sinth = sin(rad), costh = cos(rad);
+		Matrix<_Ty, 3, 3> mat = 
+		{
+			 1,	0, 0,
+			 0,	costh, -sinth,
+			 0,	sinth, costh
+		};
+
+		return mat;
+	}
+
+	//Returns a matrix that will transform a collumn vector by deg degrees around the y-axis.
+	static Matrix<_Ty, 3, 3> rotmaty(_Ty deg)
+	{
+		static_assert(_X == 3 && _Y == 3, "Please use with 3x3 matrix");
+
+		_Ty rad = deg * (M_PI / 180.0);
+		_Ty sinth = sin(rad), costh = cos(rad);
+		Matrix<_Ty, 3, 3> mat =
+		{
+			costh, 0, sinth,
+			0, 1, 0,
+			-sinth,	0, costh
+		};
+		return mat;
+	}
+
+	//Returns a matrix that will transform a collumn vector by deg degrees around the z-axis.
+	static Matrix<_Ty, 3, 3> rotmatz(_Ty deg)
+	{
+		static_assert(_X == 3 && _Y == 3, "Please use with 3x3 matrix");
+
+		_Ty rad = deg * (M_PI / 180.0);
+		_Ty sinth = sin(rad), costh = cos(rad);
+		Matrix<_Ty, 3, 3> mat =
+		{
+			costh, -sinth, 0,
+			sinth, costh, 0,
+			0, 0, 1
+		};
+		return mat;
+	}
+
+	////Returns a matrix that will transform a row vector by deg degrees around the x-axis.
+	//static Matrix<_Ty, _X, _Y> rotmatxPassive(double deg);
+	////Returns a matrix that will transform a row vector by deg degrees around the y-axis.
+	//static Matrix<_Ty, _X, _Y> rotmatyPassive(double deg);
+	////Returns a matrix that will transform a row vector by deg degrees around the z-axis.
+	//static Matrix<_Ty, _X, _Y> rotmatzPassive(double deg);
 
 	//Returns a string representing the matrix compliant with wolframalpha's syntax.
-	std::string toStr() const;
+	std::string toStr() const
+	{
+		std::ostringstream os;
+		os << "{";
+		for (unsigned int n = 0; n < x(); n++)
+		{
+			os << "{";
+			for (unsigned int m = 0; m < y(); m++)
+			{
+				if (m != 0) os << ", ";
+				os << get(n, m);
+			}
+			os << "}";
+			if (n != x() - 1) os << ",";
+		}
+		os << "}";
+		return os.str();
+	}
 
-	Matrix& operator=(const Matrix&);
-	Matrix& operator=(Matrix&&);
+	Matrix<_Ty, _X, _Y>& operator=(const Matrix& rhs)
+	{
+		std::copy(rhs.arr_.cbegin(), rhs.arr_.cend(), arr_.begin());
+		return *this;
+	}
 
-	Matrix& operator*=(const Matrix&);
-	Matrix& operator*=(double);
+	Matrix<_Ty, _X, _Y>& operator*=(double mult)
+	{
+		for (auto &v : arr_)
+			v *= mult;
 
-	double det() const;
+		return *this;
+	}
 
 	//Returns the product of the matrix(lhs) multiplied by the argument matrix(rhs).
-	Matrix mult(const Matrix&);
+	template <size_t _X2, size_t _Y2>
+	Matrix<_Ty, _X, _Y2> mult(const Matrix<_Ty, _X2, _Y2>& rhs) const
+	{
+		static_assert(_Y == _X2, "Invalid matrix multiplication");
 
-	static Matrix gaussElim(Matrix mat);
+		Matrix<_Ty, _X, _Y2> ret;
+		for (size_t n = 0; n < x(); n++)
+		{
+			for (size_t m = 0; m < rhs.y(); m++)
+			{
+				_Ty res = 0.0;
+				for (size_t i = 0; i < y(); i++)
+					res += (get(n, i) * rhs.get(i, m));
 
-	Matrix(unsigned int, unsigned int, double sval = 0.0);
-	Matrix(const Matrix&);
-	Matrix(Matrix&&);
-	~Matrix(void);
+				ret.set(n, m, res);
+			}
+		}
+		return ret;
+	}
+
+	Matrix(_Ty sval = 0)
+	{
+		for (auto &v : arr_)
+			v = sval;
+	}
+
+	Matrix(const Matrix<_Ty, _X, _Y>& mat)
+	{
+		for (size_t n = 0; n < size; n++)
+			arr_[n] = mat.arr_[n];
+	}
+
+	Matrix(std::initializer_list<_Ty> list)
+	{
+		size_t cnt = 0;
+		for (auto &val : list)
+		{
+			if (cnt == size)
+				break;
+			arr_[cnt++] = val;
+		}
+	}
 };
 
-inline std::ostream& operator<<(std::ostream& stream, const Matrix& Matrix)
+typedef Matrix<double, 3, 3> Matrix3d;
+
+template <class _Ty, size_t _X, size_t _Y>
+std::ostream& operator<<(std::ostream& stream, const Matrix<_Ty, _X, _Y>& matrix)
 {
-	stream << Matrix.toStr();
+	stream << matrix.toStr();
 	return stream;
 }
 
-inline Matrix operator*(Matrix lhs, const Matrix& rhs)
+template <class _Ty, size_t _X1, size_t _Y1, size_t _X2, size_t _Y2>
+Matrix<_Ty, _X1, _Y2> operator*(const Matrix<_Ty, _X1, _Y1>& lhs, const Matrix<_Ty, _X2, _Y2>& rhs)
+{
+	return lhs.mult(rhs);
+}
+
+template <class _Ty, size_t _X, size_t _Y>
+Matrix<_Ty, _X, _Y> operator*(Matrix<_Ty, _X, _Y> lhs, _Ty rhs)
 {
 	lhs *= rhs;
 	return lhs;
 }
-
-inline Matrix operator*(Matrix lhs, double rhs)
-{
-	lhs *= rhs;
-	return lhs;
-}
-
-template <unsigned int X, unsigned int Y>
-inline Matrix toMat(double (&arr)[X][Y])
-{
-	Matrix ret(X, Y);
-	for (unsigned int n = 0; n < X; n++)
-	{
-		for (unsigned int m = 0; m < Y; m++)
-		{
-			ret[n][m] = arr[n][m];
-		}
-	}
-	return ret;
-}
-

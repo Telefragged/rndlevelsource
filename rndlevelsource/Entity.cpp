@@ -111,8 +111,8 @@ Vertex Entity::origin() const
 	auto val = (*this)["origin"];
 	if (val != "") return Vertex(val);
 	BoundingBox b = bbox();
-	Vector vec(b.min, b.max);
-	Vertex mod = vec.vec() * 0.5;
+	Vector vec = Vector::diff(b.min, b.max);
+	Vertex mod = 0.5 * vec.vec();
 	return vec.beg() + mod;
 }
 
@@ -135,7 +135,7 @@ void Entity::mergeSolids(const Entity& entity)
 	solids.insert(solids.end(), entity.solids.begin(), entity.solids.end());
 }
 
-void Entity::rotate(const Matrix& rotmat, const Vertex& pt)
+void Entity::rotate(const Matrix3d& rotmat, const Vertex& pt)
 {
 	for (Solid& s : solids)
 	{

@@ -1,6 +1,4 @@
 #include "stdafx.h"
-#include <assert.h>
-#include <iostream>
 #include <algorithm>
 #include "Matrix.h"
 #include "Vector.h"
@@ -24,6 +22,10 @@ Vertex::Vertex(const std::string& str)
 {
 	parsestr(str);
 }
+
+const Vertex Vertex::unitX = { 1, 0, 0 };
+const Vertex Vertex::unitY = { 0, 1, 0 };
+const Vertex Vertex::unitZ = { 0, 0, 1 };
 
 void Vertex::x(double x)
 {
@@ -55,34 +57,34 @@ double Vertex::z() const
 	return vertex_[2];
 }
 
-Vertex Vertex::rotate(const Matrix& rotmat) const
+Vertex Vertex::rotate(const Matrix3d& rotmat) const
 {
-	Matrix th = this->toMat();
-	Matrix res = rotmat * th;
+	auto th = this->toMat();
+	auto res = rotmat * th;
 	return Vertex(res.get(0, 0), res.get(1, 0), res.get(2, 0));
 }
 
-Vertex Vertex::rotate(const Vertex& point, const Matrix& rotmat) const
+Vertex Vertex::rotate(const Vertex& point, const Matrix3d& rotmat) const
 {
-	Vector vec(point, *this);
+	Vector vec = Vector::diff(point, *this);
 	vec.rotate(rotmat);
 	return Vertex(vec.end());
 }
 
-void Vertex::rotateInPlace(const Vertex& point, const Matrix& rotmat)
+void Vertex::rotateInPlace(const Vertex& point, const Matrix3d& rotmat)
 {
-	Vector vec(point, *this);
-	Matrix vecmat = vec.vec().toMat();
-	Matrix res = rotmat * vecmat;
+	Vector vec = Vector::diff(point, *this);
+	auto vecmat = vec.vec().toMat();
+	auto res = rotmat * vecmat;
 	x(res.get(0, 0));
 	y(res.get(1, 0));
 	z(res.get(2, 0));
 }
 
-void Vertex::rotateInPlace(const Matrix& rotmat)
+void Vertex::rotateInPlace(const Matrix3d& rotmat)
 {
-	Matrix vecmat = toMat();
-	Matrix res = rotmat * vecmat;
+	auto vecmat = toMat();
+	auto res = rotmat * vecmat;
 	x(res.get(0, 0));
 	y(res.get(1, 0));
 	z(res.get(2, 0));
@@ -103,28 +105,35 @@ double Vertex::length(const Vertex& v)
 
 double Vertex::dotProduct(const Vertex& lhs, const Vertex& rhs)
 {
-	return (lhs.x() * rhs.x()) + (lhs.y() * rhs.y()) + (lhs.z() * rhs.z());
+	return lhs.x() * rhs.x() + lhs.y() * rhs.y() + lhs.z() * rhs.z();
 }
 
 double Vertex::dotProduct2D(const Vertex& lhs, const Vertex& rhs)
 {
-	return (lhs.x() * rhs.x()) + (lhs.y() * rhs.y());
+	return lhs.x() * rhs.x() + lhs.y() * rhs.y();
+}
+
+Vertex Vertex::absolute(const Vertex& v)
+{
+	return { fabs(v.x()), fabs(v.y()), fabs(v.z()) };
 }
 
 Vertex Vertex::normalize(const Vertex& v)
 {
+	
 	double len = v.length();
 	if (doubleeq(len, 0.0)) return v;
-	return Vertex(
+	return {
 		v.x() / len,
 		v.y() / len,
-		v.z() / len);
+		v.z() / len
+	};
 }
 
 Vertex Vertex::normalize() const
 {
 	double len = length();
-	if (doubleeq(len, 0.0)) return Vertex((*this));
+	if (doubleeq(len, 0.0)) return Vertex(*this);
 	return Vertex(
 		vertex_[0] / len,
 		vertex_[1] / len,
@@ -150,7 +159,7 @@ void Vertex::parsestr(const std::string& pstr)
 		vertex_[2] = std::numeric_limits<double>::quiet_NaN();
 		return;
 	}
-	unsigned int pos = 0;
+	size_t pos = 0;
 	std::string xstr = nextword(pos, str);
 	std::string ystr = nextword(pos, str);
 	std::string zstr = nextword(pos, str);
@@ -191,6 +200,25 @@ Vertex& Vertex::operator*=(double mod)
 	return *this;
 }
 
+bool Vertex::operator==(const Vertex& other) const
+{
+	return doubleeq(x(), other.x()) && doubleeq(y(), other.y()) && doubleeq(z(), other.z());
+}
+
+bool Vertex::operator<(const Vertex& other) const
+{
+	if (!doubleeq(x(), other.x()) && x() < other.x())
+		return true;
+
+	if (!doubleeq(y(), other.y()) && y() < other.y())
+		return true;
+
+	if (!doubleeq(z(), other.z()) && z() < other.z())
+		return true;
+
+	return false;
+}
+
 bool Vertex::parallel(const Vertex& lhs, const Vertex& rhs)
 {
 	//crossproduct of parallel vectors is (0, 0, 0)
@@ -215,12 +243,21 @@ double Vertex::dotProduct(const Vertex& rhs) const
 		z() * rhs.z();
 }
 
+Vertex Vertex::closestAxis() const
+{
+	Vertex abs = absolute(*this);
+
+	if (abs.x() >= abs.y() && abs.x() >= abs.z()) return unitX;
+	if (abs.y() >= abs.z()) return unitY;
+	return unitZ;
+}
+
 Vertex Vertex::crossProduct(const Vertex& rhs) const
 {
 	return Vertex(
-		(vertex_[1] * rhs.vertex_[2]) - (vertex_[2] * rhs.vertex_[1]),
-		(vertex_[2] * rhs.vertex_[0]) - (vertex_[0] * rhs.vertex_[2]),
-		(vertex_[0] * rhs.vertex_[1]) - (vertex_[1] * rhs.vertex_[0]));
+		vertex_[1] * rhs.vertex_[2] - vertex_[2] * rhs.vertex_[1],
+		vertex_[2] * rhs.vertex_[0] - vertex_[0] * rhs.vertex_[2],
+		vertex_[0] * rhs.vertex_[1] - vertex_[1] * rhs.vertex_[0]);
 }
 
 double Vertex::operator[](unsigned int pos) const
@@ -233,9 +270,9 @@ double& Vertex::operator[](unsigned int pos)
 	return vertex_[pos];
 }
 
-Matrix Vertex::toMat() const
+Matrix<double, 3, 1> Vertex::toMat() const
 {
-	Matrix ret(3, 1);
+	Matrix<double, 3, 1> ret;
 	ret.set(0, 0, x());
 	ret.set(1, 0, y());
 	ret.set(2, 0, z());

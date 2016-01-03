@@ -39,7 +39,7 @@ public:
 
 	static Entity defaultWorldEntity();
 
-	void rotate(const Matrix&, const Vertex&);
+	void rotate(const Matrix3d&, const Vertex&);
 	void move(const Vector&);
 	void mergeSolids(const Entity&);
 	void reID(unsigned int*, unsigned int*, unsigned int*);
@@ -78,7 +78,6 @@ inline std::ostream& operator<<(std::ostream& os, const Entity& e)
 		os << solid << "\n";
 	}
 	e.edt.depth(e.depth() + TABDEPTH);
-	os << e.edt << "\n";
 	os << std::setw(e.depth()) << "" << "}";
 	return os;
 }

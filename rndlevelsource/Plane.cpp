@@ -1,5 +1,4 @@
 #include <vector>
-#include <algorithm>
 #include "Matrix.h"
 #include "Plane.h"
 #include "utils.h"
@@ -7,7 +6,7 @@
 
 void Plane::parsestr(std::string pstr)
 {
-	unsigned int spos, epos = 0;
+	size_t spos, epos = 0;
 	spos = pstr.find_first_of('(', epos);
 	epos = pstr.find_first_of(')', epos) + 1;
 	p1.parsestr(pstr.substr(spos, epos));
@@ -25,19 +24,27 @@ Vertex Plane::normal() const
 {
 	Vertex v1 = p2 - p1;
 	Vertex v2 = p3 - p1;
-	return Vertex::normalize(Vertex::crossProduct(v1, v2));
+	return Vertex::normalize(Vertex::crossProduct(v2, v1));
 }
 
-Matrix Plane::equation() const
+Matrix<double, 1, 4> Plane::equation() const
 {
-	Matrix ret(1, 4);
+	Matrix<double, 1, 4> ret;
 	Vertex norm = normal();
 	double dist = Vertex::dotProduct(norm, p1);
 	ret[0][0] = norm[0];
 	ret[0][1] = norm[1];
 	ret[0][2] = norm[2];
-	ret[0][3] = dist;
+	ret[0][3] = -dist;
 	return ret;
+}
+
+char Plane::evaluate(const Vertex& point) const
+{
+	double dist = Plane::dist(*this, point);
+	if (doubleeq(dist, 0)) return 0;
+	if (dist > 0) return 1;
+	return -1;
 }
 
 Plane Plane::vectorPlane(const Vector& line1, const Vector& line2)
@@ -56,6 +63,11 @@ Plane Plane::vectorPlane(const Vector& line1, const Vector& line2)
 	ret.p2 = p2;
 	ret.p3 = p3;
 	return ret;
+}
+
+Plane Plane::flip(const Plane& plane)
+{
+	return Plane(plane.p3, plane.p2, plane.p1);
 }
 
 Vector Plane::intersectLine(const Plane& lhs, const Plane& rhs)
@@ -101,7 +113,33 @@ Vector Plane::intersectLine(const Plane& lhs, const Plane& rhs)
 	return ret;
 }
 
-double Plane::dist(const Vertex& pt, const Vector& line)
+Vertex Plane::intersectPoint(const Plane& p, const Vector& line)
+{
+	
+	Vertex normal = p.normal();
+
+	double num = -normal.dotProduct(line.beg() - p.p1);
+	double denom = normal.dotProduct(line.vec());
+
+	if (doubleeq(denom, 0))
+		return Vertex();
+
+	double res = num / denom;
+
+	return line.beg() + res * line.vec();
+}
+
+double Plane::dist(const Plane& plane, const Vertex& point)
+{
+	auto eq = plane.equation();
+	Vertex normal(eq[0][0], eq[0][1], eq[0][2]);
+
+	//return (point.dotProduct(normal) - eq[0][3]) / normal.length();
+
+	return normal.dotProduct(point) + eq[0][3];
+}
+
+double Plane::dist(const Vector& line, const Vertex& pt)
 {
 	Vertex ptv(line.beg() - pt);
 	Vertex crpd = Vertex::crossProduct(ptv, line.vec());
@@ -111,85 +149,6 @@ double Plane::dist(const Vertex& pt, const Vector& line)
 double Plane::dist(const Vertex& pt, const Vertex& to)
 {
 	return (pt - to).length();
-}
-
-bool Plane::crossesLine(const Plane& p, const Vector& line)
-{
-	// We make the assumption that the line lies on the plane.
-	Vector line2(Vertex::normalize(p.normal()));
-	line2.beg(line.beg());
-	// Construct plane given the argument line and the argument plane normal.
-	// If the line lies on the plane, the constructed plane
-	// is perpendicular to the argument plane.
-	Plane pnorm = vectorPlane(line, line2);
-	Vertex row1 = pnorm.p3 - pnorm.p1,
-		row2 = pnorm.p2 - pnorm.p1;
-	// Construct matrix with vectors AB and AC on the new plane
-	// and the point we want test. The sign of the determinant
-	// determines which side of the plane the point lies on.
-	Matrix detmat(3, 3);
-	detmat.setRow(0, row1);
-	detmat.setRow(1, row2);
-
-	// Using this fact, we can determine if the three points
-	// That define the plane are on the same side of the line or not.
-
-	// this function determines which side the point lies on.
-	auto determineSide = [](double det) -> int
-		{
-			if (doubleeq(det, 0.0)) return 0; // Middle
-			else if (det > 0.0) return 1; // right
-			else return -1; // left
-		};
-
-	std::vector<int> points(3); // Hold the three point states
-
-	// Huge thanks to Eirik Hjorthaug Kiil who helped me squash an annoying bug with the collision detection!
-
-	detmat.setRow(2, p.p1 - pnorm.p1);
-	points.push_back(determineSide(detmat.det()));
-
-	detmat.setRow(2, p.p2 - pnorm.p1);
-	points.push_back(determineSide(detmat.det()));
-
-	detmat.setRow(2, p.p3 - pnorm.p1);
-	points.push_back(determineSide(detmat.det()));
-
-	auto it = remove(points.begin(), points.end(), 0); // remove the zeroes as we don't care if a point lies on a plane
-
-	int prev = 0;
-
-	for (auto cur = points.begin(); cur != it; ++cur)
-	{
-		if (prev != 0 && *cur != prev)
-			return true;
-		prev = *cur;
-	}
-
-	// It might not be the most efficient way of doing it, but it works.
-	return false;
-}
-
-bool Plane::testCollision(const Plane& lhs, const Plane& rhs)
-{
-	// Line where the infinite planes meet
-	Vector vec = intersectLine(lhs, rhs);
-	// If planes are parallel beg() is set to NaN by intersectLine()
-	Vertex line = vec.vec();
-	// printf("%s\n", line.toStr().c_str());
-	if (!Vertex::isVertex(line)) return false;
-	if (!Vertex::isVertex(vec.beg())) return false;
-	// Determine which planes cross the intersection
-	bool lhscrosses = crossesLine(lhs, vec);
-	bool rhscrosses = crossesLine(rhs, vec);
-	// If both planes cross the line then the planes collide
-	if (lhscrosses && rhscrosses)
-	{
-		printf("Collision: (%s, %s) \nline: %s\n\n", lhs.toStr().c_str(), rhs.toStr().c_str(), vec.toStr().c_str());
-		printf("Plane equations: (%s, %s)\n\n", lhs.equation().toStr().c_str(), rhs.equation().toStr().c_str());
-		return true;
-	}
-	return false;
 }
 
 std::string Plane::toStr() const

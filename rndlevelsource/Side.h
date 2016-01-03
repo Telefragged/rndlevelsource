@@ -6,6 +6,7 @@
 #include "DispInfo.h"
 #include "KeyValBase.h"
 #include "Plane.h"
+#include "Polygon.h"
 
 #ifndef TABDEPTH
 #define TABDEPTH 1U
@@ -22,7 +23,8 @@ private:
 public:
 	DispInfo disp;
 	Axis uaxis, vaxis;
-	Plane p;
+	Polygon polygon;
+	//Plane p;
 
 	unsigned int parse(std::istream&);
 
@@ -41,10 +43,12 @@ public:
 		depth_ = newDepth;
 	}
 
+	Plane plane() const;
+
 	BoundingBox bbox() const;
 
 	void popuvars();
-	void rotate(const Vertex&, const Matrix&);
+	void rotate(const Vertex&, const Matrix3d&);
 	void move(const Vector&);
 	void reID(unsigned int*);
 
@@ -61,7 +65,7 @@ inline std::ostream& operator<<(std::ostream& os, const Side& s)
 	os << std::setw(s.depth()) << "" << "side\n";
 	os << std::setw(s.depth()) << "" << "{\n";
 	os << std::setw(s.depth()) << "" << "\t\"id\" \"" << s.id_ << "\"\n";
-	os << std::setw(s.depth()) << "" << "\t\"Plane\" \"" << s.p.toStr() << "\"\n";
+	os << std::setw(s.depth()) << "" << "\t\"Plane\" \"" << s.plane().toStr() << "\"\n";
 	os << std::setw(s.depth()) << "" << "\t\"uaxis\" \"" << s.uaxis.toStr() << "\"\n";
 	os << std::setw(s.depth()) << "" << "\t\"vaxis\" \"" << s.vaxis.toStr() << "\"\n";
 	for (const auto& pair : s.keyvals)

@@ -1,3 +1,5 @@
+#include <algorithm>
+#include <map>
 #include "stdafx.h"
 #include "BoundingBox.h"
 #include "Solid.h"
@@ -19,204 +21,45 @@ bool Solid::testCollision(const Solid& lhs, const Solid& rhs)
 	return false;
 }
 
-Solid Solid::createBox(const Vector& size, std::string texture, int texturemode, std::string othertexture)
+bool Solid::slice(const Plane& plane, Solid& front, Solid& back) const
 {
-	Vertex spos = Vertex::allmin(size.beg(), size.end());
-	Vertex epos = Vertex::allmax(size.beg(), size.end());
-	Vertex tpos[4]; //Topmost coordinates. (max z)
-	Vertex bpos[4]; //Bottommost coordinates. (min z)
-	//clockwise from the top left position on the XY plane.
-	// 0 X-------X 1
-	//   |       |
-	//   |       |
-	// 3 X-------X 2
-	tpos[0] = Vertex(spos.x(), epos.y(), epos.z()); //top left
-	tpos[1] = Vertex(epos.x(), epos.y(), epos.z()); //top right
-	tpos[2] = Vertex(epos.x(), spos.y(), epos.z()); //bottom right
-	tpos[3] = Vertex(spos.x(), spos.y(), epos.z()); //bottom left
-	//Same as over for the bottom coords.
-	bpos[0] = Vertex(spos.x(), epos.y(), spos.z());
-	bpos[1] = Vertex(epos.x(), epos.y(), spos.z());
-	bpos[2] = Vertex(epos.x(), spos.y(), spos.z());
-	bpos[3] = Vertex(spos.x(), spos.y(), spos.z());
+	front = Solid();
+	back = Solid();
 
-	Solid box;
-	for (unsigned int n = 0; n < 6; n++)
+	if (sides.size() == 0)
+		return false;
+
+	std::vector<Polygon::classification> classes;
+	classes.resize(sides.size());
+	std::transform(sides.cbegin(), sides.cend(), classes.begin(),
+		[&plane](const Side &side) {return side.polygon.classify(plane); });
+
+	if (std::count_if(classes.cbegin(), classes.cend(),
+		[](auto &c) {return c != Polygon::classification::spanning; }) == classes.size())
 	{
-		Side side;
-		side["material"] = texture;
-		side["rotation"] = "0";
-		side["lightmapscale"] = "16";
-		side["smoothing_groups"] = "0";
-		Plane plane;
-		Axis uaxis, vaxis;
-		//We fix translation later.
-		uaxis.trans = 0.0;
-		vaxis.trans = 0.0;
-
-		//scale default is 0.25
-		uaxis.scale = 0.25;
-		vaxis.scale = 0.25;
-		switch (n)
-		{
-		case 0:
-			// top face / UP (XY plane)
-			if (texturemode & UP) side["material"] = othertexture;
-			plane.p1 = tpos[0];
-			plane.p2 = tpos[1];
-			plane.p3 = tpos[2];
-			uaxis.v = Vertex(1, 0, 0);
-			vaxis.v = Vertex(0, -1, 0);
-			break;
-		case 1:
-			// bottom face / DOWN (XY plane)
-			if (texturemode & DOWN) side["material"] = othertexture;
-			plane.p1 = bpos[3];
-			plane.p2 = bpos[2];
-			plane.p3 = bpos[1];
-			uaxis.v = Vertex(1, 0, 0);
-			vaxis.v = Vertex(0, -1, 0);
-			break;
-		case 2:
-			// front face / SOUTH (XZ plane)
-			if (texturemode & SOUTH) side["material"] = othertexture;
-			plane.p1 = tpos[3];
-			plane.p2 = tpos[2];
-			plane.p3 = bpos[2];
-			uaxis.v = Vertex(1, 0, 0);
-			vaxis.v = Vertex(0, 0, -1);
-			break;
-		case 3:
-			// back face / NORTH (XZ plane)
-			if (texturemode & NORTH) side["material"] = othertexture;
-			plane.p1 = tpos[1];
-			plane.p2 = tpos[0];
-			plane.p3 = bpos[0];
-			uaxis.v = Vertex(1, 0, 0);
-			vaxis.v = Vertex(0, 0, -1);
-			break;
-		case 4:
-			// left face / WEST (YZ plane)
-			if (texturemode & WEST) side["material"] = othertexture;
-			plane.p1 = tpos[0];
-			plane.p2 = tpos[3];
-			plane.p3 = bpos[3];
-			uaxis.v = Vertex(0, 1, 0);
-			vaxis.v = Vertex(0, 0, -1);
-			break;
-		case 5:
-			// right face / EAST (YZ plane)
-			if (texturemode & EAST) side["material"] = othertexture;
-			plane.p1 = tpos[2];
-			plane.p2 = tpos[1];
-			plane.p3 = bpos[1];
-			uaxis.v = Vertex(0, 1, 0);
-			vaxis.v = Vertex(0, 0, -1);
-			break;
-		}
-		//translation for pos (0, 0, 0) is 0.0, so we translate it to the start of the vector.
-		//uaxis.translate(size.beg());
-		//vaxis.translate(size.beg());
-		side.p = plane;
-		side.uaxis = uaxis;
-		side.vaxis = vaxis;
-		box.sides.push_back(side);
-	}
-	Editor edt;
-	edt.keyvals.put(new KeyVal("color", "192 0 192"));
-	edt.keyvals.put(new KeyVal("visgroupshown", "1"));
-	edt.keyvals.put(new KeyVal("visgroupautoshown", "1"));
-	box.edt = edt;
-	return box;
-}
-
-std::vector<Solid> Solid::carveBox(const Vector& size, const Solid& initial)
-{
-	auto sVolume = initial.bbox();
-	BoundingBox cVolume(size);
-
-	if (!BoundingBox::testCollision(sVolume, cVolume))
-	{
-		return std::vector<Solid>{initial};
+		if (std::count(classes.cbegin(), classes.cend(), Polygon::classification::back) > 0)
+			back = *this;
+		else if (std::count(classes.cbegin(), classes.cend(), Polygon::classification::front) > 0)
+			front = *this;
+		return false;
 	}
 
-	std::vector<Solid> ret;
+	Side copy = sides[0];
+	copy.polygon = { plane };
+	back.addSide(copy);
+	copy.polygon = { Plane::flip(plane) };
+	front.addSide(copy);
 
-	Vertex minBound = sVolume.min, maxBound = sVolume.max;
-
-	if (cVolume.min.z() > sVolume.min.z() && !doubleeq(cVolume.min.z(), sVolume.min.z()))
+	for(auto &side : sides)
 	{
-		Vertex min(sVolume.min);
-		Vertex max(sVolume.max.x(), sVolume.max.y(), cVolume.min.z());
-		Vector box(min, max);
-		minBound.z(max.z());
-		ret.push_back(createBox(box));
+		copy = side;
+		copy.polygon = { side.plane() };
+		Polygon::classification classification = side.polygon.classify(plane);
+		if (classification != Polygon::classification::back) front.addSide(copy);
+		if (classification != Polygon::classification::front) back.addSide(copy);
 	}
 
-	if (cVolume.max.z() < sVolume.max.z() && !doubleeq(cVolume.max.z(), sVolume.max.z()))
-	{
-		Vertex min(sVolume.min.x(), sVolume.min.y(), cVolume.max.z());
-		Vertex max(sVolume.max);
-		Vector box(min, max);
-		maxBound.z(min.z());
-		ret.push_back(createBox(box));
-	}
-
-	if (cVolume.min.x() > sVolume.min.x() && !doubleeq(cVolume.min.x(), sVolume.min.x()))
-	{
-		Vertex min = Vertex::allmax(minBound, sVolume.min);
-		Vertex max = Vertex::allmin(maxBound, sVolume.max);
-		max.x(cVolume.min.x());
-		Vector box(min, max);
-		minBound.x(max.x());
-		ret.push_back(createBox(box));
-	}
-
-	if (cVolume.max.x() < sVolume.max.x() && !doubleeq(cVolume.max.x(), sVolume.max.x()))
-	{
-		Vertex min = Vertex::allmax(minBound, sVolume.min);
-		Vertex max = Vertex::allmin(maxBound, sVolume.max);
-		min.x(cVolume.max.x());
-		Vector box(min, max);
-		maxBound.x(min.x());
-		ret.push_back(createBox(box));
-	}
-
-	if (cVolume.min.y() > sVolume.min.y() && !doubleeq(cVolume.min.y(), sVolume.min.y()))
-	{
-		Vertex min = Vertex::allmax(minBound, sVolume.min);
-		Vertex max = Vertex::allmin(maxBound, sVolume.max);
-		max.y(cVolume.min.y());
-		Vector box(min, max);
-		minBound.y(max.y());
-		ret.push_back(createBox(box));
-	}
-
-	if (cVolume.max.y() < sVolume.max.y() && !doubleeq(cVolume.max.y(), sVolume.max.y()))
-	{
-		Vertex min = Vertex::allmax(minBound, sVolume.min);
-		Vertex max = Vertex::allmin(maxBound, sVolume.max);
-		min.y(cVolume.max.y());
-		Vector box(min, max);
-		maxBound.y(min.y());
-		ret.push_back(createBox(box));
-	}
-
-	return ret;
-}
-
-std::vector<Solid> Solid::slice(const Solid& solid, const Plane& plane)
-{
-	std::vector<Solid> ret;
-
-	for(auto &side : solid.sides)
-	{
-		auto intersect = Plane::intersectLine(side.p, plane);
-
-		std::cout << intersect.toStr() << "\n";
-	}
-
-	return ret;
+	return true;
 }
 
 unsigned int Solid::parse(std::istream& stream)
@@ -234,8 +77,9 @@ unsigned int Solid::parse(std::istream& stream)
 		numparsed++;
 		if (trim(curline) == "side")
 		{
-			auto it = sides.emplace(sides.end());
-			numparsed += it->parse(stream);
+			Side side;
+			numparsed += side.parse(stream);
+			addSide(side);
 		}
 		else if (trim(curline) == "editor")
 		{
@@ -251,10 +95,11 @@ unsigned int Solid::parse(std::istream& stream)
 			if (k.key == "id") id_ = k.toInt();
 		}
 	}
+
 	return numparsed;
 }
 
-void Solid::rotate(const Vertex& point, const Matrix& rotmat)
+void Solid::rotate(const Vertex& point, const Matrix3d& rotmat)
 {
 	//mictimer rottimer("ms Solid::rotate()", 1000.0);
 	for (Side& s : sides)
@@ -278,6 +123,19 @@ void Solid::reID(unsigned int* solidID, unsigned int* sideID)
 	{
 		side.reID(sideID);
 	}
+}
+
+void Solid::addSide(const Side &side)
+{
+	Side tmp = side;
+
+	for (auto &other : sides)
+	{
+		other.polygon.slice(tmp.plane());
+		tmp.polygon.slice(other.plane());
+	}
+
+	sides.push_back(tmp);
 }
 
 unsigned Solid::depth() const
@@ -309,6 +167,20 @@ Solid::Solid(void) :
 	id_(0),
 	depth_(0)
 {
+}
+
+Solid::Solid(const std::vector<Plane>& planes) : Solid()
+{
+	for (size_t n = 0; n < planes.size(); n++)
+	{
+		Side side;
+		side.polygon = { planes[n] };
+		for (size_t m = 0; m < planes.size(); m++)
+			if (n != m)
+				side.polygon.slice(planes[m]);
+
+		sides.push_back(side);
+	}
 }
 
 Solid::~Solid(void)

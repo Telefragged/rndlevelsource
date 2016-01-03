@@ -1,8 +1,7 @@
 #pragma once
 
 #include <string>
-
-class Matrix;
+#include "Matrix.h"
 
 // For all intents and purposes a vector from the
 // coordinate systems origin.
@@ -12,6 +11,9 @@ class Vertex
 protected:
 	double vertex_[3];
 public:
+
+	static const Vertex unitX, unitY, unitZ;
+
 	virtual std::string toStr() const;
 
 	static bool isVertex(const Vertex&);
@@ -21,11 +23,11 @@ public:
 
 	void parsestr(const std::string&);
 
-	Vertex rotate(const Matrix&) const;
-	Vertex rotate(const Vertex&, const Matrix&) const;
+	Vertex rotate(const Matrix3d&) const;
+	Vertex rotate(const Vertex&, const Matrix3d&) const;
 
-	void rotateInPlace(const Matrix&);
-	void rotateInPlace(const Vertex&, const Matrix&);
+	void rotateInPlace(const Matrix3d&);
+	void rotateInPlace(const Vertex&, const Matrix3d&);
 
 	virtual void x(double x);
 	virtual void y(double y);
@@ -35,11 +37,12 @@ public:
 	virtual double y() const;
 	virtual double z() const;
 
-	Matrix toMat() const;
+	Matrix<double, 3, 1> toMat() const;
 
 	double length() const;
 	double dotProduct(const Vertex&) const;
 
+	Vertex closestAxis() const;
 	Vertex normalize() const;
 	Vertex crossProduct(const Vertex&) const;
 
@@ -50,6 +53,7 @@ public:
 	static double dotProduct(const Vertex&, const Vertex&);
 	static double dotProduct2D(const Vertex&, const Vertex&);
 
+	static Vertex absolute(const Vertex&);
 	static Vertex normalize(const Vertex&);
 	static Vertex crossProduct(const Vertex&, const Vertex&);
 
@@ -57,6 +61,9 @@ public:
 	Vertex& operator+=(const Vertex&);
 	Vertex& operator-=(const Vertex&);
 	Vertex& operator*=(double);
+
+	bool operator==(const Vertex&) const;
+	bool operator<(const Vertex&) const;
 
 	double operator[](unsigned int) const;
 	double& operator[](unsigned int);
@@ -79,9 +86,13 @@ inline Vertex operator-(Vertex lhs, const Vertex& rhs)
 	return lhs;
 }
 
-inline Vertex operator*(Vertex lhs, double rhs)
+inline Vertex operator*(double lhs, Vertex rhs)
 {
-	lhs *= rhs;
-	return lhs;
+	rhs *= lhs;
+	return rhs;
 }
 
+inline Vertex operator-(const Vertex& v)
+{
+	return -1 * v;
+}

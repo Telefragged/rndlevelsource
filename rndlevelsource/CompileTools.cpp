@@ -93,7 +93,7 @@ void CompileTools::copyfile(std::string existing, std::string newfile, bool conf
 		char res = 0;
 		while(res != 'y' && res != 'n' && res != 'Y' && res != 'N') {
 			printf("Overwrite %s? (y/n): ", newfile.c_str());
-			scanf_s("%c", &res, sizeof(char));
+			scanf_s("%c", &res, (int)sizeof(char));
 		}
 		switch(res) {
 		case('y'):

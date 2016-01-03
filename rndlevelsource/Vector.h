@@ -20,20 +20,24 @@ public:
 	void vec(const Vertex&);
 	//Rotate the internal vector.
 	//The origin is not changed.
-	void rotate(const Matrix&);
+	void rotate(const Matrix<double, 3, 3>&);
 
 	Vector& operator+=(const Vector&);
 	Vector& operator-=(const Vector&);
 
 	Vector& operator*=(double);
 
+	static Vector diff(const Vertex&, const Vertex&);
 	static Vector allMinMax(const Vertex&, const Vertex&);
+	static Vertex intersectPoint(const Vector&, const Vector&);
 
 	std::string toStr() const;
 
 	Vector();
 	Vector(const Vertex&);
 	Vector(double, double, double);
+
+	//Construct vector with point and vector part
 	Vector(const Vertex&, const Vertex&);
 	~Vector();
 };

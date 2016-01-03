@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-inline std::string nextword(unsigned int& pos, const std::string& str, std::string delim = " \t\n\r")
+inline std::string nextword(size_t& pos, const std::string& str, std::string delim = " \t\n\r")
 {
 	if (pos >= str.length()) return "";
 	size_t spos = pos;
@@ -29,7 +29,7 @@ inline std::string reverse_string(const std::string& input)
 
 inline bool doubleeq(double lhs, double rhs, double epsilon = 1e-6)
 {
-	return (fabs(lhs - rhs)) < epsilon;
+	return fabs(lhs - rhs) < epsilon;
 }
 
 template <typename T>
@@ -117,7 +117,7 @@ inline std::string numToPretty(T num, bool onlyPretty = false, bool appTxt = tru
 
 inline std::vector<std::string> splitstr(const std::string &orig, std::string delim = " \n\r\t")
 {
-	unsigned int pos = 0;
+	size_t pos = 0;
 	std::vector<std::string> ret;
 	while (pos < orig.length())
 	{

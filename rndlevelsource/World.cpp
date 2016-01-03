@@ -10,13 +10,13 @@
 bool World::testCollisions(Part* partptr)
 {
 	if (partptr == nullptr) return true;
-	unsigned int npartn = parts.size(), partn = 0;
+	size_t npartn = parts.size(), partn = 0;
 	for (const Part& p : parts)
 	{
 		if (Part::testCollision(p, *partptr))
 		{
-			printf("Collision room %d and %d\n", partn, npartn);
-			printf("[(%s) (%s)] %d collision [(%s) (%s)] %d\n\n",
+			printf("Collision room %zu and %zu\n", partn, npartn);
+			printf("[(%s) (%s)] %zu collision [(%s) (%s)] %zu\n\n",
 			       p.bbox().min.toStr().c_str(), p.bbox().max.toStr().c_str(), partn,
 			       partptr->bbox().min.toStr().c_str(), partptr->bbox().max.toStr().c_str(), npartn);
 			return true;
@@ -67,7 +67,7 @@ void World::movePart(Part* part, Connection* newc, const Connection* prevc)
 	rotAngle.fromMatrix(newAngle.calcRotation(targetAngle));
 
 	part->rotate(rotAngle);
-	Vector mov(newc->origin(), prevc->origin());
+	Vector mov = Vector::diff(newc->origin(), prevc->origin());
 	part->move(mov);
 }
 
@@ -84,7 +84,7 @@ Part World::collapse()
 Connection* World::randConnection(Part& part)
 {
 	if (part.connections.weight() == 0) return nullptr;
-	std::uniform_int_distribution<unsigned int> dist(0, part.connections.weight() - 1);
+	std::uniform_int_distribution<size_t> dist(0, part.connections.weight() - 1);
 	auto ptr = part.connections.getWeighted(dist(eng_));
 	part.connections.setWeight(ptr, 0);
 	return ptr;
@@ -129,7 +129,7 @@ void World::buildWorld()
 
 	WeightedVector<Part> weightedInter(interParts, 5);
 
-	std::uniform_int_distribution<unsigned int>
+	std::uniform_int_distribution<size_t>
 		startDist(0, startParts.size() - 1),
 		endDist(0, endParts.size() - 1);
 
@@ -137,7 +137,7 @@ void World::buildWorld()
 
 	for (unsigned int n = 0; n < 20; n++)
 	{
-		std::uniform_int_distribution<unsigned int> interDist(0, weightedInter.weight() - 1);
+		std::uniform_int_distribution<size_t> interDist(0, weightedInter.weight() - 1);
 		auto* part = weightedInter.getWeighted(interDist(eng_));
 		int weight = weightedInter.changeWeight(part, -int(5 * weightedInter.size()));
 		weightedInter.addToRandomWeights(abs(weight), eng_);

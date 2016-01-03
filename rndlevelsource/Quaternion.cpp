@@ -48,11 +48,11 @@ void Quaternion::normalize()
 	w_ = w_ / mag;
 }
 
-Matrix Quaternion::quaternionMatrix()
+Matrix3d Quaternion::quaternionMatrix() const
 {
 	//Quaternion has to be a unit quaternion
 	//for this to produce a correct result.
-	Matrix matrix(3, 3);
+	Matrix3d matrix;
 
 	matrix[0][0] = 1.0 - 2.0 * y() * y() - 2.0 * z() * z();
 	matrix[1][0] = 2.0 * x() * y() + 2.0 * w() * z();
@@ -99,10 +99,8 @@ double Quaternion::operator[](unsigned int pos) const
 	case 2:
 	case 3:
 		return xyz_[pos];
-		break;
 	case 4:
 		return w_;
-		break;
 	default:
 		;
 	}
@@ -117,7 +115,6 @@ double& Quaternion::operator[](unsigned int pos)
 	case 2:
 	case 3:
 		return xyz_[pos];
-		break;
 	default:
 		return w_;
 	}

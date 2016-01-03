@@ -110,7 +110,7 @@ void DispInfo::setHeight(int x, int y, double height)
 		disp.normal = Vertex(0, 0, 1);
 }
 
-void DispInfo::rotate(const Vertex& point, const Matrix& rotmat)
+void DispInfo::rotate(const Vertex& point, const Matrix3d& rotmat)
 {
 	//mictimer rotatetimer("ms Side::rotate()", 1000.0);
 

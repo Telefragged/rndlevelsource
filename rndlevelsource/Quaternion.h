@@ -1,7 +1,7 @@
 #pragma once
 #include "Vertex.h"
+#include "Matrix.h"
 
-class Matrix;
 class Angle;
 
 class Quaternion
@@ -20,7 +20,7 @@ public:
 	void normalize();
 	void alignWith(const Quaternion&);
 
-	Matrix quaternionMatrix();
+	Matrix3d quaternionMatrix() const;
 
 	Quaternion conjugate();
 

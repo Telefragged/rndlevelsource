@@ -41,7 +41,7 @@ public:
 
 	void setHeight(int x, int y, double height);
 
-	void rotate(const Vertex&, const Matrix&);
+	void rotate(const Vertex&, const Matrix3d&);
 
 	friend std::ostream& operator<<(std::ostream&, const DispInfo&);
 

@@ -56,13 +56,13 @@ KeyVal::KeyVal(void)
 KeyVal::KeyVal(const std::string& str)
 {
 	std::string trimmed = trim(str);
-	unsigned int fsplit = trimmed.find_first_of("\"", 1);
+	size_t fsplit = trimmed.find_first_of("\"", 1);
 	if (fsplit > trimmed.length()) fsplit = trimmed.length();
 	std::string left = trimmed.substr(0, fsplit);
 	left = trim(left, "\"");
 	this->key = left;
 	if (fsplit == trimmed.length()) return;
-	unsigned int esplit = trimmed.find_first_of("\"", fsplit + 1);
+	size_t esplit = trimmed.find_first_of("\"", fsplit + 1);
 	if (esplit == 0 || esplit >= trimmed.length()) esplit = fsplit;
 	std::string right = trimmed.substr(esplit + 1);
 	right = trim(right, "\"");
