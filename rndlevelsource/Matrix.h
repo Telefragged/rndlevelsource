@@ -1,7 +1,7 @@
 #pragma once
 
 #include <array>
-#include <ios>
+#include <sstream>
 #include <string>
 #include <initializer_list>
 

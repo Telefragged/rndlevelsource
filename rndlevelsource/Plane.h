@@ -18,9 +18,8 @@ public:
 
 	char evaluate(const Vertex&) const;
 
-	//Returns a vector representing the line where two planes intersect.
-	//Parameters are equations in the form ax + by + cz + d = 0,
-	//as a 1x4 matrix.
+	Vertex closestAxisToNormal() const;
+
 	static Plane vectorPlane(const Vector&, const Vector&);
 	static Plane flip(const Plane&);
 

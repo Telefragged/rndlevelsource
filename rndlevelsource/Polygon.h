@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include "Vertex.h"
 #include "Vector.h"
 #include "Plane.h"
 
@@ -17,6 +18,8 @@ public:
 	std::vector<Vertex> points;
 
 	classification classify(const Plane&) const;
+
+	Vertex origin() const;
 
 	void rotate(const Vertex& point, const Matrix3d& rotmat);
 	void move(const Vertex& v);

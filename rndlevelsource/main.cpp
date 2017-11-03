@@ -1,6 +1,5 @@
 #include <iostream>
 #include <thread>
-#include <boost/multiprecision/mpfr.hpp>
 #include "Part.h"
 #include "Angle.h"
 
@@ -10,45 +9,54 @@ int main(int argc, char* argv[])
 
 	//std::mt19937 eng(rd());
 
-	//Part part("test.vmf");
-	//part.rotate({ 0, 45, 0 });
+	Part part("f:\\test\\test.vmf");
+
+	//part.rotate({ 0, 45, 30 });
 
 	//std::cout << part << "\n";
 
-	Matrix <double, 3, 3> mat;
+	//auto mat = Matrix3d::rotmatz(90);
 
-	mat = Matrix3d::rotmatz(90);
+	//Vertex vec3{ 1, 0, 0 };
 
-	Vertex vec3{ 1, 0, 0 };
+	//std::cout << vec3.toMat() << "\n";
 
-	vec3 = vec3.rotate(mat);
+	//std::cout << mat << "\n";
 
-	std::cout << vec3.toStr() << "\n";
+	//for (size_t x = 0; x < mat.x(); x++)
+	//{
+	//	for (int y = 0; y < mat.y(); y++)
+	//	{
+	//		printf("%3.2f ", mat[x][y]);
+	//	}
+	//	printf("\n");
+	//}
 
-	for (size_t x = 0; x < mat.x(); x++)
-	{
-		for (int y = 0; y < mat.y(); y++)
-		{
-			printf("%3.2f ", mat[x][y]);
-		}
-		printf("\n");
-	}
+	Solid s = part.entities[0].solids[0], front, back;
 
-	//Solid s = part.entities[0].solids[0], front, back;
+	Plane p{ "(0 0 32) (64 0 32) (64 32 64)" };
 
-	//s.slice({ "(0 0 32) (64 0 32) (64 32 64)" }, front, back);
+	std::cout << p.equation().toStr() << "\n";
 
-	//back.move({ 0, 32, 32 });
+	s.slice({ "(0 0 32) (64 0 32) (64 32 64)" }, front, back);
 
-	//part.entities[0].solids.clear();
-	//part.entities[0].solids.push_back(front);
-	//part.entities[0].solids.push_back(back);
+	back.move({ 0, 32, 32 });
 
-	//part.reID();
+	part.entities[0].solids.clear();
+	part.entities[0].solids.push_back(front);
+	part.entities[0].solids.push_back(back);
 
-	//std::cout << part << "\n";
+	part.reID();
 
-	//Polygon p({ "(0 0 64) (0 64 64) (64 64 64)" });
+	std::cout << part << "\n";
+
+	//Polygon p({ "(0 0 0) (0 64 0) (64 64 0)" });
+
+	//Plane plane{ "(0 0 0) (0 64 0) (64 64 0)" };
+
+	//auto classification = p.classify(plane);
+
+	//std::cout << classification << "\n";
 
 	//Plane plane(p.points[0], p.points[1], p.points[2]);
 

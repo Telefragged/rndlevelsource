@@ -1,0 +1,7 @@
+﻿  main.cpp
+  Generating code
+  564 of 2234 functions (25.2%) were compiled, the rest were copied from previous compilation.
+    9 functions were new in current compilation
+    97 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  rndlevelsource.vcxproj -> C:\Users\Vetle\Source\Repos\rndlevelsource\x64\Release\rndlevelsource.exe

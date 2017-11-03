@@ -61,6 +61,7 @@ public:
 	Vertex& operator+=(const Vertex&);
 	Vertex& operator-=(const Vertex&);
 	Vertex& operator*=(double);
+	Vertex& operator/=(double);
 
 	bool operator==(const Vertex&) const;
 	bool operator<(const Vertex&) const;
@@ -90,6 +91,24 @@ inline Vertex operator*(double lhs, Vertex rhs)
 {
 	rhs *= lhs;
 	return rhs;
+}
+
+inline Vertex operator*(Vertex lhs, double rhs)
+{
+	lhs *= rhs;
+	return lhs;
+}
+
+inline Vertex operator/(double lhs, Vertex rhs)
+{
+	rhs /= lhs;
+	return rhs;
+}
+
+inline Vertex operator/(Vertex lhs, double rhs)
+{
+	lhs /= rhs;
+	return lhs;
 }
 
 inline Vertex operator-(const Vertex& v)

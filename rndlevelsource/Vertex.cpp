@@ -200,6 +200,14 @@ Vertex& Vertex::operator*=(double mod)
 	return *this;
 }
 
+Vertex & Vertex::operator/=(double mod)
+{
+	vertex_[0] /= mod;
+	vertex_[1] /= mod;
+	vertex_[2] /= mod;
+	return *this;
+}
+
 bool Vertex::operator==(const Vertex& other) const
 {
 	return doubleeq(x(), other.x()) && doubleeq(y(), other.y()) && doubleeq(z(), other.z());
