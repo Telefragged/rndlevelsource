@@ -34,7 +34,7 @@ Vertex Polygon::origin() const
 void Polygon::rotate(const Vertex & point, const Matrix3d & rotmat)
 {
 	for (auto &p : points)
-		p.rotateInPlace(point, rotmat);
+		p = p.rotate(point, rotmat);
 }
 
 void Polygon::move(const Vertex & v)
@@ -46,9 +46,8 @@ void Polygon::move(const Vertex & v)
 void Polygon::slice(const Plane &plane)
 {
 	Polygon front, back;
-	slice(plane, back, front);
-
-	points = back.points;
+	if (slice(plane, back, front))
+		points = back.points;
 }
 
 bool Polygon::slice(const Plane &plane, Polygon &back, Polygon &front) const
@@ -98,6 +97,22 @@ bool Polygon::slice(const Plane &plane, Polygon &back, Polygon &front) const
 	return true;
 }
 
+void Polygon::flip()
+{
+	std::reverse(points.begin(), points.end());
+}
+
+void Polygon::roundPoints(size_t precision)
+{
+	double exp = std::pow(10, precision);
+	std::transform(points.begin(), points.end(), points.begin(), [exp](Vertex v) {
+		v.x(std::round(v.x() * exp) / exp);
+		v.y(std::round(v.y() * exp) / exp);
+		v.z(std::round(v.z() * exp) / exp);
+		return v;
+	});
+}
+
 Polygon::Polygon()
 {
 }
@@ -122,7 +137,7 @@ Polygon::Polygon(const Plane & p)
 	auto orig = origin();
 
 	std::transform(points.begin(), points.end(), points.begin(), [&orig](Vertex v) {
-		return (v - orig) * 10'000'000.0 + orig;
+		return (v - orig).normalize() * 10'000'000.0 + orig;
 	});
 
 }

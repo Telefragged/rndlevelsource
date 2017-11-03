@@ -31,3 +31,6 @@
 /nbproject/
 /debug/
 /release/
+/x64/
+/rndlevelsource/x64/
+/.vs/

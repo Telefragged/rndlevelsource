@@ -2,6 +2,7 @@
 #include <thread>
 #include "Part.h"
 #include "Angle.h"
+#include "World.h"
 
 int main(int argc, char* argv[])
 {
@@ -9,12 +10,19 @@ int main(int argc, char* argv[])
 
 	//std::mt19937 eng(rd());
 
-	Part part("f:\\test\\test.vmf");
+	Part part1("f:\\test\\rndmap\\room5.vmf");
+	Part part2("f:\\test\\rndmap\\room6.vmf");
 
-	//part.rotate({ 0, 45, 30 });
+	World testWorld;
 
-	//std::cout << part << "\n";
+	testWorld.addPart(part1);
+	for(int i = 0; i < 3; i++)
+		testWorld.addPart(part2);
 
+	Part part = testWorld.collapse();
+
+	part.moveTo({ 0, 0, 0 });
+	part.toFile("f:\\test\\test2.vmf");
 	//auto mat = Matrix3d::rotmatz(90);
 
 	//Vertex vec3{ 1, 0, 0 };
@@ -32,23 +40,41 @@ int main(int argc, char* argv[])
 	//	printf("\n");
 	//}
 
-	Solid s = part.entities[0].solids[0], front, back;
+	//Solid s = part.entities[0].solids[0], front, back;
 
-	Plane p{ "(0 0 32) (64 0 32) (64 32 64)" };
+	//part.moveTo({ 0, 0, 0 });
 
-	std::cout << p.equation().toStr() << "\n";
+	//Plane p{ "(0 0 64) (64 0 64) (64 32 32)" };
 
-	s.slice({ "(0 0 32) (64 0 32) (64 32 64)" }, front, back);
+	//std::vector<Solid> newSolids;
 
-	back.move({ 0, 32, 32 });
+	//auto worldspawn = std::find_if(part.entities.begin(), part.entities.end(), &Entity::entworldcmp);
 
-	part.entities[0].solids.clear();
-	part.entities[0].solids.push_back(front);
-	part.entities[0].solids.push_back(back);
+	//for (auto solid : worldspawn->solids)
+	//{
+	//	Solid front, back;
+	//	solid.slice(p, front, back);
+	//	if (front.sides.size() > 0) newSolids.push_back(front);
+	//	if (back.sides.size() > 0) newSolids.push_back(back);
+	//}
 
-	part.reID();
+	//worldspawn->solids = newSolids;
 
-	std::cout << part << "\n";
+	//part.reID();
+
+	//part.toFile("f:\\test\\test2.vmf");
+
+	//s.slice({ "(0 0 32) (64 0 32) (64 32 64)" }, front, back);
+
+	//back.move({ 0, 32, 32 });
+
+	//part.entities[0].solids.clear();
+	//part.entities[0].solids.push_back(front);
+	//part.entities[0].solids.push_back(back);
+
+	//part.reID();
+
+	//std::cout << part << "\n";
 
 	//Polygon p({ "(0 0 0) (0 64 0) (64 64 0)" });
 
@@ -80,8 +106,6 @@ int main(int argc, char* argv[])
 
 	//for (auto &point : back.points)
 	//	std::cout << point.toStr() << "\n";
-
-	std::cin.get();
 
 	return 0;
 }

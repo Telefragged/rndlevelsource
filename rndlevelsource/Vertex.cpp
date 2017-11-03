@@ -74,11 +74,8 @@ Vertex Vertex::rotate(const Vertex& point, const Matrix3d& rotmat) const
 void Vertex::rotateInPlace(const Vertex& point, const Matrix3d& rotmat)
 {
 	Vector vec = Vector::diff(point, *this);
-	auto vecmat = vec.vec().toMat();
-	auto res = rotmat * vecmat;
-	x(res.get(0, 0));
-	y(res.get(1, 0));
-	z(res.get(2, 0));
+	vec.rotate(rotmat);
+	*this = vec.end();
 }
 
 void Vertex::rotateInPlace(const Matrix3d& rotmat)

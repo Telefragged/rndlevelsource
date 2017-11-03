@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <numeric>
 #include <map>
 #include "stdafx.h"
 #include "BoundingBox.h"
@@ -96,6 +97,8 @@ unsigned int Solid::parse(std::istream& stream)
 		}
 	}
 
+	fixSides();
+
 	return numparsed;
 }
 
@@ -138,6 +141,19 @@ void Solid::addSide(const Side &side)
 	sides.push_back(tmp);
 }
 
+void Solid::fixSides()
+{
+	auto orig = origin();
+	for (auto &side : sides)
+	{
+		if (side.plane().evaluate(orig) >= 0)
+		{
+			side.polygon.flip();
+		}
+		side.polygon.roundPoints(3);
+	}
+}
+
 unsigned Solid::depth() const
 {
 	return depth_;
@@ -161,6 +177,21 @@ BoundingBox Solid::bbox() const
 		max = Vertex::allmax(max, sbox.max);
 	}
 	return BoundingBox(min, max);
+}
+
+Vertex Solid::origin() const
+{
+	std::vector<Vertex> points;
+
+	for (const auto &side : sides)
+		points.insert(points.end(), side.polygon.points.cbegin(), side.polygon.points.cend());
+
+	return std::accumulate(points.begin(), points.end(), Vertex{ 0, 0, 0 }) / points.size();
+
+	//BoundingBox b = bbox();
+	//Vector vec = Vector::diff(b.min, b.max);
+	//Vertex mod = 0.5 * vec.vec();
+	//return vec.beg() + mod;
 }
 
 Solid::Solid(void) :
