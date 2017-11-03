@@ -42,12 +42,15 @@ public:
 	void move(const Vector&);
 	void reID(unsigned int*, unsigned int*);
 	void addSide(const Side& side);
+	void fixSides();
 
 	unsigned int depth() const;
 
 	void depth(unsigned int newDepth) const;
 
 	BoundingBox bbox() const;
+
+	Vertex origin() const;
 
 	friend std::ostream& operator<<(std::ostream&, const Solid&);
 

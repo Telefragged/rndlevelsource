@@ -27,6 +27,9 @@ public:
 	void slice(const Plane&);
 	bool slice(const Plane&, Polygon&, Polygon&) const;
 
+	void flip();
+	void roundPoints(size_t precision = 3);
+
 	Polygon();
 	Polygon(const Plane& p);
 	~Polygon();
