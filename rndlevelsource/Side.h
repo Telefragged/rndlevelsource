@@ -50,7 +50,7 @@ public:
 	void popuvars();
 	void rotate(const Vertex&, const Matrix3d&);
 	void move(const Vector&);
-	void reID(unsigned int*);
+	void reID(unsigned int&);
 
 	static bool testCollision(const Side&, const Side&);
 

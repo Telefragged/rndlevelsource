@@ -161,7 +161,7 @@ void Part::reID()
 	sideID_ = 0;
 	for (Entity& e : entities)
 	{
-		e.reID(&entityID_, &solidID_, &sideID_);
+		e.reID(entityID_, solidID_, sideID_);
 	}
 }
 

@@ -119,9 +119,9 @@ void Solid::move(const Vector& vec)
 	}
 }
 
-void Solid::reID(unsigned int* solidID, unsigned int* sideID)
+void Solid::reID(unsigned int &solidID, unsigned int &sideID)
 {
-	id_ = ++(*solidID);
+	id_ = ++solidID;
 	for (Side& side : sides)
 	{
 		side.reID(sideID);
@@ -186,7 +186,7 @@ Vertex Solid::origin() const
 	for (const auto &side : sides)
 		points.insert(points.end(), side.polygon.points.cbegin(), side.polygon.points.cend());
 
-	return std::accumulate(points.begin(), points.end(), Vertex{ 0, 0, 0 }) / points.size();
+	return std::accumulate(points.begin(), points.end(), Vertex{ 0, 0, 0 }) / double(points.size());
 
 	//BoundingBox b = bbox();
 	//Vector vec = Vector::diff(b.min, b.max);

@@ -170,11 +170,11 @@ void Entity::move(const Vector& vec)
 	}
 }
 
-void Entity::reID(unsigned int* entityID,
-                  unsigned int* solidID,
-                  unsigned int* sideID)
+void Entity::reID(unsigned int &entityID,
+                  unsigned int &solidID,
+                  unsigned int &sideID)
 {
-	id_ = ++(*entityID);
+	id_ = ++entityID;
 	for (Solid& solid : solids)
 	{
 		solid.reID(solidID, sideID);

@@ -42,7 +42,7 @@ public:
 	void rotate(const Matrix3d&, const Vertex&);
 	void move(const Vector&);
 	void mergeSolids(const Entity&);
-	void reID(unsigned int*, unsigned int*, unsigned int*);
+	void reID(unsigned int&, unsigned int&, unsigned int&);
 
 	BoundingBox bbox() const;
 

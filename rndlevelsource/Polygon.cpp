@@ -28,7 +28,7 @@ Vertex Polygon::origin() const
 	for (const auto &p : points)
 		orig += p;
 
-	return orig / points.size();
+	return orig / double(points.size());
 }
 
 void Polygon::rotate(const Vertex & point, const Matrix3d & rotmat)

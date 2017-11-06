@@ -40,7 +40,7 @@ public:
 	unsigned int parse(std::istream&);
 	void rotate(const Vertex&, const Matrix3d&);
 	void move(const Vector&);
-	void reID(unsigned int*, unsigned int*);
+	void reID(unsigned int&, unsigned int&);
 	void addSide(const Side& side);
 	void fixSides();
 
