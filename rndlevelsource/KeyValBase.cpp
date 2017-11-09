@@ -2,12 +2,23 @@
 
 #include <iostream>
 
-KeyValBase::KeyValBase()
+KeyValBase::KeyValBase() :
+	depth_(0)
 {
 }
 
 KeyValBase::~KeyValBase()
 {
+}
+
+size_t KeyValBase::depth() const
+{
+	return depth_;
+}
+
+void KeyValBase::depth(size_t depth) const
+{
+	depth_ = depth;
 }
 
 std::string KeyValBase::operator[](std::string key) const

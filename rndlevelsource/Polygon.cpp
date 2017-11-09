@@ -1,5 +1,7 @@
 #include "Polygon.h"
 #include <algorithm>
+#include <numeric>
+
 Polygon::classification Polygon::classify(const Plane &plane) const
 {
 	size_t count = points.size();
@@ -23,12 +25,7 @@ Polygon::classification Polygon::classify(const Plane &plane) const
 
 Vertex Polygon::origin() const
 {
-	Vertex orig = { 0, 0, 0 };
-
-	for (const auto &p : points)
-		orig += p;
-
-	return orig / double(points.size());
+	return std::accumulate(points.cbegin(), points.cend(), Vertex{ 0, 0, 0 }) / double(points.size());
 }
 
 void Polygon::rotate(const Vertex & point, const Matrix3d & rotmat)
@@ -40,7 +37,7 @@ void Polygon::rotate(const Vertex & point, const Matrix3d & rotmat)
 void Polygon::move(const Vertex & v)
 {
 	for (auto &p : points)
-		p = p + v;
+		p += v;
 }
 
 void Polygon::slice(const Plane &plane)

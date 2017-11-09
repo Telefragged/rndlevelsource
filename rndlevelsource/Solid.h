@@ -14,10 +14,8 @@ class Solid :
 	public KeyValBase
 {
 private:
-	unsigned int id_;
-	mutable unsigned int depth_;
+	size_t id_;
 	Editor edt;
-
 public:
 
 	enum texmode
@@ -43,10 +41,6 @@ public:
 	void reID(unsigned int&, unsigned int&);
 	void addSide(const Side& side);
 	void fixSides();
-
-	unsigned int depth() const;
-
-	void depth(unsigned int newDepth) const;
 
 	BoundingBox bbox() const;
 

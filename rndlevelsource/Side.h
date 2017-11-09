@@ -19,7 +19,6 @@ class Side :
 {
 private:
 	unsigned int id_;
-	mutable unsigned int depth_;
 public:
 	DispInfo disp;
 	Axis uaxis, vaxis;
@@ -31,16 +30,6 @@ public:
 	unsigned int id() const
 	{
 		return id_;
-	}
-
-	unsigned int depth() const
-	{
-		return depth_;
-	}
-
-	void depth(unsigned int newDepth) const
-	{
-		depth_ = newDepth;
 	}
 
 	Plane plane() const;
@@ -64,7 +53,7 @@ inline std::ostream& operator<<(std::ostream& os, const Side& s)
 {
 	os << std::setw(s.depth()) << "" << "side\n";
 	os << std::setw(s.depth()) << "" << "{\n";
-	os << std::setw(s.depth()) << "" << "\t\"id\" \"" << s.id_ << "\"\n";
+	os << std::setw(s.depth()) << "" << "\t\"id\" \"" << s.id() << "\"\n";
 	os << std::setw(s.depth()) << "" << "\t\"Plane\" \"" << s.plane().toStr() << "\"\n";
 	os << std::setw(s.depth()) << "" << "\t\"uaxis\" \"" << s.uaxis.toStr() << "\"\n";
 	os << std::setw(s.depth()) << "" << "\t\"vaxis\" \"" << s.vaxis.toStr() << "\"\n";

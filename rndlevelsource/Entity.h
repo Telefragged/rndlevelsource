@@ -11,7 +11,6 @@ class Entity :
 	public KeyValBase
 {
 private:
-	mutable unsigned int depth_;
 	Editor edt;
 public:
 	unsigned int id_;
@@ -20,16 +19,6 @@ public:
 	Vertex origin() const;
 	Vertex originKV() const;
 	Angle angles() const;
-
-	unsigned int depth() const
-	{
-		return depth_;
-	}
-
-	void depth(unsigned int newDepth) const
-	{
-		depth_ = newDepth;
-	}
 
 	unsigned int parse(std::istream&);
 

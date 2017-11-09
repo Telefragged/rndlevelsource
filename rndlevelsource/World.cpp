@@ -214,12 +214,12 @@ std::vector<Part> World::filter(const Connection* connection, const std::vector<
 	return ret;
 }
 
-World::World(void)
+World::World()
 {
 	eng_.seed(UINTTIME);
 }
 
-World::~World(void)
+World::~World()
 {
 }
 

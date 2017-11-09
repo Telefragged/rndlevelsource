@@ -45,7 +45,7 @@ public:
 	static std::vector<parttuple> filterFit(const Part&, const Part&, const std::vector<Part>&);
 	std::vector<Part> filter(const Connection*, const std::vector<Part>&);
 
-	World(void);
-	~World(void);
+	World();
+	~World();
 };
 

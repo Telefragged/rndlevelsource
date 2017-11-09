@@ -48,7 +48,7 @@ bool Solid::slice(const Plane& plane, Solid& front, Solid& back) const
 	Side copy = sides[0];
 	copy.polygon = { plane };
 	back.addSide(copy);
-	copy.polygon = { Plane::flip(plane) };
+	copy.polygon.flip();
 	front.addSide(copy);
 
 	for(auto &side : sides)
@@ -150,18 +150,8 @@ void Solid::fixSides()
 		{
 			side.polygon.flip();
 		}
-		side.polygon.roundPoints(3);
+		side.polygon.roundPoints();
 	}
-}
-
-unsigned Solid::depth() const
-{
-	return depth_;
-}
-
-void Solid::depth(unsigned int newDepth) const
-{
-	depth_ = newDepth;
 }
 
 BoundingBox Solid::bbox() const
@@ -187,16 +177,10 @@ Vertex Solid::origin() const
 		points.insert(points.end(), side.polygon.points.cbegin(), side.polygon.points.cend());
 
 	return std::accumulate(points.begin(), points.end(), Vertex{ 0, 0, 0 }) / double(points.size());
-
-	//BoundingBox b = bbox();
-	//Vector vec = Vector::diff(b.min, b.max);
-	//Vertex mod = 0.5 * vec.vec();
-	//return vec.beg() + mod;
 }
 
 Solid::Solid(void) :
-	id_(0),
-	depth_(0)
+	id_(0)
 {
 }
 
