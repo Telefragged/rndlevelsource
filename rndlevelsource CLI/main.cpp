@@ -22,7 +22,10 @@ int main(int argc, char* argv[])
 	Part part = testWorld.collapse();
 
 	part.moveTo({ 0, 0, 0 });
-	part.toFile("f:\\test\\test2.vmf");
+	//part.toFile("f:\\test\\test2.vmf");
+
+	std::cout << part << "\n";
+
 	//auto mat = Matrix3d::rotmatz(90);
 
 	//Vertex vec3{ 1, 0, 0 };
