@@ -36,3 +36,5 @@
 /.vs/
 *.db
 /rndlevelsource CLI/x64/Debug
+/rndlevelsource Unit Tests/x64/Debug
+/ipch
