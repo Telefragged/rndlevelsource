@@ -63,9 +63,7 @@ Plane Plane::vectorPlane(const Vector& line1, const Vector& line2)
 
 	Vertex p1 = line1.beg();
 	Vertex p2 = line1.end();
-	Vertex p3 = line2.beg();
-	if (Vertex::equals(p3, p1) || Vertex::equals(p3, p2))
-		p3 = line2.end();
+	Vertex p3 = !(Vertex::equals(p3, p1) || Vertex::equals(p3, p2)) ? line2.beg() : line2.end();
 
 	Plane ret;
 	ret.p1 = p1;
