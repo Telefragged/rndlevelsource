@@ -1,15 +1,16 @@
 #pragma once
 #include <iostream>
 #include <iomanip>
+#include <vector>
+
 #include "KeyVal.h"
-#include "LinkedList.h"
 
 class Editor
 {
 private:
 	mutable size_t depth_;
 public:
-	LinkedList<KeyVal> keyvals;
+	std::vector<KeyVal> keyvals;
 	unsigned int parse(std::istream&);
 
 	size_t depth() const

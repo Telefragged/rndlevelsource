@@ -6,7 +6,7 @@
 #include "BoundingBox.h"
 #include "Matrix.h"
 #include "Vector.h"
-#include "WeightedList.h"
+#include "defines.h"
 
 bool World::testCollisions(Part* partptr)
 {
@@ -217,7 +217,7 @@ std::vector<Part> World::filter(const Connection* connection, const std::vector<
 
 World::World()
 {
-	eng_.seed(UINTTIME);
+	eng_.seed(1);
 }
 
 World::~World()

@@ -20,7 +20,7 @@ unsigned int Editor::parse(std::istream& stream)
 		}
 		else
 		{
-			keyvals.put(new KeyVal(curline));
+			keyvals.emplace_back(curline);
 		}
 	}
 	return numparsed;
