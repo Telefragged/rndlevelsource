@@ -1,6 +1,7 @@
 #include "World.h"
 
 #include <algorithm>
+#include <chrono>
 
 #include "Angle.h"
 #include "BoundingBox.h"
@@ -217,10 +218,10 @@ std::vector<Part> World::filter(const Connection* connection, const std::vector<
 
 World::World()
 {
-	eng_.seed(1);
+	auto t = std::chrono::system_clock::now();
+	eng_.seed(t.time_since_epoch().count());
 }
 
 World::~World()
 {
 }
-

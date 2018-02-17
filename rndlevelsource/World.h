@@ -7,7 +7,7 @@ typedef std::tuple<Part, unsigned int, unsigned int, const Connection *, const C
 class World
 {
 	std::vector<Part> master;
-	std::mt19937 eng_;
+	std::mt19937_64 eng_;
 
 	static void World::filterFitHelper(const Part& p1, const Part& p2, const Part& test, std::vector<parttuple>& resList);
 
