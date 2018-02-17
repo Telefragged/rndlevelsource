@@ -26,11 +26,11 @@ unsigned int Editor::parse(std::istream& stream)
 	return numparsed;
 }
 
-Editor::Editor(void): depth_(0)
+Editor::Editor(): depth_(0)
 {
 }
 
-Editor::~Editor(void)
+Editor::~Editor()
 {
 }
 

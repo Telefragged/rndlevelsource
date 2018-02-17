@@ -69,10 +69,10 @@ public:
 	double operator[](unsigned int) const;
 	double& operator[](unsigned int);
 
-	Vertex(void);
+	Vertex();
 	Vertex(const std::string&);
 	Vertex(double, double, double);
-	virtual ~Vertex(void);
+	virtual ~Vertex();
 };
 
 inline Vertex operator+(Vertex lhs, const Vertex& rhs)

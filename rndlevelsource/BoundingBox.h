@@ -15,9 +15,9 @@ public:
 
 	std::string toStr() const;
 
-	BoundingBox(void);
+	BoundingBox();
 	BoundingBox(const Vector&);
 	BoundingBox(const Vertex& min, const Vertex& max);
-	~BoundingBox(void);
+	~BoundingBox();
 };
 

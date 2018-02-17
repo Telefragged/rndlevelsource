@@ -39,9 +39,9 @@ public:
 
 	friend Connection;
 
-	Entity(void);
+	Entity();
 	Entity(const std::string&);
-	~Entity(void);
+	~Entity();
 };
 
 inline std::ostream& operator<<(std::ostream& os, const Entity& e)

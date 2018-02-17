@@ -67,7 +67,7 @@ public:
 		return std::chrono::duration_cast<rettm>(rtime - stime);
 	}
 
-	Timer(void)
+	Timer()
 	{
 		mod = 1.0;
 		mint = 0.0;
@@ -87,7 +87,7 @@ public:
 		start();
 	}
 
-	~Timer(void)
+	~Timer()
 	{
 		prevTime = double(getTime().count());
 		double printtime = prevTime / mod;

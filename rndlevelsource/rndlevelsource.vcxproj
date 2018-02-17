@@ -150,7 +150,6 @@
     <ClInclude Include="Entity.h" />
     <ClInclude Include="KeyVal.h" />
     <ClInclude Include="KeyValBase.h" />
-    <ClInclude Include="LinkedList.h" />
     <ClInclude Include="Matrix.h" />
     <ClInclude Include="Part.h" />
     <ClInclude Include="Plane.h" />
@@ -163,7 +162,6 @@
     <ClInclude Include="utils.h" />
     <ClInclude Include="Vector.h" />
     <ClInclude Include="Vertex.h" />
-    <ClInclude Include="WeightedList.h" />
     <ClInclude Include="WeightedVector.h" />
     <ClInclude Include="World.h" />
   </ItemGroup>

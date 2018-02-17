@@ -24,8 +24,8 @@ public:
 
 	friend std::ostream& operator<<(std::ostream&, const Editor&);
 
-	Editor(void);
-	~Editor(void);
+	Editor();
+	~Editor();
 };
 
 inline std::ostream& operator<<(std::ostream& os, const Editor& e)

@@ -51,7 +51,7 @@ bool KeyVal::keycmp(const KeyVal& lhs, const std::string& rhs)
 //	return std::regex_match(lhs.key, reg);
 //}
 
-KeyVal::KeyVal(void)
+KeyVal::KeyVal()
 {
 }
 
@@ -77,7 +77,7 @@ KeyVal::KeyVal(std::string k, std::string v) :
 {
 }
 
-KeyVal::~KeyVal(void)
+KeyVal::~KeyVal()
 {
 }
 

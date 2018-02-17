@@ -33,11 +33,11 @@ std::string Axis::toStr() const
 	return os.str();
 }
 
-Axis::Axis(void): trans(0), scale(0)
+Axis::Axis(): trans(0), scale(0)
 {
 }
 
-Axis::~Axis(void)
+Axis::~Axis()
 {
 }
 

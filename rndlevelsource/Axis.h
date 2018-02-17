@@ -15,7 +15,7 @@ public:
 
 	std::string toStr() const;
 
-	Axis(void);
-	~Axis(void);
+	Axis();
+	~Axis();
 };
 

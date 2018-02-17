@@ -197,7 +197,7 @@ BoundingBox Entity::bbox() const
 	return BoundingBox(min, max);
 }
 
-Entity::Entity(void)
+Entity::Entity()
 {
 }
 
@@ -207,7 +207,7 @@ Entity::Entity(const std::string& classname) :
 	keyvals["classname"] = classname;
 }
 
-Entity::~Entity(void)
+Entity::~Entity()
 {
 }
 

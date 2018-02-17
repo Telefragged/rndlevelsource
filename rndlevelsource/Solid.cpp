@@ -184,7 +184,7 @@ Vertex Solid::origin() const
 	return point / double(numPoints);
 }
 
-Solid::Solid(void) :
+Solid::Solid() :
 	id_(0)
 {
 }
@@ -203,7 +203,7 @@ Solid::Solid(const std::initializer_list<Plane>& planes) : Solid()
 	}
 }
 
-Solid::~Solid(void)
+Solid::~Solid()
 {
 }
 

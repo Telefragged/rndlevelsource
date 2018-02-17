@@ -38,11 +38,11 @@ public:
 	Angle& operator-=(const Angle&);
 	Angle operator-() const;
 
-	Angle(void);
+	Angle();
 	Angle(const std::string&);
 	Angle(double pitch, double yaw, double roll);
 
-	virtual ~Angle(void);
+	virtual ~Angle();
 };
 
 inline Angle operator+(Angle lhs, const Angle& rhs)

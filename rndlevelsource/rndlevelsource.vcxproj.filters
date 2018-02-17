@@ -57,9 +57,6 @@
     <ClInclude Include="KeyValBase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="LinkedList.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Matrix.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -91,9 +88,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Vertex.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="WeightedList.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Polygon.h">

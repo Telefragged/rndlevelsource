@@ -10,6 +10,6 @@ public:
 
 	//Only move constructor for now.
 	Connection(Entity&&);
-	~Connection(void);
+	~Connection();
 };
 

@@ -107,11 +107,11 @@ void CompileTools::copyfile(std::string existing, std::string newfile, bool conf
 #endif
 }
 
-CompileTools::CompileTools(void)
+CompileTools::CompileTools()
 {
 }
 
-CompileTools::~CompileTools(void)
+CompileTools::~CompileTools()
 {
 }
 

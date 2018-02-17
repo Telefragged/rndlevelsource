@@ -5,7 +5,7 @@
 #include "Matrix.h"
 #include "Vector.h"
 
-Vertex::Vertex(void)
+Vertex::Vertex()
 {
 	vertex_[0] = std::numeric_limits<double>::quiet_NaN();
 	vertex_[1] = std::numeric_limits<double>::quiet_NaN();
@@ -316,7 +316,7 @@ bool Vertex::isVertex(const Vertex& v)
 	return (v.x() == v.x() && v.y() == v.y() && v.z() == v.z());
 }
 
-Vertex::~Vertex(void)
+Vertex::~Vertex()
 {
 }
 

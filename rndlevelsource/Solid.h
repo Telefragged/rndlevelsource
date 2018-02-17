@@ -48,9 +48,9 @@ public:
 
 	friend std::ostream& operator<<(std::ostream&, const Solid&);
 
-	Solid(void);
+	Solid();
 	Solid(const std::initializer_list<Plane>& planes);
-	~Solid(void);
+	~Solid();
 };
 
 inline std::ostream& operator<<(std::ostream& os, const Solid& s)

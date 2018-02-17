@@ -36,7 +36,7 @@
 //#endif
 //}
 
-Angle::Angle(void) : Vertex()
+Angle::Angle() : Vertex()
 {
 }
 
@@ -191,7 +191,7 @@ Angle::Angle(double x, double y, double z)
 	vertex_[2] = z;
 }
 
-Angle::~Angle(void)
+Angle::~Angle()
 {
 }
 

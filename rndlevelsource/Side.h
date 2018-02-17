@@ -45,8 +45,8 @@ public:
 
 	friend std::ostream& operator<<(std::ostream&, const Side& s);
 
-	Side(void);
-	~Side(void);
+	Side();
+	~Side();
 };
 
 inline std::ostream& operator<<(std::ostream& os, const Side& s)

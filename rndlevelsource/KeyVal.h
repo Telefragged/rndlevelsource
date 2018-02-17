@@ -19,11 +19,11 @@ public:
 	// void fromDouble(double);
 
 	static bool keycmp(const KeyVal&, const std::string&);
-	static bool keyregex(const KeyVal&, const std::string&);
+	//static bool keyregex(const KeyVal&, const std::string&);
 
-	KeyVal(void);
+	KeyVal();
 	KeyVal(const std::string&);
 	KeyVal(std::string, std::string);
-	~KeyVal(void);
+	~KeyVal();
 };
 

@@ -5,8 +5,6 @@ class BaseNPC :
 	public Entity
 {
 public:
-
-
 	BaseNPC();
 	~BaseNPC();
 };

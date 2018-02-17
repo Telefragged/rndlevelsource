@@ -23,7 +23,7 @@ std::string BoundingBox::toStr() const
 	return os.str();
 }
 
-BoundingBox::BoundingBox(void)
+BoundingBox::BoundingBox()
 {
 }
 
@@ -39,7 +39,7 @@ BoundingBox::BoundingBox(const Vertex& mn, const Vertex& mx) :
 {
 }
 
-BoundingBox::~BoundingBox(void)
+BoundingBox::~BoundingBox()
 {
 }
 

@@ -111,11 +111,11 @@ bool Side::testCollision(const Side& lhs, const Side& rhs)
 	return false;
 }
 
-Side::Side(void) : id_(0)
+Side::Side() : id_(0)
 {
 }
 
-Side::~Side(void)
+Side::~Side()
 {
 }
 

@@ -14,7 +14,7 @@ Connection::Connection(Entity&& entity) : isConnected(false)
 	}
 }
 
-Connection::~Connection(void)
+Connection::~Connection()
 {
 }
 

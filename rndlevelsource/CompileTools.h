@@ -15,7 +15,7 @@ public:
 
 	static void runtools(std::string vmffile, std::string gamedir);
 
-	CompileTools(void);
-	~CompileTools(void);
+	CompileTools();
+	~CompileTools();
 };
 
