@@ -23,6 +23,7 @@ public:
 
 	void rotate(const Vertex& point, const Matrix3d& rotmat);
 	void move(const Vertex& v);
+	void moveTo(const Vertex &p);
 
 	void slice(const Plane&);
 	bool slice(const Plane&, Polygon&, Polygon&) const;
@@ -32,5 +33,6 @@ public:
 
 	Polygon();
 	Polygon(const Plane& p);
+	Polygon(const std::initializer_list<Vertex> &);
 	~Polygon();
 };

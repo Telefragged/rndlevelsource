@@ -31,11 +31,10 @@ Matrix<double, 1, 4> Plane::equation() const
 {
 	Matrix<double, 1, 4> ret;
 	Vertex norm = normal();
-	double dist = Vertex::dotProduct(norm, p1);
 	ret[0][0] = norm[0];
 	ret[0][1] = norm[1];
 	ret[0][2] = norm[2];
-	ret[0][3] = -dist;
+	ret[0][3] = -Vertex::dotProduct(norm, p1);
 	return ret;
 }
 

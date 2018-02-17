@@ -40,6 +40,14 @@ void Polygon::move(const Vertex & v)
 		p += v;
 }
 
+void Polygon::moveTo(const Vertex & p)
+{
+	Vertex dist = p - origin();
+
+	for (auto &p : points)
+		p += dist;
+}
+
 void Polygon::slice(const Plane &plane)
 {
 	Polygon front, back;
@@ -137,6 +145,11 @@ Polygon::Polygon(const Plane & p)
 		return (v - orig).normalize() * 10'000'000.0 + orig;
 	});
 
+}
+
+Polygon::Polygon(const std::initializer_list<Vertex> &points)
+	: points(points)
+{
 }
 
 Polygon::~Polygon()

@@ -7,17 +7,17 @@
 class Editor
 {
 private:
-	mutable unsigned int depth_;
+	mutable size_t depth_;
 public:
 	LinkedList<KeyVal> keyvals;
 	unsigned int parse(std::istream&);
 
-	unsigned int depth() const
+	size_t depth() const
 	{
 		return depth_;
 	}
 
-	void depth(unsigned int newDepth) const
+	void depth(size_t newDepth) const
 	{
 		depth_ = newDepth;
 	}

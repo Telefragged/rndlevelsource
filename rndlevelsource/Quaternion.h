@@ -29,10 +29,10 @@ public:
 	double& operator[](unsigned int);
 	double operator[](unsigned int) const;
 
-	Quaternion(void);
+	Quaternion();
 	Quaternion(double, double, double, double);
 	Quaternion(const Angle&);
-	~Quaternion(void);
+	~Quaternion();
 };
 
 inline Quaternion operator*(Quaternion lhs, const Quaternion& rhs)

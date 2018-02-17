@@ -24,20 +24,10 @@ public:
 class DispInfo :
 	public KeyValBase
 {
-	mutable unsigned int depth_;
 public:
 	unsigned int parse(std::istream&);
+
 	std::vector<std::vector<SingleDisp>> info;
-
-	unsigned int depth() const
-	{
-		return depth_;
-	}
-
-	void depth(unsigned int newDepth) const
-	{
-		depth_ = newDepth;
-	}
 
 	void setHeight(int x, int y, double height);
 

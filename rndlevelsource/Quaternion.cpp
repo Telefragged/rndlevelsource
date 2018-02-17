@@ -74,7 +74,7 @@ Quaternion Quaternion::conjugate()
 	return Quaternion(-x(), -y(), -z(), w());
 }
 
-Quaternion::Quaternion(void)
+Quaternion::Quaternion()
 {
 	w_ = std::numeric_limits<double>::quiet_NaN();
 }
@@ -128,25 +128,25 @@ Quaternion::Quaternion(double x, double y, double z, double w) :
 
 Quaternion::Quaternion(const Angle& a)
 {
-	double sy, sr, sp, cy, cr, cp;
+	double sp = sin(DEG2RAD(a.y()) * 0.5);
+	double cp = cos(DEG2RAD(a.y()) * 0.5);
+	double sr = sin(DEG2RAD(a.x()) * 0.5);
+	double cr = cos(DEG2RAD(a.x()) * 0.5);
+	double sy = sin(DEG2RAD(a.z()) * 0.5);
+	double cy = cos(DEG2RAD(a.z()) * 0.5);
 
-	sp = sin(DEG2RAD(a.y()) * 0.5);
-	cp = cos(DEG2RAD(a.y()) * 0.5);
-	sr = sin(DEG2RAD(a.x()) * 0.5);
-	cr = cos(DEG2RAD(a.x()) * 0.5);
-	sy = sin(DEG2RAD(a.z()) * 0.5);
-	cy = cos(DEG2RAD(a.z()) * 0.5);
-
-	double srXcp = sy * cr, crXsp = cy * sr;
+	double srXcp = sy * cr;
+	double crXsp = cy * sr;
 	xyz_.x(srXcp * cp - crXsp * sp); // X
 	xyz_.y(crXsp * cp + srXcp * sp); // Y
 
-	double crXcp = cy * cr, srXsp = sy * sr;
+	double crXcp = cy * cr;
+	double srXsp = sy * sr;
 	xyz_.z(crXcp * sp - srXsp * cp); // Z
 	w_ = crXcp * cp + srXsp * sp; // W (real component)
 }
 
-Quaternion::~Quaternion(void)
+Quaternion::~Quaternion()
 {
 }
 

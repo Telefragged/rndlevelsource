@@ -35,6 +35,7 @@
 /rndlevelsource/x64/
 /.vs/
 *.db
-/rndlevelsource CLI/x64/Debug
-/rndlevelsource Unit Tests/x64/Debug
+/rndlevelsource CLI/x64
+/rndlevelsource Unit Tests/x64
 /ipch
+~AutoRecover*

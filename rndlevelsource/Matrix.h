@@ -4,6 +4,7 @@
 #include <sstream>
 #include <string>
 #include <initializer_list>
+#include "utils.h"
 
 #define M_PI 3.14159265358979323846
 
@@ -83,7 +84,7 @@ public:
 	void setRow(size_t row, const Matrix<_Ty, _X, 1>& v)
 	{
 		for (size_t col = 0; col < cols(); col++)
-		set(row, col, v.x());
+			set(row, col, v.x());
 	}
 
 	void setCol(size_t col, const Matrix<_Ty, _X, 1>& v)
@@ -187,6 +188,18 @@ public:
 		return *this;
 	}
 
+	bool operator==(const Matrix &rhs) const
+	{
+		if (rhs.size != size)
+			return false;
+
+		for (size_t n = 0; n < size; n++)
+			if (!doubleeq(rhs.arr_[n], arr_[n]))
+				return false;
+
+		return true;
+	}
+
 	//Returns the product of the matrix(lhs) multiplied by the argument matrix(rhs).
 	template <size_t _X2, size_t _Y2>
 	Matrix<_Ty, _X, _Y2> mult(const Matrix<_Ty, _X2, _Y2>& rhs) const
@@ -208,10 +221,10 @@ public:
 		return ret;
 	}
 
-	Matrix(_Ty sval = 0)
+	Matrix(_Ty initVal = 0)
 	{
 		for (auto &v : arr_)
-			v = sval;
+			v = initVal;
 	}
 
 	Matrix(const Matrix<_Ty, _X, _Y>& mat)
