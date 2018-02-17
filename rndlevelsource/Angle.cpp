@@ -113,7 +113,6 @@ Matrix3d Angle::calcRotation(const Angle& target) const
 
 void Angle::fromMatrix(const Matrix3d& matrix)
 {
-	assert(matrix.x() == 3 && matrix.y() == 3);
 	double forward[3];
 	double left[3];
 	double up[3];
