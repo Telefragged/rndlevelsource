@@ -21,7 +21,6 @@
 *.app
 
 # Extra
-*.vmf
 *.bsp
 *.opensdf
 *.sdf

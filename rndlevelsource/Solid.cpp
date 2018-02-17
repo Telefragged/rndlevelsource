@@ -171,12 +171,16 @@ BoundingBox Solid::bbox() const
 
 Vertex Solid::origin() const
 {
-	std::vector<Vertex> points;
+	Vertex point{ 0, 0, 0 };
+	size_t numPoints = 0;
 
 	for (const auto &side : sides)
-		points.insert(points.end(), side.polygon.points.cbegin(), side.polygon.points.cend());
+	{
+		point = std::accumulate(side.polygon.points.cbegin(), side.polygon.points.cend(), point);
+		numPoints += side.polygon.points.size();
+	}
 
-	return std::accumulate(points.begin(), points.end(), Vertex{ 0, 0, 0 }) / double(points.size());
+	return point / double(numPoints);
 }
 
 Solid::Solid(void) :
@@ -184,15 +188,15 @@ Solid::Solid(void) :
 {
 }
 
-Solid::Solid(const std::vector<Plane>& planes) : Solid()
+Solid::Solid(const std::initializer_list<Plane>& planes) : Solid()
 {
-	for (size_t n = 0; n < planes.size(); n++)
+	for (const auto &plane : planes)
 	{
 		Side side;
-		side.polygon = { planes[n] };
-		for (size_t m = 0; m < planes.size(); m++)
-			if (n != m)
-				side.polygon.slice(planes[m]);
+		side.polygon = { plane };
+		for (const auto &other : planes)
+			if (&plane != &other)
+				side.polygon.slice(other);
 
 		sides.push_back(side);
 	}

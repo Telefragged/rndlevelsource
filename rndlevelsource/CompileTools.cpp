@@ -9,8 +9,9 @@
 std::string CompileTools::getabspath(std::string partialpath)
 {
 	std::string ret;
-	char buf[256];
-	ret = buf;
+	//char buf[256];
+	//ret = buf;
+	
 	return ret;
 }
 

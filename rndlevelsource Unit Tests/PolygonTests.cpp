@@ -10,13 +10,18 @@ namespace rndlevelsourceUnitTests
 {
 	TEST_CLASS(PolygonTests)
 	{
-		const Polygon TestPolygonUp{{0, 0, 0}, {0, 64, 0}, {64, 64, 0}, {64, 0, 0}};
-		const Plane TestPlaneUp{{0, 0, 0}, {0, 64, 0}, {64, 64, 0}};
+		const Polygon TestPolygonUp{ {0, 0, 0}, {0, 64, 0}, {64, 64, 0}, {64, 0, 0} };
+		const Plane TestPlaneUp{ {0, 0, 0}, {0, 64, 0}, {64, 64, 0} };
 	public:
 
 		TEST_METHOD(TestPolygonOrigin)
 		{
-			Assert::AreEqual({32, 32, 0}, TestPolygonUp.origin());
+			Assert::AreEqual({ 32, 32, 0 }, TestPolygonUp.origin());
+
+			Polygon polygon = TestPolygonUp;
+
+			polygon.moveTo({ 0, 0, 32 });
+			Assert::AreEqual({ 0, 0, 32 }, polygon.origin());
 		}
 
 		TEST_METHOD(TestPolygonClassify)
@@ -47,7 +52,7 @@ namespace rndlevelsourceUnitTests
 			polygon.moveTo(p0);
 			Assert::AreEqual(p0, polygon.origin());
 
-			polygon.move(p1);
+			polygon.moveTo(p1);
 			Assert::AreEqual(p1, polygon.origin());
 		}
 		

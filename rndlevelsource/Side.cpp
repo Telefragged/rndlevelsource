@@ -50,7 +50,7 @@ void Side::popuvars()
 	}
 	if (keyvals.count("plane") > 0)
 	{
-		this->polygon = Polygon({keyvals["plane"]});
+		this->polygon = Polygon(Plane(keyvals["plane"]));
 		keyvals.erase("plane");
 	}
 	if (keyvals.count("uaxis") > 0)
