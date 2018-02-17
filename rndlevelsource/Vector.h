@@ -27,6 +27,7 @@ public:
 
 	Vector& operator*=(double);
 
+	//Returns a vector that points from vertex 1 to vertex 2
 	static Vector diff(const Vertex&, const Vertex&);
 	static Vector allMinMax(const Vertex&, const Vertex&);
 	static Vertex intersectPoint(const Vector&, const Vector&);
