@@ -1,8 +1,9 @@
-#include "stdafx.h"
+#include "Entity.h"
+
 #include <sstream>
+
 #include "Angle.h"
 #include "BoundingBox.h"
-#include "Entity.h"
 #include "Matrix.h"
 #include "Vector.h"
 #include "Vertex.h"

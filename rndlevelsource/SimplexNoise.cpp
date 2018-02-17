@@ -1,5 +1,5 @@
-#include "stdafx.h"
 #include "SimplexNoise.h"
+
 #include <algorithm>
 #include <cmath>
 

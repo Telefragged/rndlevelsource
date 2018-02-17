@@ -1,8 +1,9 @@
-#include "stdafx.h"
+#include "Quaternion.h"
+
 #include <math.h>
+
 #include "Angle.h"
 #include "Matrix.h"
-#include "Quaternion.h"
 
 #define M_PI 3.14159265358979323846
 

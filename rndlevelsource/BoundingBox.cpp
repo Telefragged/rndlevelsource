@@ -1,7 +1,8 @@
-#include "stdafx.h"
+#include "BoundingBox.h"
+
 #include <sstream>
 #include <limits>
-#include "BoundingBox.h"
+
 #include "Vector.h"
 
 bool BoundingBox::testCollision(const BoundingBox& lhs, const BoundingBox& rhs)

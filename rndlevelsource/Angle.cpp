@@ -1,8 +1,9 @@
-#include "stdafx.h"
+#include "Angle.h"
+
 #include <math.h>
 #include <assert.h>
 #include <sstream>
-#include "Angle.h"
+
 #include "Matrix.h"
 #include "Quaternion.h"
 

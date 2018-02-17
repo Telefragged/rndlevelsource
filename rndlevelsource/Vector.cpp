@@ -1,6 +1,6 @@
-#include "stdafx.h"
-#include <string>
 #include "Vector.h"
+
+#include <string>
 
 void Vector::rotate(const Matrix<double, 3, 3>& rotmat)
 {

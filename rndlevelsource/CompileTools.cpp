@@ -1,5 +1,6 @@
-#include "stdafx.h"
 #include "CompileTools.h"
+
+#include <string>
 #include <stdlib.h>
 
 #if defined _WIN32

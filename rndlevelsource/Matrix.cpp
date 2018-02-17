@@ -1,8 +1,9 @@
-#include "stdafx.h"
 #include "Matrix.h"
+
 #include <math.h>
 #include <limits>
 #include <sstream>
+
 #include "Vertex.h"
 
 #define M_PI 3.14159265358979323846

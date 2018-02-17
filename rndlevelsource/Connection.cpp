@@ -1,5 +1,5 @@
-#include "stdafx.h"
 #include "Connection.h"
+
 #include "KeyVal.h"
 
 Connection::Connection(Entity&& entity) : isConnected(false)

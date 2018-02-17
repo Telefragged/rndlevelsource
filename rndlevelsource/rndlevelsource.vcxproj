@@ -159,7 +159,6 @@
     <ClInclude Include="Side.h" />
     <ClInclude Include="SimplexNoise.h" />
     <ClInclude Include="Solid.h" />
-    <ClInclude Include="stdafx.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="utils.h" />
     <ClInclude Include="Vector.h" />

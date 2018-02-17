@@ -1,9 +1,10 @@
-#include "stdafx.h"
+#include "Side.h"
+
 #include <ios>
 #include <stdio.h>
+
 #include "BoundingBox.h"
 #include "KeyVal.h"
-#include "Side.h"
 #include "Vector.h"
 
 unsigned int Side::parse(std::istream& stream)

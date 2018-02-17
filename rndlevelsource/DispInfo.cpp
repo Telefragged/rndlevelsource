@@ -1,10 +1,12 @@
 #include "DispInfo.h"
-#include "KeyVal.h"
-#include "utils.h"
+
 #include <cmath>
 #include <map>
 #include <string>
 #include <iostream>
+
+#include "KeyVal.h"
+#include "utils.h"
 
 SingleDisp::SingleDisp()
 	: normal(0, 0, 1)

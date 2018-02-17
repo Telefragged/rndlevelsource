@@ -1,5 +1,6 @@
-#include "stdafx.h"
 #include "Editor.h"
+
+#include "utils.h"
 
 unsigned int Editor::parse(std::istream& stream)
 {

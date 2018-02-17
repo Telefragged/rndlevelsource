@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "Axis.h"
 
 void Axis::parsestr(const std::string& pstr)

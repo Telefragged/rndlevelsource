@@ -1,8 +1,9 @@
-#include "stdafx.h"
+#include "Vertex.h"
+
 #include <algorithm>
+
 #include "Matrix.h"
 #include "Vector.h"
-#include "Vertex.h"
 
 Vertex::Vertex(void)
 {

@@ -1,9 +1,10 @@
+#include "Solid.h"
+
 #include <algorithm>
 #include <numeric>
 #include <map>
-#include "stdafx.h"
+
 #include "BoundingBox.h"
-#include "Solid.h"
 #include "Vector.h"
 #include "Matrix.h"
 

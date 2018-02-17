@@ -1,10 +1,11 @@
-#include "stdafx.h"
+#include "World.h"
+
 #include <algorithm>
+
 #include "Angle.h"
 #include "BoundingBox.h"
 #include "Matrix.h"
 #include "Vector.h"
-#include "World.h"
 #include "WeightedList.h"
 
 bool World::testCollisions(Part* partptr)
