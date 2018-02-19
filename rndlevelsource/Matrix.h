@@ -16,12 +16,12 @@ private:
 
 public:
 
-	static const size_t size = _X * _Y;
+	static constexpr size_t size = _X * _Y;
 
 	class matrow
 	{
 		size_t row;
-		Matrix<_Ty,_X, _Y>& parent;
+		Matrix<_Ty, _X, _Y>& parent;
 
 	public:
 		matrow(size_t r, Matrix<_Ty, _X, _Y>& p) : row(r), parent(p)
@@ -98,14 +98,14 @@ public:
 		std::swap(lhs.arr_, rhs.arr_);
 	}
 
-	//Returns a matrix that will transform a collumn vector by deg degrees around the x-axis.
+	//Returns a matrix that will transform a column vector by deg degrees around the x-axis.
 	static Matrix<_Ty, 3, 3> rotmatx(_Ty deg)
 	{
-		static_assert(_X == 3 && _Y == 3, "Please use with 3x3 matrix");
+		static_assert(_X == 3 && _Y == 3, "Only available with 3x3 matrix");
 
 		_Ty rad = deg * (M_PI / 180.0);
 		_Ty sinth = sin(rad), costh = cos(rad);
-		Matrix<_Ty, 3, 3> mat = 
+		Matrix<_Ty, 3, 3> mat =
 		{
 			 1,	0, 0,
 			 0,	costh, -sinth,
@@ -115,10 +115,10 @@ public:
 		return mat;
 	}
 
-	//Returns a matrix that will transform a collumn vector by deg degrees around the y-axis.
+	//Returns a matrix that will transform a column vector by deg degrees around the y-axis.
 	static Matrix<_Ty, 3, 3> rotmaty(_Ty deg)
 	{
-		static_assert(_X == 3 && _Y == 3, "Please use with 3x3 matrix");
+		static_assert(_X == 3 && _Y == 3, "Only available with 3x3 matrix");
 
 		_Ty rad = deg * (M_PI / 180.0);
 		_Ty sinth = sin(rad), costh = cos(rad);
@@ -131,10 +131,10 @@ public:
 		return mat;
 	}
 
-	//Returns a matrix that will transform a collumn vector by deg degrees around the z-axis.
+	//Returns a matrix that will transform a column vector by deg degrees around the z-axis.
 	static Matrix<_Ty, 3, 3> rotmatz(_Ty deg)
 	{
-		static_assert(_X == 3 && _Y == 3, "Please use with 3x3 matrix");
+		static_assert(_X == 3 && _Y == 3, "Only available with 3x3 matrix");
 
 		_Ty rad = deg * (M_PI / 180.0);
 		_Ty sinth = sin(rad), costh = cos(rad);

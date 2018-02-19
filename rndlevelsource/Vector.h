@@ -20,7 +20,7 @@ public:
 	void vec(const Vertex&);
 	//Rotate the internal vector.
 	//The origin is not changed.
-	void rotate(const Matrix<double, 3, 3>&);
+	void rotate(const Matrix3d& rotmat);
 
 	Vector& operator+=(const Vector&);
 	Vector& operator-=(const Vector&);
@@ -30,6 +30,9 @@ public:
 	//Returns a vector that points from vertex 1 to vertex 2
 	static Vector diff(const Vertex&, const Vertex&);
 	static Vector allMinMax(const Vertex&, const Vertex&);
+
+	//Calculates the point where line A intersects with B.
+	//Returns invalid Vertex if the lines to not intersect.
 	static Vertex intersectPoint(const Vector&, const Vector&);
 
 	std::string toStr() const;

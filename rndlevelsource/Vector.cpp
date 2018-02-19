@@ -2,7 +2,7 @@
 
 #include <string>
 
-void Vector::rotate(const Matrix<double, 3, 3>& rotmat)
+void Vector::rotate(const Matrix3d& rotmat)
 {
 	_vec = _vec.rotate(rotmat);
 }
