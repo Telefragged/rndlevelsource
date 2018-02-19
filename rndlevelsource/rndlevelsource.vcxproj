@@ -144,7 +144,6 @@
     <ClInclude Include="BoundingBox.h" />
     <ClInclude Include="CompileTools.h" />
     <ClInclude Include="Connection.h" />
-    <ClInclude Include="defines.h" />
     <ClInclude Include="DispInfo.h" />
     <ClInclude Include="Editor.h" />
     <ClInclude Include="Entity.h" />

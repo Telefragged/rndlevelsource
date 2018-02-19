@@ -39,9 +39,6 @@
     <ClInclude Include="Connection.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="defines.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="DispInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
