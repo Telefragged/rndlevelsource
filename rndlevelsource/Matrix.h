@@ -29,7 +29,7 @@ public:
 		{
 		}
 
-		_Ty& operator[](size_t col) const
+		_Ty& operator[](size_t col)
 		{
 			return parent.arr_[row + col * parent.x()];
 		}
