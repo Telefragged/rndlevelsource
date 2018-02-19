@@ -29,13 +29,13 @@ public:
 	Matrix3d angleMatrix() const;
 
 	//Calculate rotation matrix from this angle to target angle.
-	Matrix3d calcRotation(const Angle&) const;
+	Matrix3d calcRotation(const Angle& target) const;
 
 	//Sets the pitch, yaw and roll of the angle to the values represented by the rotation matrix.
-	void fromMatrix(const Matrix3d&);
+	void fromMatrix(const Matrix3d& matrix);
 
-	Angle& operator+=(const Angle&);
-	Angle& operator-=(const Angle&);
+	Angle& operator+=(const Angle& rhs);
+	Angle& operator-=(const Angle& rhs);
 	Angle operator-() const;
 
 	Angle();

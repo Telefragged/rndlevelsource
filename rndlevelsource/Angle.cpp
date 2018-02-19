@@ -127,7 +127,7 @@ void Angle::fromMatrix(const Matrix3d& matrix)
 
 	double xyDist = sqrt(forward[0] * forward[0] + forward[1] * forward[1]);
 
-	if (xyDist > 0.0001)
+	if (!doubleeq(xyDist, 0))
 	{
 		(*this)[PITCH] = RAD2DEG( atan2( -forward[2], xyDist ) );
 		(*this)[YAW] = RAD2DEG( atan2( forward[1], forward[0] ) );
