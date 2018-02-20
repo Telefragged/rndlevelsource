@@ -39,7 +39,7 @@ unsigned int Side::parse(std::istream& stream)
 
 void Side::reID(unsigned int &sideID)
 {
-	id_ = +sideID;
+	id_ = ++sideID;
 }
 
 void Side::popuvars()

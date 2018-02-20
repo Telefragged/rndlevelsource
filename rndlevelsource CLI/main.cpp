@@ -22,8 +22,9 @@ int main(int argc, char* argv[])
 
 	std::cout << s.bbox().toStr() << ", " << s.origin().toStr() << "\n";
 
-	s.scale({ 2, 2, 2 });
+	s.scale({ 1, 1, 2 });
 
+	
 
 	part.entities[0].solids[0] = s;
 
