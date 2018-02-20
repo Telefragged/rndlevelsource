@@ -10,21 +10,37 @@ int main(int argc, char* argv[])
 
 	//std::mt19937 eng(rd());
 
-	Part part1("f:\\test\\rndmap\\room5.vmf");
-	Part part2("f:\\test\\rndmap\\room6.vmf");
+	//Part part1("f:\\test\\rndmap\\room5.vmf");
+	//Part part2("f:\\test\\rndmap\\room6.vmf");
 
-	World testWorld;
+	//World testWorld;
 
-	testWorld.addPart(part1);
-	for(int i = 0; i < 3; i++)
-		testWorld.addPart(part2);
+	//testWorld.addPart(part1);
+	//for(int i = 0; i < 3; i++)
+	//	testWorld.addPart(part2);
 
-	Part part = testWorld.collapse();
+	//Part part = testWorld.collapse();
 
-	part.moveTo({ 0, 0, 0 });
-	//part.toFile("f:\\test\\test2.vmf");
+	//part.moveTo({ 0, 0, 0 });
+	////part.toFile("f:\\test\\test2.vmf");
 
-	std::cout << part << "\n";
+	//std::cout << part << "\n";
+
+	Solid solid = {
+		{ { 0, 128, 128 },{ 128, 128, 128 },{ 128, 0, 128 } },
+		{ { 0, 0, 0 },{ 128, 0, 0 },{ 128, 128, 0 } },
+		{ { 0, 128, 128 },{ 0, 0, 128 },{ 0, 0, 0 } },
+		{ { 128, 128, 0 },{ 128, 0, 0 },{ 128, 0, 128 } },
+		{ { 128, 128, 128 },{ 0, 128, 128 },{ 0, 128, 0 } },
+		{ { 128, 0, 0 },{ 0, 0, 0 },{ 0, 0, 128 } }
+	};
+
+	solid.scale({ 1, 1, 2 });
+
+
+	std::cout << solid << std::endl;
+
+	std::cin.get();
 
 	//auto mat = Matrix3d::rotmatz(90);
 

@@ -8,7 +8,6 @@ namespace rndlevelsourceUnitTests
 {
 	TEST_CLASS(SolidTests)
 	{
-
 		// A solid stretching from {0, 0, 0} to {128, 128, 128}
 		// Created from intersecting planes
 		const Solid TestSolid = {

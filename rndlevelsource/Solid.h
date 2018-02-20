@@ -36,8 +36,9 @@ public:
 	bool slice(const Plane& plane, Solid& front, Solid& back) const;
 
 	unsigned int parse(std::istream&);
-	void rotate(const Vertex&, const Matrix3d&);
+	void rotate(const Vertex& point, const Matrix3d& rotmat);
 	void move(const Vector&);
+	void scale(const Vertex& scale);
 	void reID(unsigned int&, unsigned int&);
 	void addSide(const Side& side);
 	void fixSides();

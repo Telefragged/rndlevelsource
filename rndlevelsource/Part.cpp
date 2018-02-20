@@ -3,6 +3,7 @@
 #include <functional>
 #include <string>
 #include <stdio.h>
+
 #include "Angle.h"
 #include "BoundingBox.h"
 #include "DispInfo.h"
@@ -89,14 +90,12 @@ bool Part::testCollision(const Part& lhs, const Part& rhs)
 void Part::move(const Vector& vec)
 {
 	if (!Vertex::isVertex(vec.vec())) return;
+
 	for (Entity& e : entities)
-	{
 		e.move(vec);
-	}
+
 	for (auto& c : connections)
-	{
 		c.move(vec);
-	}
 }
 
 void Part::moveTo(const Vertex& pt)
@@ -106,10 +105,12 @@ void Part::moveTo(const Vertex& pt)
 
 	auto it = find_if(entities.begin(), entities.end(), &Entity::entworldcmp);
 	Vertex wOrig;
+
 	if (it == entities.end())
 		wOrig = Vertex(0, 0, 0);
 	else
 		wOrig = it->origin();
+
 	Vector mov = Vector::diff(wOrig, pt);
 	move(mov);
 }
@@ -143,13 +144,9 @@ void Part::rotate(const Angle& angle, const Vertex& pt)
 std::streampos Part::toFile(std::string filename) const
 {
 	std::ofstream file(filename, std::ios::trunc);
-	size_t bufsize = 128 * 1024;
-	char* buf = new char[bufsize];
-	file.rdbuf()->pubsetbuf(buf, bufsize);
 	file << *this;
 	std::streampos fsize = file.tellp();
 	file.close();
-	delete [] buf;
 	return fsize;
 }
 

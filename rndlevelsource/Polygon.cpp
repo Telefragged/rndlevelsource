@@ -48,6 +48,21 @@ void Polygon::moveTo(const Vertex & p)
 		p += dist;
 }
 
+void Polygon::scale(const Vertex &scale)
+{
+	auto orig = origin();
+
+	for (auto &point : points)
+	{
+		Vertex vec = Vector::diff(orig, point).vec();
+		vec.x(vec.x() * scale.x());
+		vec.y(vec.y() * scale.y());
+		vec.z(vec.z() * scale.z());
+
+		point = orig + vec;
+	}
+}
+
 void Polygon::slice(const Plane &plane)
 {
 	Polygon front, back;

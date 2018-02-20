@@ -120,6 +120,12 @@ void Solid::move(const Vector& vec)
 	}
 }
 
+void Solid::scale(const Vertex& scale)
+{
+	for (auto &side : sides)
+		side.polygon.scale(scale);
+}
+
 void Solid::reID(unsigned int &solidID, unsigned int &sideID)
 {
 	id_ = ++solidID;

@@ -23,7 +23,8 @@ public:
 
 	void rotate(const Vertex& point, const Matrix3d& rotmat);
 	void move(const Vertex& v);
-	void moveTo(const Vertex &p);
+	void moveTo(const Vertex& p);
+	void scale(const Vertex& scale);
 
 	void slice(const Plane&);
 	bool slice(const Plane&, Polygon&, Polygon&) const;
