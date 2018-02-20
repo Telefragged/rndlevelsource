@@ -100,7 +100,6 @@ bool Polygon::slice(const Plane &plane, Polygon &back, Polygon &front) const
 		{
 			Vertex start = points[i - 1];
 			Vector line = Vector::diff(start, end);
-			double len = line.vec().length();
 			Vertex intersect = Plane::intersectPoint(plane, line);
 			if (!Vertex::isVertex(intersect))
 				throw new std::exception("Expected intersection");

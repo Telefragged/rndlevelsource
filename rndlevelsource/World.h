@@ -9,7 +9,7 @@ class World
 	std::vector<Part> master;
 	std::mt19937_64 eng_;
 
-	static void World::filterFitHelper(const Part& p1, const Part& p2, const Part& test, std::vector<parttuple>& resList);
+	static void filterFitHelper(const Part& p1, const Part& p2, const Part& test, std::vector<parttuple>& resList);
 
 public:
 

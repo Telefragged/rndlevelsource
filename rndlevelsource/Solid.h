@@ -1,4 +1,4 @@
-#pragma
+#pragma once
 #include <vector>
 #include "Editor.h"
 #include "KeyValBase.h"
