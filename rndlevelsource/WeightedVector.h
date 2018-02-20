@@ -113,7 +113,7 @@ public:
 	_Ty* getIndexed(unsigned int index)
 	{
 		if (index >= vec.size()) return nullptr;
-		return &vec.at(index);
+		return &vec.at(index).second;
 	}
 
 	// Modify weight of the object pointed at by ptr.
