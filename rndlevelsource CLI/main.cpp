@@ -3,6 +3,7 @@
 #include "Part.h"
 #include "Angle.h"
 #include "World.h"
+#include "BoundingBox.h"
 
 int main(int argc, char* argv[])
 {
@@ -35,10 +36,20 @@ int main(int argc, char* argv[])
 		{ { 128, 0, 0 },{ 0, 0, 0 },{ 0, 0, 128 } }
 	};
 
+	solid.moveTo({ 0, 0, 0 });
+
+	auto box = solid.bbox();
+	std::cout << box.toStr() << "\n";
+
+	std::cout << solid.origin().toStr() << "\n";
+
 	solid.scale({ 1, 1, 2 });
 
+	box = solid.bbox();
 
-	std::cout << solid << std::endl;
+	std::cout << box.toStr() << "\n";
+
+	//std::cout << solid << std::endl;
 
 	std::cin.get();
 

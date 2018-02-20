@@ -115,9 +115,13 @@ void Solid::rotate(const Vertex& point, const Matrix3d& rotmat)
 void Solid::move(const Vector& vec)
 {
 	for (Side& s : sides)
-	{
 		s.move(vec);
-	}
+}
+
+void Solid::moveTo(const Vertex& point)
+{
+	Vector diff = Vector::diff(origin(), point);
+	move(diff);
 }
 
 void Solid::scale(const Vertex& scale)

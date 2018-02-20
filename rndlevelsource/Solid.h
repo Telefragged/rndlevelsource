@@ -38,6 +38,8 @@ public:
 	unsigned int parse(std::istream&);
 	void rotate(const Vertex& point, const Matrix3d& rotmat);
 	void move(const Vector&);
+	void moveTo(const Vertex& point);
+
 	void scale(const Vertex& scale);
 	void reID(unsigned int&, unsigned int&);
 	void addSide(const Side& side);
