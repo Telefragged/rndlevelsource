@@ -14,6 +14,25 @@ int main(int argc, char* argv[])
 	//Part part1("f:\\test\\rndmap\\room5.vmf");
 	//Part part2("f:\\test\\rndmap\\room6.vmf");
 
+	Part part("f:\\test\\TestMap.vmf");
+
+	Solid s = part.entities[0].solids[0];
+
+	s.moveTo({ 0, 0, 0 });
+
+	std::cout << s.bbox().toStr() << ", " << s.origin().toStr() << "\n";
+
+	s.scale({ 2, 2, 2 });
+
+
+	part.entities[0].solids[0] = s;
+
+	part.reID();
+
+	part.toFile("f:\\test\\ScaledMap.vmf");
+
+	std::cin.get();
+
 	//World testWorld;
 
 	//testWorld.addPart(part1);
@@ -26,32 +45,6 @@ int main(int argc, char* argv[])
 	////part.toFile("f:\\test\\test2.vmf");
 
 	//std::cout << part << "\n";
-
-	Solid solid = {
-		{ { 0, 128, 128 },{ 128, 128, 128 },{ 128, 0, 128 } },
-		{ { 0, 0, 0 },{ 128, 0, 0 },{ 128, 128, 0 } },
-		{ { 0, 128, 128 },{ 0, 0, 128 },{ 0, 0, 0 } },
-		{ { 128, 128, 0 },{ 128, 0, 0 },{ 128, 0, 128 } },
-		{ { 128, 128, 128 },{ 0, 128, 128 },{ 0, 128, 0 } },
-		{ { 128, 0, 0 },{ 0, 0, 0 },{ 0, 0, 128 } }
-	};
-
-	solid.moveTo({ 0, 0, 0 });
-
-	auto box = solid.bbox();
-	std::cout << box.toStr() << "\n";
-
-	std::cout << solid.origin().toStr() << "\n";
-
-	solid.scale({ 1, 1, 2 });
-
-	box = solid.bbox();
-
-	std::cout << box.toStr() << "\n";
-
-	//std::cout << solid << std::endl;
-
-	std::cin.get();
 
 	//auto mat = Matrix3d::rotmatz(90);
 

@@ -126,8 +126,10 @@ void Solid::moveTo(const Vertex& point)
 
 void Solid::scale(const Vertex& scale)
 {
+	Vertex orig = origin();
+
 	for (auto &side : sides)
-		side.polygon.scale(scale);
+		side.polygon.scale(orig, scale);
 }
 
 void Solid::reID(unsigned int &solidID, unsigned int &sideID)
@@ -167,8 +169,8 @@ void Solid::fixSides()
 
 BoundingBox Solid::bbox() const
 {
-	const double dmax = std::numeric_limits<double>::max();
-	const double dmin = -dmax;
+	constexpr double dmax = std::numeric_limits<double>::max();
+	constexpr double dmin = -dmax;
 	Vertex min(dmax, dmax, dmax);
 	Vertex max(dmin, dmin, dmin);
 	for (const Side& s : sides)
