@@ -171,6 +171,9 @@ void Part::scaleTo(double length)
 	if (connections.size() != 2)
 		throw std::exception("Part needs exactly 2 connections for scaling to work");
 
+	if (Vertex::countDifferentAxes(connections.getIndexed(1)->origin(), connections.getIndexed(0)->origin()) > 1)
+		throw std::exception("Connections can only have one differing axis");
+
 	Vertex diff = Vertex::absolute(connections.getIndexed(1)->origin() - connections.getIndexed(0)->origin());
 
 	if (!doubleeq(diff.x(), 0))
