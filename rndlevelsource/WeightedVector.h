@@ -6,15 +6,13 @@
 template <class _Ty>
 class WeightedVector
 {
-	std::vector<std::pair<unsigned int, _Ty>> vec;
+	std::vector<std::pair<size_t, _Ty>> vec;
 	size_t totalWeight = 0;
-
 public:
 
 	class iterator
 	{
-		std::_Vector_iterator<std::_Vector_val<std::_Simple_types<std::pair<unsigned int, _Ty>>>> iter; // Why do I have to do this?
-
+		typename std::vector<std::pair<size_t, _Ty>>::iterator iter;
 	public:
 		iterator(const decltype(iter)& iter)
 		{
@@ -40,8 +38,7 @@ public:
 
 	class const_iterator
 	{
-		std::_Vector_const_iterator<std::_Vector_val<std::_Simple_types<std::pair<unsigned int, _Ty>>>> iter; // Why do I have to do this?
-
+		typename std::vector<std::pair<size_t, _Ty>>::const_iterator iter;
 	public:
 		const_iterator(const decltype(iter)& iter)
 		{
@@ -91,10 +88,10 @@ public:
 		vec.push_back(std::pair<unsigned int, _Ty>(weight, elem));
 	}
 
-	void push_back(_Ty&& elem, unsigned int weight = 1)
+	void push_back(_Ty&& elem, size_t weight = 1)
 	{
 		totalWeight += weight;
-		vec.push_back(std::pair<unsigned int, _Ty>(weight, elem));
+		vec.push_back(std::pair<size_t, _Ty>(weight, elem));
 	}
 
 	_Ty* getWeighted(size_t weight)
@@ -102,7 +99,7 @@ public:
 		if (weight >= totalWeight)
 			return nullptr;
 
-		unsigned int cWeight = 0;
+		size_t cWeight = 0;
 		for (auto& pair : vec)
 		{
 			if (pair.first + cWeight > weight)

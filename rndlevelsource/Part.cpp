@@ -208,10 +208,9 @@ void Part::reID()
 	entityID_ = 0;
 	solidID_ = 0;
 	sideID_ = 0;
+
 	for (Entity& e : entities)
-	{
 		e.reID(entityID_, solidID_, sideID_);
-	}
 }
 
 //Merges world entities and copies all other entities
