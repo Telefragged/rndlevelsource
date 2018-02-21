@@ -8,8 +8,6 @@ private:
 	mutable size_t depth_ = 0;
 public:
 	std::unordered_map<std::string, std::string> keyvals;
-	KeyValBase();
-	~KeyValBase();
 
 	size_t depth() const;
 	void depth(size_t depth) const;
@@ -20,5 +18,7 @@ public:
 	std::string get(const std::string& key) const;
 
 	static std::string toStr(const std::pair<std::string, std::string>& pair, char enclose = '\"');
-};
 
+	KeyValBase();
+	virtual ~KeyValBase();
+};

@@ -2,8 +2,7 @@
 
 #include <iostream>
 
-KeyValBase::KeyValBase() :
-	depth_(0)
+KeyValBase::KeyValBase()
 {
 }
 
