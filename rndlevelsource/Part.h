@@ -44,9 +44,15 @@ public:
 	void moveTo(const Vertex& point);
 
 	// Performs a rotation around a fixed point
-	// By default the part rotates around the centre
-	// of its AABB
+	// By default the part rotates around its origin
 	void rotate(const Angle& angle, const Vertex& point = Vertex());
+
+	// Scales the part around its origin
+	void scale(const Vertex& scale);
+
+	// Scales the part to desired length
+	// Needs exactly two connections that share exactly two axes
+	void scaleTo(double length);
 
 	// Re-assigns all entity-, solid- and sideids so that they are unique and in order
 	// NOTE -- this is called by the parse and += methods

@@ -17,45 +17,7 @@ int main(int argc, char* argv[])
 
 	Part part("f:\\test\\TestMap.vmf");
 
-	auto orig = part.entities[0].origin();
-
-	double targetlen = 1500;
-
-	Vertex diff = Vertex::absolute(part.connections.getIndexed(1)->origin() - part.connections.getIndexed(0)->origin());
-
-	if(!doubleeq(diff.x(), 0))
-		diff.x(targetlen / diff.x());
-	else
-		diff.x(1.0);
-
-	if (!doubleeq(diff.y(), 0))
-		diff.y(targetlen / diff.y());
-	else
-		diff.y(1.0);
-
-	if (!doubleeq(diff.z(), 0))
-		diff.z(targetlen / diff.z());
-	else
-		diff.z(1.0);
-
-	Vertex scale = diff;
-
-	std::cout << diff.toStr() << "\n";
-
-	for(Solid &s : part.entities[0].solids)
-		s.scale(scale, orig);
-
-	for (Connection &c : part.connections)
-	{
-		Vertex vec = Vector::diff(orig, c.origin()).vec();
-		vec.x(vec.x() * scale.x());
-		vec.y(vec.y() * scale.y());
-		vec.z(vec.z() * scale.z());
-
-		c["origin"] = (orig + vec).toStr();
-
-		std::cout << c.origin().toStr() << "\n";
-	}
+	part.scaleTo(512);
 
 	part.toFile("f:\\test\\ScaledMap.vmf");
 

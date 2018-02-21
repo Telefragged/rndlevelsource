@@ -141,6 +141,56 @@ void Part::rotate(const Angle& angle, const Vertex& point)
 	}
 }
 
+void Part::scale(const Vertex& scale)
+{
+	auto it = find_if(entities.begin(), entities.end(), &Entity::entworldcmp);
+
+	Vertex orig;
+	if (it == entities.end())
+		orig = Vertex(0, 0, 0);
+	else
+		orig = it->origin();
+
+	for(Entity &e : entities)
+		for (Solid &s : e.solids)
+			s.scale(scale, orig);
+
+	for (Connection &c : connections)
+	{
+		Vertex vec = Vector::diff(orig, c.origin()).vec();
+		vec.x(vec.x() * scale.x());
+		vec.y(vec.y() * scale.y());
+		vec.z(vec.z() * scale.z());
+
+		c["origin"] = (orig + vec).toStr();
+	}
+}
+
+void Part::scaleTo(double length)
+{
+	if (connections.size() != 2)
+		throw std::exception("Part needs exactly 2 connections for scaling to work");
+
+	Vertex diff = Vertex::absolute(connections.getIndexed(1)->origin() - connections.getIndexed(0)->origin());
+
+	if (!doubleeq(diff.x(), 0))
+		diff.x(length / diff.x());
+	else
+		diff.x(1.0);
+
+	if (!doubleeq(diff.y(), 0))
+		diff.y(length / diff.y());
+	else
+		diff.y(1.0);
+
+	if (!doubleeq(diff.z(), 0))
+		diff.z(length / diff.z());
+	else
+		diff.z(1.0);
+
+	scale(diff);
+}
+
 std::streampos Part::toFile(const std::string& path) const
 {
 	std::ofstream file(path, std::ios::trunc);
