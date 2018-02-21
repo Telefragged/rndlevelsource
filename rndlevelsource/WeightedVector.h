@@ -161,7 +161,7 @@ public:
 	}
 
 	template <typename _Eng>
-	void addToRandomWeights(unsigned int distWeight, _Eng& engine)
+	void addToRandomWeights(size_t distWeight, _Eng& engine)
 	{
 		std::uniform_int_distribution<size_t> dist(0, vec.size() - 1);
 		for (unsigned int n = 0; n < distWeight; n++)
@@ -182,27 +182,25 @@ public:
 		return totalWeight;
 	}
 
-	unsigned int reachable() const
+	size_t reachable() const
 	{
-		unsigned int count = 0;
+		size_t count = 0;
 		for (const auto& pair : vec)
-		{
-			if (pair.first) count++;
-		}
+			if (pair.first > 0)
+				count++;
+
 		return count;
 	}
 
-	WeightedVector(const std::vector<_Ty>& other, unsigned int initWeight = 1)
+	WeightedVector(const std::vector<_Ty>& other, size_t initWeight = 1)
 	{
 		for (const auto& item : other)
-		{
 			vec.emplace_back(initWeight, item);
-		}
+
 		totalWeight = initWeight * other.size();
 	}
 
 	WeightedVector() = default;
-
 	~WeightedVector() = default;
 };
 
