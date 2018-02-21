@@ -14,7 +14,7 @@ class Solid :
 	public KeyValBase
 {
 private:
-	size_t id_;
+	size_t id_ = 0;
 	Editor edt;
 public:
 
@@ -31,17 +31,18 @@ public:
 
 	std::vector<Side> sides;
 
-	static bool testCollision(const Solid&, const Solid&);
+	static bool testCollision(const Solid& lhs, const Solid& rhs);
 
 	bool slice(const Plane& plane, Solid& front, Solid& back) const;
 
-	unsigned int parse(std::istream&);
+	unsigned int parse(std::istream& stream);
 	void rotate(const Vertex& point, const Matrix3d& rotmat);
-	void move(const Vector&);
+	void move(const Vector& vec);
 	void moveTo(const Vertex& point);
 
 	void scale(const Vertex& scale);
-	void reID(unsigned int&, unsigned int&);
+	void scale(const Vertex& scale, const Vertex& origin);
+	void reID(unsigned int& solidID, unsigned int& sideID);
 	void addSide(const Side& side);
 	void fixSides();
 
@@ -49,7 +50,7 @@ public:
 
 	Vertex origin() const;
 
-	friend std::ostream& operator<<(std::ostream&, const Solid&);
+	friend std::ostream& operator<<(std::ostream& os, const Solid& s);
 
 	Solid();
 	Solid(const std::initializer_list<Plane>& planes);

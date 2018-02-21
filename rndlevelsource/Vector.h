@@ -12,37 +12,37 @@ private:
 public:
 	//The origin of the vector in XYZ space
 	Vertex beg() const;
-	void beg(const Vertex&);
+	void beg(const Vertex& beg);
 	//The end point in XYZ space.
 	Vertex end() const;
 	//The internal vector.
 	Vertex vec() const;
-	void vec(const Vertex&);
+	void vec(const Vertex& vec);
 	//Rotate the internal vector.
 	//The origin is not changed.
 	void rotate(const Matrix3d& rotmat);
 
-	Vector& operator+=(const Vector&);
-	Vector& operator-=(const Vector&);
+	Vector& operator+=(const Vector& rhs);
+	Vector& operator-=(const Vector& rhs);
 
-	Vector& operator*=(double);
+	Vector& operator*=(double rhs);
 
 	//Returns a vector that points from vertex 1 to vertex 2
-	static Vector diff(const Vertex&, const Vertex&);
-	static Vector allMinMax(const Vertex&, const Vertex&);
+	static Vector diff(const Vertex& p1, const Vertex& p2);
+	static Vector allMinMax(const Vertex& v1, const Vertex& v2);
 
 	//Calculates the point where line A intersects with B.
 	//Returns invalid Vertex if the lines to not intersect.
-	static Vertex intersectPoint(const Vector&, const Vector&);
+	static Vertex intersectPoint(const Vector& lhs, const Vector& rhs);
 
 	std::string toStr() const;
 
 	Vector();
-	Vector(const Vertex&);
-	Vector(double, double, double);
+	Vector(const Vertex& vert);
+	Vector(double x, double y, double z);
 
 	//Construct vector with point and vector part
-	Vector(const Vertex&, const Vertex&);
+	Vector(const Vertex& beg, const Vertex& vec);
 	~Vector();
 };
 

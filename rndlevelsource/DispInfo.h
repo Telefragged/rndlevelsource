@@ -13,10 +13,10 @@ class SingleDisp
 public:
 
 	Vertex normal;
-	double distance;
+	double distance = 0.0;
 	Vertex offset;
 	Vertex offset_normal;
-	char alpha;
+	char alpha = 0;
 
 	SingleDisp();
 };
@@ -25,122 +25,129 @@ class DispInfo :
 	public KeyValBase
 {
 public:
-	unsigned int parse(std::istream&);
+	unsigned int parse(std::istream& stream);
 
 	std::vector<std::vector<SingleDisp>> info;
 
 	void setHeight(int x, int y, double height);
 
-	void rotate(const Vertex&, const Matrix3d&);
+	void rotate(const Vertex& point, const Matrix3d& rotmat);
 
-	friend std::ostream& operator<<(std::ostream&, const DispInfo&);
+	friend std::ostream& operator<<(std::ostream& os, const DispInfo& dispinfo);
 
-	DispInfo();
+	DispInfo() = default;
 };
 
-inline std::ostream& operator<<(std::ostream& os, const DispInfo& d)
+inline std::ostream& operator<<(std::ostream& os, const DispInfo& dispinfo)
 {
-	if (d.keyvals.size() == 0) return os;
-	os << std::setw(d.depth()) << "" << "dispinfo\n";
-	os << std::setw(d.depth()) << "" << "{\n";
-	for (const auto& pair : d.keyvals)
-	{
-		os << std::setw(d.depth()) << "" << "\t" << KeyValBase::toStr(pair) << "\n";
-	}
+	if (dispinfo.keyvals.empty())
+		return os;
 
-	int sz = (int)pow(2, atoi(d["power"].c_str())) + 1;
+	os << std::setw(dispinfo.depth()) << "" << "dispinfo\n";
+	os << std::setw(dispinfo.depth()) << "" << "{\n";
 
-	os << std::setw(d.depth()) << "" << "\tnormals\n";
-	os << std::setw(d.depth()) << "" << "\t{\n";
+	for (const auto& pair : dispinfo.keyvals)
+		os << std::setw(dispinfo.depth()) << "" << "\t" << KeyValBase::toStr(pair) << "\n";
+
+	int sz = (int)pow(2, atoi(dispinfo["power"].c_str())) + 1;
+
+	os << std::setw(dispinfo.depth()) << "" << "\tnormals\n";
+	os << std::setw(dispinfo.depth()) << "" << "\t{\n";
 	for (int n = 0; n < sz; n++)
 	{
-		os << std::setw(d.depth()) << "" << "\t\t";
+		os << std::setw(dispinfo.depth()) << "" << "\t\t";
 		os << "\"row";
 		os << std::to_string(n) + "\" \"";
 		bool first = true;
-		for (auto& disp : d.info[n])
+		for (auto& disp : dispinfo.info[n])
 		{
-			if (!first) os << ' ';
+			if (!first)
+				os << ' ';
+
 			os << disp.normal.toStr();
 			first = false;
 		}
 		os << "\"\n";
 	}
-	os << std::setw(d.depth()) << "" << "\t}\n";
+	os << std::setw(dispinfo.depth()) << "" << "\t}\n";
 
-	os << std::setw(d.depth()) << "" << "\tdistances\n";
-	os << std::setw(d.depth()) << "" << "\t{\n";
+	os << std::setw(dispinfo.depth()) << "" << "\tdistances\n";
+	os << std::setw(dispinfo.depth()) << "" << "\t{\n";
 	for (int n = 0; n < sz; n++)
 	{
-		os << std::setw(d.depth()) << "" << "\t\t";
+		os << std::setw(dispinfo.depth()) << "" << "\t\t";
 		os << "\"row";
 		os << std::to_string(n) + "\" \"";
 		bool first = true;
-		for (auto& disp : d.info[n])
+		for (auto& disp : dispinfo.info[n])
 		{
-			if (!first) os << ' ';
+			if (!first)
+				os << ' ';
 			os << disp.distance;
 			first = false;
 		}
 		os << "\"\n";
 	}
-	os << std::setw(d.depth()) << "" << "\t}\n";
+	os << std::setw(dispinfo.depth()) << "" << "\t}\n";
 
-	os << std::setw(d.depth()) << "" << "\toffsets\n";
-	os << std::setw(d.depth()) << "" << "\t{\n";
+	os << std::setw(dispinfo.depth()) << "" << "\toffsets\n";
+	os << std::setw(dispinfo.depth()) << "" << "\t{\n";
 	for (int n = 0; n < sz; n++)
 	{
-		os << std::setw(d.depth()) << "" << "\t\t";
+		os << std::setw(dispinfo.depth()) << "" << "\t\t";
 		os << "\"row";
 		os << std::to_string(n) + "\" \"";
 		bool first = true;
-		for (auto& disp : d.info[n])
+		for (auto& disp : dispinfo.info[n])
 		{
-			if (!first) os << ' ';
+			if (!first)
+				os << ' ';
 			os << disp.offset.toStr();
 			first = false;
 		}
 		os << "\"\n";
 	}
-	os << std::setw(d.depth()) << "" << "\t}\n";
+	os << std::setw(dispinfo.depth()) << "" << "\t}\n";
 
-	os << std::setw(d.depth()) << "" << "\toffset_normals\n";
-	os << std::setw(d.depth()) << "" << "\t{\n";
+	os << std::setw(dispinfo.depth()) << "" << "\toffset_normals\n";
+	os << std::setw(dispinfo.depth()) << "" << "\t{\n";
 	for (int n = 0; n < sz; n++)
 	{
-		os << std::setw(d.depth()) << "" << "\t\t";
+		os << std::setw(dispinfo.depth()) << "" << "\t\t";
 		os << "\"row";
 		os << std::to_string(n) + "\" \"";
 		bool first = true;
-		for (auto& disp : d.info[n])
+		for (auto& disp : dispinfo.info[n])
 		{
-			if (!first) os << ' ';
+			if (!first)
+				os << ' ';
 			os << disp.offset_normal.toStr();
 			first = false;
 		}
 		os << "\"\n";
 	}
-	os << std::setw(d.depth()) << "" << "\t}\n";
+	os << std::setw(dispinfo.depth()) << "" << "\t}\n";
 
-	os << std::setw(d.depth()) << "" << "\talphas\n";
-	os << std::setw(d.depth()) << "" << "\t{\n";
+	os << std::setw(dispinfo.depth()) << "" << "\talphas\n";
+	os << std::setw(dispinfo.depth()) << "" << "\t{\n";
 	for (int n = 0; n < sz; n++)
 	{
-		os << std::setw(d.depth()) << "" << "\t\t";
+		os << std::setw(dispinfo.depth()) << "" << "\t\t";
 		os << "\"row";
 		os << std::to_string(n) + "\" \"";
 		bool first = true;
-		for (auto& disp : d.info[n])
+		for (auto& disp : dispinfo.info[n])
 		{
-			if (!first) os << ' ';
+			if (!first)
+				os << ' ';
 			os << (int)disp.alpha;
 			first = false;
 		}
 		os << "\"\n";
 	}
-	os << std::setw(d.depth()) << "" << "\t}\n";
+	os << std::setw(dispinfo.depth()) << "" << "\t}\n";
 
-	os << std::setw(d.depth()) << "" << "}";
+	os << std::setw(dispinfo.depth()) << "" << "}";
 	return os;
 }
 

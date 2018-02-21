@@ -2,7 +2,7 @@
 #include <vector>
 #include "Part.h"
 
-typedef std::tuple<Part, unsigned int, unsigned int, const Connection *, const Connection *> parttuple;
+using parttuple = std::tuple<Part, unsigned int, unsigned int, const Connection *, const Connection *>;
 
 class World
 {
@@ -15,9 +15,9 @@ public:
 
 	std::vector<Part> parts;
 
-	bool testCollisions(Part*);
+	bool testCollisions(Part* partptr);
 
-	void addMaster(const Part&);
+	void addMaster(const Part& part);
 
 	template <typename _Ty, typename... Args>
 	void addMaster(_Ty t, Args ... args)
@@ -26,24 +26,24 @@ public:
 		addMaster(args...);
 	}
 
-	void addPart(const Part&);
+	void addPart(const Part& part);
 
 	void buildWorld();
 	// Align the part at a random connection to the selected connection
-	void movePart(Part*, const Connection*);
-	void removePart(unsigned int);
+	void movePart(Part* part, const Connection* prevc);
+	void removePart(size_t index);
 
-	static void movePart(Part*, Connection*, const Connection*);
+	static void movePart(Part* part, Connection* newc, const Connection* prevc);
 
 	Part collapse();
 
-	Connection* randConnection(Part&);
+	Connection* randConnection(Part& part);
 
-	Part* getPart(unsigned int);
+	Part* getPart(size_t index);
 
 	// Copies all combinations of all parts from the candidate list that fit between the two parts
-	static std::vector<parttuple> filterFit(const Part&, const Part&, const std::vector<Part>&);
-	std::vector<Part> filter(const Connection*, const std::vector<Part>&);
+	static std::vector<parttuple> filterFit(const Part& p1, const Part& p2, const std::vector<Part>& cands);
+	std::vector<Part> filter(const Connection* connection, const std::vector<Part>& parts);
 
 	World();
 	~World();

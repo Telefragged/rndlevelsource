@@ -18,14 +18,14 @@ class Side :
 	public KeyValBase
 {
 private:
-	unsigned int id_;
+	unsigned int id_ = 0;
 public:
 	DispInfo disp;
 	Axis uaxis, vaxis;
 	Polygon polygon;
 	//Plane p;
 
-	unsigned int parse(std::istream&);
+	unsigned int parse(std::istream& stream);
 
 	unsigned int id() const
 	{
@@ -37,13 +37,13 @@ public:
 	BoundingBox bbox() const;
 
 	void popuvars();
-	void rotate(const Vertex&, const Matrix3d&);
-	void move(const Vector&);
-	void reID(unsigned int&);
+	void rotate(const Vertex& point, const Matrix3d& rotmat);
+	void move(const Vector& vec);
+	void reID(unsigned int& sideID);
 
-	static bool testCollision(const Side&, const Side&);
+	static bool testCollision(const Side& lhs, const Side& rhs);
 
-	friend std::ostream& operator<<(std::ostream&, const Side& s);
+	friend std::ostream& operator<<(std::ostream& os, const Side& s);
 
 	Side();
 	~Side();

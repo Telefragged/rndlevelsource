@@ -7,7 +7,7 @@ template <class _Ty>
 class WeightedVector
 {
 	std::vector<std::pair<unsigned int, _Ty>> vec;
-	size_t totalWeight;
+	size_t totalWeight = 0;
 
 public:
 
@@ -99,7 +99,9 @@ public:
 
 	_Ty* getWeighted(size_t weight)
 	{
-		if (weight >= totalWeight) return nullptr;
+		if (weight >= totalWeight)
+			return nullptr;
+
 		unsigned int cWeight = 0;
 		for (auto& pair : vec)
 		{
@@ -202,13 +204,8 @@ public:
 		totalWeight = initWeight * other.size();
 	}
 
-	WeightedVector() :
-		totalWeight(0)
-	{
-	}
+	WeightedVector() = default;
 
-	~WeightedVector()
-	{
-	}
+	~WeightedVector() = default;
 };
 

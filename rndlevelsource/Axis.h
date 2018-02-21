@@ -7,15 +7,15 @@ class Axis
 {
 public:
 	Vertex v;
-	double trans;
-	double scale;
+	double trans = 0.0;
+	double scale = 0.25;
 
-	void parsestr(const std::string&);
-	void translate(const Vertex&);
+	void parsestr(const std::string& str);
+	void translate(const Vertex& translation);
 
 	std::string toStr() const;
 
-	Axis();
-	~Axis();
+	Axis() = default;
+	~Axis() = default;
 };
 

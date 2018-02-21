@@ -33,13 +33,10 @@ BoundingBox::BoundingBox(const Vector& v) :
 {
 }
 
-BoundingBox::BoundingBox(const Vertex& mn, const Vertex& mx) :
-	min(mn),
-	max(mx)
+BoundingBox::BoundingBox(const Vertex& min, const Vertex& max) :
+	min(min),
+	max(max)
 {
 }
 
-BoundingBox::~BoundingBox()
-{
-}
 

@@ -91,13 +91,13 @@ Connection* World::randConnection(Part& part)
 	return ptr;
 }
 
-void World::removePart(unsigned int index)
+void World::removePart(size_t index)
 {
 	if (index >= parts.size()) return;
 	parts.erase(parts.begin() + index);
 }
 
-Part* World::getPart(unsigned int index)
+Part* World::getPart(size_t index)
 {
 	if (index >= parts.size()) return nullptr;
 	return &parts.at(index);

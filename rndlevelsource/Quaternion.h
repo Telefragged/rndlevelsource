@@ -24,15 +24,15 @@ public:
 
 	Quaternion conjugate();
 
-	Quaternion& operator*=(const Quaternion&);
+	Quaternion& operator*=(const Quaternion& rhs);
 
-	double& operator[](unsigned int);
-	double operator[](unsigned int) const;
+	double& operator[](size_t pos);
+	double operator[](size_t pos) const;
 
 	Quaternion();
-	Quaternion(double, double, double, double);
-	Quaternion(const Angle&);
-	~Quaternion();
+	Quaternion(double x, double y, double z, double w);
+	Quaternion(const Angle& a);
+	~Quaternion() = default;
 };
 
 inline Quaternion operator*(Quaternion lhs, const Quaternion& rhs)

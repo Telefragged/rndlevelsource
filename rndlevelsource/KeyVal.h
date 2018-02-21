@@ -18,12 +18,12 @@ public:
 	// void fromInt(int);
 	// void fromDouble(double);
 
-	static bool keycmp(const KeyVal&, const std::string&);
+	static bool keycmp(const KeyVal& lhs, const std::string& rhs);
 	//static bool keyregex(const KeyVal&, const std::string&);
 
 	KeyVal();
-	KeyVal(const std::string&);
-	KeyVal(std::string, std::string);
+	KeyVal(const std::string& str);
+	KeyVal(const std::string& k, const std::string& v);
 	~KeyVal();
 };
 

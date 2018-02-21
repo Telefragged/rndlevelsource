@@ -10,10 +10,8 @@
 
 SingleDisp::SingleDisp()
 	: normal(0, 0, 1)
-	  , distance(0)
 	  , offset(0, 0, 0)
 	  , offset_normal(0, 0, 1)
-	  , alpha(0)
 {
 }
 
@@ -34,9 +32,10 @@ unsigned int DispInfo::parse(std::istream& stream)
 		if (trim(curline) == "}")
 		{
 			std::cout << "IS THIS REAL LIFE??\n";
-			if (--depth == 0) break;
+			if (--depth == 0)
+				break;
 		}
-		else if (trim(curline) != "" && trim(curline)[0] != '\"')
+		else if (!trim(curline).empty() && trim(curline)[0] != '\"')
 		{
 			auto cpos = stream.tellg();
 			std::string peekline;
@@ -50,14 +49,10 @@ unsigned int DispInfo::parse(std::istream& stream)
 				{
 					numparsed++;
 					if (trim(curline) == "}")
-					{
 						break;
-					}
-					else
-					{
-						KeyVal k(curline);
-						group[k.key] = k.val;
-					}
+
+					KeyVal k(curline);
+					group[k.key] = k.val;
 				}
 				tempKeys[groupName] = move(group);
 			}
@@ -116,7 +111,7 @@ void DispInfo::rotate(const Vertex& point, const Matrix3d& rotmat)
 {
 	//mictimer rotatetimer("ms Side::rotate()", 1000.0);
 
-	if (keyvals.size() == 0) return;
+	if (keyvals.empty()) return;
 
 	Vertex startpos((*this)["startposition"]);
 	startpos = startpos.rotate(point, rotmat);
@@ -127,7 +122,4 @@ void DispInfo::rotate(const Vertex& point, const Matrix3d& rotmat)
 			disp.offset_normal = disp.offset_normal.rotate(rotmat);
 }
 
-DispInfo::DispInfo()
-{
-}
 

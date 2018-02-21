@@ -15,22 +15,10 @@ unsigned int Editor::parse(std::istream& stream)
 	{
 		numparsed++;
 		if (trim(curline) == "}")
-		{
 			break;
-		}
-		else
-		{
-			keyvals.emplace_back(curline);
-		}
+
+		keyvals.emplace_back(curline);
 	}
 	return numparsed;
-}
-
-Editor::Editor(): depth_(0)
-{
-}
-
-Editor::~Editor()
-{
 }
 

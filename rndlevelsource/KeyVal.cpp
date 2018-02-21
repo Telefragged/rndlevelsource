@@ -71,7 +71,7 @@ KeyVal::KeyVal(const std::string& str)
 	this->val = right;
 }
 
-KeyVal::KeyVal(std::string k, std::string v) :
+KeyVal::KeyVal(const std::string& k, const std::string& v) :
 	key(k),
 	val(v)
 {

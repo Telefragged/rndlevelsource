@@ -9,12 +9,8 @@ Connection::Connection(Entity&& entity) : isConnected(false)
 	if (keyvals.count("classname") > 0)
 	{
 		std::string val = keyvals["classname"];
+
 		if (val.length() > 12)
 			connectstr = val.substr(12);
 	}
 }
-
-Connection::~Connection()
-{
-}
-

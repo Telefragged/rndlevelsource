@@ -126,13 +126,17 @@ void Solid::moveTo(const Vertex& point)
 
 void Solid::scale(const Vertex& scale)
 {
-	Vertex orig = origin();
-
-	for (auto &side : sides)
-		side.polygon.scale(orig, scale);
+	Vertex origin = this->origin();
+	this->scale(scale, origin);
 }
 
-void Solid::reID(unsigned int &solidID, unsigned int &sideID)
+void Solid::scale(const Vertex & scale, const Vertex & origin)
+{
+	for (auto &side : sides)
+		side.polygon.scale(origin, scale);
+}
+
+void Solid::reID(unsigned int& solidID, unsigned int& sideID)
 {
 	id_ = ++solidID;
 	for (Side& side : sides)

@@ -4,7 +4,7 @@
 #include "utils.h"
 #include "Vector.h"
 
-void Plane::parsestr(std::string pstr)
+void Plane::parsestr(const std::string& pstr)
 {
 	size_t spos, epos = 0;
 	spos = pstr.find_first_of('(', epos);
@@ -62,7 +62,7 @@ Plane Plane::vectorPlane(const Vector& line1, const Vector& line2)
 
 	Vertex p1 = line1.beg();
 	Vertex p2 = line1.end();
-	Vertex p3 = !(Vertex::equals(p3, p1) || Vertex::equals(p3, p2)) ? line2.beg() : line2.end();
+	Vertex p3 = !(Vertex::equals(line2.beg(), p1) || Vertex::equals(line2.beg(), p2)) ? line2.beg() : line2.end();
 
 	Plane ret;
 	ret.p1 = p1;
@@ -114,8 +114,7 @@ Vector Plane::intersectLine(const Plane& lhs, const Plane& rhs)
 		return Vector();
 	}
 	
-	Vector ret(interLine.normalize());
-	ret.beg(commonPoint);
+	Vector ret(commonPoint, interLine.normalize());
 	return ret;
 }
 
@@ -145,16 +144,16 @@ double Plane::dist(const Plane& plane, const Vertex& point)
 	return normal.dotProduct(point) + eq[0][3];
 }
 
-double Plane::dist(const Vector& line, const Vertex& pt)
+double Plane::dist(const Vector& line, const Vertex& point)
 {
-	Vertex ptv(line.beg() - pt);
+	Vertex ptv(line.beg() - point);
 	Vertex crpd = Vertex::crossProduct(ptv, line.vec());
 	return crpd.length() / line.vec().length();
 }
 
-double Plane::dist(const Vertex& pt, const Vertex& to)
+double Plane::dist(const Vertex& point, const Vertex& other)
 {
-	return (pt - to).length();
+	return (point - other).length();
 }
 
 std::string Plane::toStr() const
@@ -164,19 +163,13 @@ std::string Plane::toStr() const
 	return ret;
 }
 
-Plane::Plane(void)
-{
-}
 
-Plane::Plane(const std::string &str)
+Plane::Plane(const std::string& str)
 {
 	this->parsestr(str);
 }
 
-Plane::Plane(const Vertex &p1, const Vertex &p2, const Vertex &p3) : p1(p1), p2(p2), p3(p3)
+Plane::Plane(const Vertex& p1, const Vertex& p2, const Vertex& p3) : p1(p1), p2(p2), p3(p3)
 {
 }
 
-Plane::~Plane(void)
-{
-}

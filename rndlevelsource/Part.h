@@ -17,7 +17,7 @@ public:
 	WeightedVector<Connection> connections;
 
 	//Test collision between parts
-	static bool testCollision(const Part&, const Part&);
+	static bool testCollision(const Part& lhs, const Part& rhs);
 
 	// Generate a random room
 	// Thickness determines the brush thickness
@@ -25,44 +25,44 @@ public:
 
 	// Parse contents of stream in .vmf format
 	// Parses until end of stream
-	unsigned int parse(std::istream&);
+	unsigned int parse(std::istream& stream);
 	// Open and parse file in .vmf (valve map format) format.
-	unsigned int parse(std::string);
+	unsigned int parse(const std::string& path);
 	// Counts number of entities in the part with the exact same classname
-	unsigned int countEntities(std::string) const;
+	unsigned int countEntities(const std::string& classname) const;
 
 	// Opens and writes a file in .vmf format
-	std::streampos toFile(std::string) const;
+	std::streampos toFile(const std::string& path) const;
 
 	// Returns an AABB with the min and max coordinates of this part
 	BoundingBox bbox() const;
 
 	// Move the part
-	void move(const Vector&);
+	void move(const Vector& vec);
 
 	// Move the part to specified coordinates
-	void moveTo(const Vertex&);
+	void moveTo(const Vertex& point);
 
 	// Performs a rotation around a fixed point
 	// By default the part rotates around the centre
 	// of its AABB
-	void rotate(const Angle&, const Vertex& pt = Vertex());
+	void rotate(const Angle& angle, const Vertex& point = Vertex());
 
 	// Re-assigns all entity-, solid- and sideids so that they are unique and in order
 	// NOTE -- this is called by the parse and += methods
 	void reID();
 
-	Part& operator+=(const Part&);
-	Entity& operator[](std::string);
+	Part& operator+=(const Part& rhs);
+	Entity& operator[](const std::string& classname);
 
-	friend std::ostream& operator<<(std::ostream&, const Part&);
-	friend std::istream& operator>>(std::istream&, Part&);
+	friend std::ostream& operator<<(std::ostream& os, const Part& p);
+	friend std::istream& operator>>(std::istream& is, Part& p);
 
-	Part();
+	Part() = default;
 
 	// Open and parse file in .vmf format
 	Part(std::string);
-	~Part();
+	~Part() = default;
 };
 
 inline std::ostream& operator<<(std::ostream& os, const Part& p)

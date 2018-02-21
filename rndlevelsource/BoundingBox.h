@@ -16,8 +16,8 @@ public:
 	std::string toStr() const;
 
 	BoundingBox();
-	BoundingBox(const Vector&);
+	BoundingBox(const Vector& v);
 	BoundingBox(const Vertex& min, const Vertex& max);
-	~BoundingBox();
+	~BoundingBox() = default;
 };
 

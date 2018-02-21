@@ -16,7 +16,7 @@ public:
 	std::string toStr() const override;
 
 	//Returns true if all angles are non-NAN, return false otherwise.
-	static bool isAngle(const Angle&);
+	static bool isAngle(const Angle& a);
 
 	double pitch() const;
 	double yaw() const;
@@ -38,11 +38,11 @@ public:
 	Angle& operator-=(const Angle& rhs);
 	Angle operator-() const;
 
-	Angle();
-	Angle(const std::string&);
+	Angle() = default;
+	Angle(const std::string& str);
 	Angle(double pitch, double yaw, double roll);
 
-	virtual ~Angle();
+	~Angle() override = default;
 };
 
 inline Angle operator+(Angle lhs, const Angle& rhs)

@@ -37,7 +37,7 @@ unsigned int Side::parse(std::istream& stream)
 	return numparsed;
 }
 
-void Side::reID(unsigned int &sideID)
+void Side::reID(unsigned int& sideID)
 {
 	id_ = ++sideID;
 }
@@ -76,9 +76,9 @@ void Side::rotate(const Vertex& point, const Matrix3d& rotmat)
 	disp.rotate(point, rotmat);
 }
 
-void Side::move(const Vector& v)
+void Side::move(const Vector& vec)
 {
-	Vertex mov = v.vec();
+	Vertex mov = vec.vec();
 	polygon.move(mov);
 	uaxis.translate(mov);
 	vaxis.translate(mov);

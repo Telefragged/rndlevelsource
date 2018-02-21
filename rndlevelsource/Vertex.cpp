@@ -211,15 +211,15 @@ bool Vertex::operator==(const Vertex& other) const
 	return doubleeq(x(), other.x()) && doubleeq(y(), other.y()) && doubleeq(z(), other.z());
 }
 
-bool Vertex::operator<(const Vertex& other) const
+bool Vertex::operator<(const Vertex& rhs) const
 {
-	if (!doubleeq(x(), other.x()) && x() < other.x())
+	if (!doubleeq(x(), rhs.x()) && x() < rhs.x())
 		return true;
 
-	if (!doubleeq(y(), other.y()) && y() < other.y())
+	if (!doubleeq(y(), rhs.y()) && y() < rhs.y())
 		return true;
 
-	if (!doubleeq(z(), other.z()) && z() < other.z())
+	if (!doubleeq(z(), rhs.z()) && z() < rhs.z())
 		return true;
 
 	return false;
@@ -266,12 +266,12 @@ Vertex Vertex::crossProduct(const Vertex& rhs) const
 		vertex_[0] * rhs.vertex_[1] - vertex_[1] * rhs.vertex_[0]);
 }
 
-double Vertex::operator[](unsigned int pos) const
+double Vertex::operator[](size_t pos) const
 {
 	return vertex_[pos];
 }
 
-double& Vertex::operator[](unsigned int pos)
+double& Vertex::operator[](size_t pos)
 {
 	return vertex_[pos];
 }

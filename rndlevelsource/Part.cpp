@@ -45,9 +45,9 @@ unsigned int Part::parse(std::istream& stream)
 	return numparsed;
 }
 
-unsigned int Part::parse(std::string filepath)
+unsigned int Part::parse(const std::string& path)
 {
-	std::ifstream file(filepath);
+	std::ifstream file(path);
 	if (!file.good())
 		throw std::exception("Failed to open file");
 
@@ -56,7 +56,7 @@ unsigned int Part::parse(std::string filepath)
 	return ret;
 }
 
-unsigned int Part::countEntities(std::string classname) const
+unsigned int Part::countEntities(const std::string& classname) const
 {
 	unsigned int count = 0;
 	for (const Entity& entity : entities)
@@ -98,7 +98,7 @@ void Part::move(const Vector& vec)
 		c.move(vec);
 }
 
-void Part::moveTo(const Vertex& pt)
+void Part::moveTo(const Vertex& point)
 {
 	using namespace std;
 	using namespace placeholders;
@@ -111,17 +111,17 @@ void Part::moveTo(const Vertex& pt)
 	else
 		wOrig = it->origin();
 
-	Vector mov = Vector::diff(wOrig, pt);
+	Vector mov = Vector::diff(wOrig, point);
 	move(mov);
 }
 
-void Part::rotate(const Angle& angle, const Vertex& pt)
+void Part::rotate(const Angle& angle, const Vertex& point)
 {
 	auto it = find_if(entities.begin(), entities.end(), &Entity::entworldcmp);
 
 	Vertex orig;
-	if (Vertex::isVertex(pt))
-		orig = pt;
+	if (Vertex::isVertex(point))
+		orig = point;
 	else if (it == entities.end())
 		orig = Vertex(0, 0, 0);
 	else
@@ -141,9 +141,9 @@ void Part::rotate(const Angle& angle, const Vertex& pt)
 	}
 }
 
-std::streampos Part::toFile(std::string filename) const
+std::streampos Part::toFile(const std::string& path) const
 {
-	std::ofstream file(filename, std::ios::trunc);
+	std::ofstream file(path, std::ios::trunc);
 	file << *this;
 	std::streampos fsize = file.tellp();
 	file.close();
@@ -192,7 +192,7 @@ Part& Part::operator+=(const Part& rhs)
 
 //Returns reference to a entity with classname equal to argument.
 //If no such entity exists, the function will create one and return its reference.
-Entity& Part::operator[](std::string classname)
+Entity& Part::operator[](const std::string& classname)
 {
 	auto it = find_if(entities.begin(), entities.end(), bind(&Entity::entclasscmp, std::placeholders::_1, classname));
 	if (it == entities.end())
@@ -202,20 +202,9 @@ Entity& Part::operator[](std::string classname)
 	return *it;
 }
 
-Part::Part(void)
-{
-	entityID_ = 0;
-	solidID_ = 0;
-	sideID_ = 0;
-}
-
 Part::Part(std::string filepath) : Part()
 {
 	parse(filepath);
 }
 
-
-Part::~Part(void)
-{
-}
 

@@ -246,7 +246,7 @@ public:
 	}
 };
 
-typedef Matrix<double, 3, 3> Matrix3d;
+using Matrix3d = Matrix<double, 3, 3>;
 
 template <class _Ty, size_t _X, size_t _Y>
 std::ostream& operator<<(std::ostream& stream, const Matrix<_Ty, _X, _Y>& matrix)

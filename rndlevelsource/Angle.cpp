@@ -1,7 +1,7 @@
 #include "Angle.h"
 
-#include <math.h>
-#include <assert.h>
+#include <cmath>
+#include <cassert>
 #include <sstream>
 
 #include "Matrix.h"
@@ -36,9 +36,6 @@
 //#endif
 //}
 
-Angle::Angle() : Vertex()
-{
-}
 
 Angle::Angle(const std::string& str) : Vertex(str)
 {
@@ -174,23 +171,27 @@ Angle& Angle::operator-=(const Angle& rhs)
 Angle Angle::operator-() const
 {
 	Angle ret;
-	if (x() > 0) ret.x(x() - 180.0);
-	else ret.x(x() + 180.0);
-	if (y() > 0) ret.y(y() - 180.0);
-	else ret.y(y() + 180.0);
-	if (z() > 0) ret.z(z() - 180.0);
-	else ret.z(z() + 180.0);
+	if (x() > 0)
+		ret.x(x() - 180.0);
+	else
+		ret.x(x() + 180.0);
+
+	if (y() > 0)
+		ret.y(y() - 180.0);
+	else
+		ret.y(y() + 180.0);
+
+	if (z() > 0)
+		ret.z(z() - 180.0);
+	else
+		ret.z(z() + 180.0);
+
 	return ret;
 }
 
-Angle::Angle(double x, double y, double z)
+Angle::Angle(double pitch, double yaw, double roll)
 {
-	vertex_[0] = x;
-	vertex_[1] = y;
-	vertex_[2] = z;
+	vertex_[0] = pitch;
+	vertex_[1] = yaw;
+	vertex_[2] = roll;
 }
-
-Angle::~Angle()
-{
-}
-

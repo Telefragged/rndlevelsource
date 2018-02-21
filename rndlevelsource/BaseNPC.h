@@ -5,7 +5,7 @@ class BaseNPC :
 	public Entity
 {
 public:
-	BaseNPC();
-	~BaseNPC();
+	BaseNPC() = default;
+	~BaseNPC() = default;
 };
 

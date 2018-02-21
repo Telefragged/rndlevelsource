@@ -17,7 +17,7 @@ public:
 
 	std::vector<Vertex> points;
 
-	classification classify(const Plane&) const;
+	classification classify(const Plane& plane) const;
 
 	Vertex origin() const;
 
@@ -28,14 +28,14 @@ public:
 	void scale(const Vertex& scale);
 	void scale(const Vertex& origin, const Vertex& scale);
 
-	void slice(const Plane&);
-	bool slice(const Plane&, Polygon&, Polygon&) const;
+	void slice(const Plane& plane);
+	bool slice(const Plane& plane, Polygon& back, Polygon& front) const;
 
 	void flip();
 	void roundPoints(size_t precision = 3);
 
-	Polygon();
+	Polygon() = default;
 	Polygon(const Plane& p);
-	Polygon(const std::initializer_list<Vertex> &);
-	~Polygon();
+	Polygon(const std::initializer_list<Vertex>& points);
+	~Polygon() = default;
 };

@@ -1,16 +1,19 @@
 #pragma once
 #include <limits>
-#include <math.h>
+#include <cmath>
 #include <sstream>
 #include <string>
 #include <vector>
 
 inline std::string nextword(size_t& pos, const std::string& str, std::string delim = " \t\n\r")
 {
-	if (pos >= str.length()) return "";
+	if (pos >= str.length())
+		return "";
+
 	size_t spos = pos;
 	size_t to = str.find_first_of(delim, pos);
-	if (to == std::string::npos) to = str.length();
+	if (to == std::string::npos)
+		to = str.length();
 	pos = to + 1;
 	return str.substr(spos, to - spos);
 }
@@ -18,7 +21,9 @@ inline std::string nextword(size_t& pos, const std::string& str, std::string del
 inline std::string trim(const std::string& str, const std::string delim = " \t\n\r")
 {
 	size_t bpos = str.find_first_not_of(delim), epos = str.find_last_not_of(delim);
-	if (epos < bpos || epos >= str.length()) return "";
+	if (epos < bpos || epos >= str.length())
+		return "";
+
 	return str.substr(bpos, epos - bpos + 1);
 }
 

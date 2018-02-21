@@ -6,16 +6,16 @@ class CompileTools
 {
 public:
 
-	static std::string getabspath(std::string partial);
+	static std::string getabspath(std::string partialpath);
 	static std::string removeext(std::string file);
 
-	static void exec(std::string exec, std::string param, bool output = true);
-	static void copyfile(std::string original, std::string copy, bool confirm = false);
-	static void cleanup(std::string);
+	static void exec(const std::string& binarypath, const std::string& param, bool showoutput = true);
+	static void copyfile(const std::string& existing, const std::string& newfile, bool confirm = false);
+	static void cleanup(const std::string& vmfpath);
 
-	static void runtools(std::string vmffile, std::string gamedir);
+	static void runtools(std::string file, std::string gamedir);
 
-	CompileTools();
-	~CompileTools();
+	CompileTools() = default;
+	~CompileTools() = default;
 };
 

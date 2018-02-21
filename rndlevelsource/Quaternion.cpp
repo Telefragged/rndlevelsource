@@ -92,7 +92,7 @@ Quaternion& Quaternion::operator*=(const Quaternion& rhs)
 	return *this;
 }
 
-double Quaternion::operator[](unsigned int pos) const
+double Quaternion::operator[](size_t pos) const
 {
 	switch (pos)
 	{
@@ -108,7 +108,7 @@ double Quaternion::operator[](unsigned int pos) const
 	return std::numeric_limits<double>::quiet_NaN();
 }
 
-double& Quaternion::operator[](unsigned int pos)
+double& Quaternion::operator[](size_t pos)
 {
 	switch (pos)
 	{
@@ -146,8 +146,3 @@ Quaternion::Quaternion(const Angle& a)
 	xyz_.z(crXcp * sp - srXsp * cp); // Z
 	w_ = crXcp * cp + srXsp * sp; // W (real component)
 }
-
-Quaternion::~Quaternion()
-{
-}
-

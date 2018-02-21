@@ -19,7 +19,7 @@ int main(int argc, char* argv[])
 
 	auto orig = part.entities[0].origin();
 
-	double targetlen = 384.0;
+	double targetlen = 1500;
 
 	Vertex diff = Vertex::absolute(part.connections.getIndexed(1)->origin() - part.connections.getIndexed(0)->origin());
 
@@ -43,7 +43,7 @@ int main(int argc, char* argv[])
 	std::cout << diff.toStr() << "\n";
 
 	for(Solid &s : part.entities[0].solids)
-		s.scale(scale);
+		s.scale(scale, orig);
 
 	for (Connection &c : part.connections)
 	{

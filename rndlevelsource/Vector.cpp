@@ -87,7 +87,7 @@ Vertex Vector::beg() const
 	return _orig;
 }
 
-void Vector::beg(const Vertex &beg)
+void Vector::beg(const Vertex& beg)
 {
 	_orig = beg;
 }

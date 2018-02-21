@@ -1,12 +1,12 @@
 #include "Axis.h"
 
-void Axis::parsestr(const std::string& pstr)
+void Axis::parsestr(const std::string& str)
 {
-	size_t epos = pstr.find_first_of(']') + 1;
+	size_t epos = str.find_first_of(']') + 1;
 	if (epos == std::string::npos)
 		throw std::exception("Invalid axis string");
 
-	std::string fstr = trim(pstr.substr(0, epos), "[]");
+	std::string fstr = trim(str.substr(0, epos), "[]");
 	size_t vpos = fstr.find_last_of(' ');
 
 	std::string parstr = fstr.substr(0, vpos);
@@ -15,15 +15,15 @@ void Axis::parsestr(const std::string& pstr)
 	parstr = fstr.substr(vpos + 1);
 	trans = atof(parstr.c_str());
 
-	parstr = pstr.substr(fstr.length() + 3);
+	parstr = str.substr(fstr.length() + 3);
 	scale = atof(parstr.c_str());
 }
 
-void Axis::translate(const Vertex& mov)
+void Axis::translate(const Vertex& translation)
 {
-	trans -= (mov.x() * v.x()) / scale;
-	trans -= (mov.y() * v.y()) / scale;
-	trans -= (mov.z() * v.z()) / scale;
+	trans -= (translation.x() * v.x()) / scale;
+	trans -= (translation.y() * v.y()) / scale;
+	trans -= (translation.z() * v.z()) / scale;
 }
 
 std::string Axis::toStr() const
@@ -31,13 +31,5 @@ std::string Axis::toStr() const
 	std::ostringstream os;
 	os << "[" << v.toStr() << " " << trans << "] " << scale;
 	return os.str();
-}
-
-Axis::Axis(): trans(0), scale(0)
-{
-}
-
-Axis::~Axis()
-{
 }
 

@@ -37,7 +37,8 @@ unsigned int Entity::parse(std::istream& stream)
 		}
 		else if (trim(curline) == "}")
 		{
-			if (--depth == 0) break;
+			if (--depth == 0)
+				break;
 		}
 		else if (trim(curline) == "{")
 		{
@@ -76,10 +77,11 @@ bool Entity::entclasscmp(const Entity& lhs, const std::string& rhs)
 {
 	if (lhs.keyvals.count("classname") == 0)
 		return false;
+
 	else if (lhs.keyvals.at("classname") == rhs)
 		return true;
-	else
-		return false;
+
+	return false;
 }
 
 bool Entity::entworldcmp(const Entity& entity)
@@ -110,7 +112,12 @@ Entity Entity::defaultWorldEntity()
 Vertex Entity::origin() const
 {
 	auto val = (*this)["origin"];
-	if (val != "") return Vertex(val);
+
+	bool empty = val.empty();
+
+	if (!val.empty())
+		return Vertex(val);
+
 	BoundingBox b = bbox();
 	Vector vec = Vector::diff(b.min, b.max);
 	Vertex mod = 0.5 * vec.vec();
@@ -126,7 +133,10 @@ Vertex Entity::originKV() const
 Angle Entity::angles() const
 {
 	auto val = (*this)["angles"];
-	if (val != "") return Angle(val);
+
+	if (val.empty())
+		return Angle(val);
+
 	return Angle();
 }
 
@@ -197,17 +207,8 @@ BoundingBox Entity::bbox() const
 	return BoundingBox(min, max);
 }
 
-Entity::Entity()
-{
-}
-
 Entity::Entity(const std::string& classname) :
 	id_(0)
 {
 	keyvals["classname"] = classname;
 }
-
-Entity::~Entity()
-{
-}
-

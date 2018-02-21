@@ -21,18 +21,18 @@ void KeyValBase::depth(size_t depth) const
 	depth_ = depth;
 }
 
-std::string KeyValBase::operator[](std::string key) const
+std::string KeyValBase::operator[](const std::string& key) const
 {
 	if (keyvals.count(key) == 0) return "";
 	return keyvals.at(key);
 }
 
-std::string& KeyValBase::operator[](std::string key)
+std::string& KeyValBase::operator[](const std::string& key)
 {
 	return keyvals[key];
 }
 
-std::string KeyValBase::get(std::string key) const
+std::string KeyValBase::get(const std::string& key) const
 {
 	return (*this)[key];
 }

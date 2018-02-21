@@ -20,28 +20,29 @@ public:
 	Vertex originKV() const;
 	Angle angles() const;
 
-	unsigned int parse(std::istream&);
+	unsigned int parse(std::istream& stream);
 
-	static bool testCollision(const Entity&, const Entity&);
-	static bool entclasscmp(const Entity&, const std::string&);
-	static bool entworldcmp(const Entity&);
+	static bool testCollision(const Entity& lhs, const Entity& rhs);
+	static bool entclasscmp(const Entity& lhs, const std::string& rhs);
+	static bool entworldcmp(const Entity& entity);
 
+	// Creates a default "worldspawn" entity.
 	static Entity defaultWorldEntity();
 
-	void rotate(const Matrix3d&, const Vertex&);
-	void move(const Vector&);
-	void mergeSolids(const Entity&);
-	void reID(unsigned int&, unsigned int&, unsigned int&);
+	void rotate(const Matrix3d& rotmat, const Vertex& pt);
+	void move(const Vector& vec);
+	void mergeSolids(const Entity& entity);
+	void reID(unsigned int& entityID, unsigned int& solidID, unsigned int& sideID);
 
 	BoundingBox bbox() const;
 
-	friend std::ostream& operator<<(std::ostream&, const Entity&);
+	friend std::ostream& operator<<(std::ostream& os, const Entity& e);
 
-	friend Connection;
+	friend class Connection;
 
-	Entity();
-	Entity(const std::string&);
-	~Entity();
+	Entity() = default;
+	Entity(const std::string& classname);
+	~Entity() = default;
 };
 
 inline std::ostream& operator<<(std::ostream& os, const Entity& e)

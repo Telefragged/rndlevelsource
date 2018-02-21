@@ -2,7 +2,7 @@
 #include <algorithm>
 #include <numeric>
 
-Polygon::classification Polygon::classify(const Plane &plane) const
+Polygon::classification Polygon::classify(const Plane& plane) const
 {
 	size_t count = points.size();
 
@@ -73,7 +73,7 @@ void Polygon::slice(const Plane &plane)
 		points = back.points;
 }
 
-bool Polygon::slice(const Plane &plane, Polygon &back, Polygon &front) const
+bool Polygon::slice(const Plane& plane, Polygon& back, Polygon& front) const
 {
 
 	auto classification = classify(plane);
@@ -135,9 +135,6 @@ void Polygon::roundPoints(size_t precision)
 	});
 }
 
-Polygon::Polygon()
-{
-}
 
 Polygon::Polygon(const Plane & p)
 {
@@ -164,11 +161,7 @@ Polygon::Polygon(const Plane & p)
 
 }
 
-Polygon::Polygon(const std::initializer_list<Vertex> &points)
+Polygon::Polygon(const std::initializer_list<Vertex>& points)
 	: points(points)
-{
-}
-
-Polygon::~Polygon()
 {
 }

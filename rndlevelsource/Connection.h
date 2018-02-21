@@ -9,7 +9,7 @@ public:
 	bool isConnected;
 
 	//Only move constructor for now.
-	Connection(Entity&&);
-	~Connection();
+	Connection(Entity&& entity);
+	~Connection() = default;
 };
 

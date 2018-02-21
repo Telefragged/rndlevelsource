@@ -16,25 +16,25 @@ public:
 	//returned as a 1x4 matrix.
 	Matrix<double, 1, 4> equation() const;
 
-	char evaluate(const Vertex&) const;
+	char evaluate(const Vertex& point) const;
 
 	Vertex closestAxisToNormal() const;
 
-	static Plane vectorPlane(const Vector&, const Vector&);
-	static Plane flip(const Plane&);
+	static Plane vectorPlane(const Vector& line1, const Vector& line2);
+	static Plane flip(const Plane& plane);
 
-	static Vector intersectLine(const Plane&, const Plane&);
-	static Vertex intersectPoint(const Plane&, const Vector&);
+	static Vector intersectLine(const Plane& lhs, const Plane& rhs);
+	static Vertex intersectPoint(const Plane& p, const Vector& line);
 
-	static double dist(const Plane&, const Vertex&);
-	static double dist(const Vector&, const Vertex&);
-	static double dist(const Vertex&, const Vertex&);
+	static double dist(const Plane& plane, const Vertex& point);
+	static double dist(const Vector& line, const Vertex& point);
+	static double dist(const Vertex& point, const Vertex& other);
 
-	void parsestr(std::string);
+	void parsestr(const std::string& pstr);
 
-	Plane(void);
-	Plane(const std::string &);
-	Plane(const Vertex &, const Vertex &, const Vertex &);
-	~Plane(void);
+	Plane() = default;
+	Plane(const std::string & str);
+	Plane(const Vertex& p1, const Vertex& p2, const Vertex& p3);
+	~Plane() = default;
 };
 
