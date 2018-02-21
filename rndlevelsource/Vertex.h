@@ -57,6 +57,8 @@ public:
 	static Vertex normalize(const Vertex& v);
 	static Vertex crossProduct(const Vertex& lhs, const Vertex& rhs);
 
+	static size_t countDifferentAxes(const Vertex& lhs, const Vertex& rhs);
+
 	Vertex& operator=(const Vertex& rhs);
 	Vertex& operator+=(const Vertex& rhs);
 	Vertex& operator-=(const Vertex& rhs);

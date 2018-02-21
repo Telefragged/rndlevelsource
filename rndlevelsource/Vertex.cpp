@@ -146,6 +146,22 @@ Vertex Vertex::crossProduct(const Vertex& lhs, const Vertex& rhs)
 		lhs.vertex_[0] * rhs.vertex_[1] - lhs.vertex_[1] * rhs.vertex_[0]);
 }
 
+size_t Vertex::countDifferentAxes(const Vertex& lhs, const Vertex& rhs)
+{
+	size_t ret = 0;
+
+	if (!doubleeq(lhs.x(), rhs.x()))
+		++ret;
+
+	if (!doubleeq(lhs.y(), rhs.y()))
+		++ret;
+
+	if (!doubleeq(lhs.z(), rhs.z()))
+		++ret;
+
+	return ret;
+}
+
 void Vertex::parsestr(const std::string& pstr)
 {
 	std::string str = trim(pstr, " \t\r\n()");
