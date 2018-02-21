@@ -41,8 +41,8 @@ bool KeyValBase::empty() const
 void KeyValBase::extraOutput(std::ostream & os) const
 {
 }
-
-std::string KeyValBase::getName() const
-{
-	return std::string();
-}
+//
+//std::string KeyValBase::getName() const
+//{
+//	return std::string();
+//}

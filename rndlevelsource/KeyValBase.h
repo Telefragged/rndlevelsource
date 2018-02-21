@@ -36,7 +36,7 @@ public:
 	
 	virtual void extraOutput(std::ostream& os) const;
 
-	virtual std::string getName() const;
+	virtual std::string getName() const = 0;
 
 	KeyValBase() = default;
 	virtual ~KeyValBase() = default;
