@@ -17,8 +17,14 @@ unsigned int Editor::parse(std::istream& stream)
 		if (trim(curline) == "}")
 			break;
 
-		keyvals.emplace_back(curline);
+		KeyVal parsed(curline);
+
+		keyvals[parsed.key] = parsed.val;
 	}
 	return numparsed;
 }
 
+std::string Editor::getName() const
+{
+	return "editor";
+}

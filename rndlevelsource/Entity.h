@@ -13,7 +13,6 @@ class Entity :
 private:
 	Editor edt;
 public:
-	unsigned int id_;
 	std::vector<Solid> solids;
 
 	Vertex origin() const;
@@ -36,7 +35,8 @@ public:
 
 	BoundingBox bbox() const;
 
-	friend std::ostream& operator<<(std::ostream& os, const Entity& e);
+	void extraOutput(std::ostream& os) const override;
+	std::string getName() const override;
 
 	friend class Connection;
 
@@ -44,31 +44,4 @@ public:
 	Entity(const std::string& classname);
 	~Entity() = default;
 };
-
-inline std::ostream& operator<<(std::ostream& os, const Entity& e)
-{
-	if (e["classname"] == "worldspawn")
-	{
-		os << std::setw(e.depth()) << "" << "world\n";
-	}
-	else
-	{
-		os << std::setw(e.depth()) << "" << "entity\n";
-	}
-	os << std::setw(e.depth()) << "" << "{\n";
-	os << std::setw(e.depth()) << "" << "\t\"id\" \"" << e.id_ << "\"\n";
-	for (const auto& pair : e.keyvals)
-	{
-		//if (pair.first == "classname" && pair.second == "worldspawn") continue;
-		os << std::setw(e.depth()) << "\t" << KeyValBase::toStr(pair) << "\n";
-	}
-	for (const Solid& solid : e.solids)
-	{
-		solid.depth(e.depth() + TABDEPTH);
-		os << solid << "\n";
-	}
-	e.edt.depth(e.depth() + TABDEPTH);
-	os << std::setw(e.depth()) << "" << "}";
-	return os;
-}
 

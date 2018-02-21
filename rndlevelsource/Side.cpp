@@ -30,7 +30,10 @@ unsigned int Side::parse(std::istream& stream)
 		else
 		{
 			KeyVal parsed(curline);
-			keyvals[parsed.key] = parsed.val;
+			if (parsed.key == "id")
+				id_ = parsed.toInt();
+			else
+				keyvals[parsed.key] = parsed.val;
 		}
 	}
 	popuvars();
@@ -111,7 +114,24 @@ bool Side::testCollision(const Side& lhs, const Side& rhs)
 	return false;
 }
 
-Side::Side() : id_(0)
+void Side::extraOutput(std::ostream& os) const
+{
+	os << std::setw(depth()) << "" << "\t\"Plane\" \"" << plane().toStr() << "\"\n";
+	os << std::setw(depth()) << "" << "\t\"uaxis\" \"" << uaxis.toStr() << "\"\n";
+	os << std::setw(depth()) << "" << "\t\"vaxis\" \"" << vaxis.toStr() << "\"\n";
+	if (!disp.empty())
+	{
+		disp.depth(depth() + TABDEPTH);
+		os << disp << "\n";
+	}
+}
+
+std::string Side::getName() const
+{
+	return "side";
+}
+
+Side::Side()
 {
 }
 

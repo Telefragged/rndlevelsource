@@ -18,7 +18,6 @@ class Side :
 	public KeyValBase
 {
 private:
-	unsigned int id_ = 0;
 public:
 	DispInfo disp;
 	Axis uaxis, vaxis;
@@ -26,11 +25,6 @@ public:
 	//Plane p;
 
 	unsigned int parse(std::istream& stream);
-
-	unsigned int id() const
-	{
-		return id_;
-	}
 
 	Plane plane() const;
 
@@ -43,27 +37,9 @@ public:
 
 	static bool testCollision(const Side& lhs, const Side& rhs);
 
-	friend std::ostream& operator<<(std::ostream& os, const Side& s);
+	void extraOutput(std::ostream& os) const override;
+	std::string getName() const override;
 
 	Side();
 	~Side();
 };
-
-inline std::ostream& operator<<(std::ostream& os, const Side& s)
-{
-	os << std::setw(s.depth()) << "" << "side\n";
-	os << std::setw(s.depth()) << "" << "{\n";
-	os << std::setw(s.depth()) << "" << "\t\"id\" \"" << s.id() << "\"\n";
-	os << std::setw(s.depth()) << "" << "\t\"Plane\" \"" << s.plane().toStr() << "\"\n";
-	os << std::setw(s.depth()) << "" << "\t\"uaxis\" \"" << s.uaxis.toStr() << "\"\n";
-	os << std::setw(s.depth()) << "" << "\t\"vaxis\" \"" << s.vaxis.toStr() << "\"\n";
-	for (const auto& pair : s.keyvals)
-	{
-		os << std::setw(s.depth()) << "" << "\t" << KeyValBase::toStr(pair) << "\n";
-	}
-	s.disp.depth(s.depth() + TABDEPTH);
-	os << s.disp << "\n";
-	os << std::setw(s.depth()) << "" << "}";
-	return os;
-}
-

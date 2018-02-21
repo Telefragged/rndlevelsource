@@ -73,8 +73,7 @@ public:
 
 inline std::ostream& operator<<(std::ostream& os, const Part& p)
 {
-	char prevfill = os.fill();
-	os.fill('\t');
+	char prevfill = os.fill('\t');
 	for (const Entity& entity : p.entities)
 	{
 		entity.depth(0);

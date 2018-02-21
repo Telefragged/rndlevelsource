@@ -5,6 +5,7 @@
 #include "Angle.h"
 #include "World.h"
 #include "BoundingBox.h"
+#include "Timer.h"
 
 int main(int argc, char* argv[])
 {
@@ -12,24 +13,28 @@ int main(int argc, char* argv[])
 
 	//std::mt19937 eng(rd());
 
-	//Part part1("f:\\test\\rndmap\\room5.vmf");
-	//Part part2("f:\\test\\rndmap\\room6.vmf");
+	Part part1("f:\\test\\rndmap\\room5.vmf");
+	Part part2("f:\\test\\rndmap\\room6.vmf");
 
-	Part part("f:\\test\\TestMap.vmf");
+	nanotimer timer;
 
-	part.scaleTo(512);
+	timer.start();
+
+	World testWorld;
+
+	testWorld.addPart(part1);
+	for(int i = 0; i < 3; i++)
+		testWorld.addPart(part2);
+
+	Part part = testWorld.collapse();
+
+	timer.stop();
+
+	std::cout << (double)(timer.getTime().count()) / 1000000.0 << "\n";
 
 	part.toFile("f:\\test\\ScaledMap.vmf");
 
 	std::cin.get();
-
-	//World testWorld;
-
-	//testWorld.addPart(part1);
-	//for(int i = 0; i < 3; i++)
-	//	testWorld.addPart(part2);
-
-	//Part part = testWorld.collapse();
 
 	//part.moveTo({ 0, 0, 0 });
 	////part.toFile("f:\\test\\test2.vmf");

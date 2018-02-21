@@ -6,8 +6,6 @@
 #include "Vertex.h"
 #include "KeyValBase.h"
 
-#define TABDEPTH 1U
-
 class SingleDisp
 {
 public:
@@ -32,6 +30,8 @@ public:
 	void setHeight(int x, int y, double height);
 
 	void rotate(const Vertex& point, const Matrix3d& rotmat);
+
+	std::string getName() const override;
 
 	friend std::ostream& operator<<(std::ostream& os, const DispInfo& dispinfo);
 

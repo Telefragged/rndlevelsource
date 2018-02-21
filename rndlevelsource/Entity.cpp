@@ -113,8 +113,6 @@ Vertex Entity::origin() const
 {
 	auto val = (*this)["origin"];
 
-	bool empty = val.empty();
-
 	if (!val.empty())
 		return Vertex(val);
 
@@ -134,7 +132,7 @@ Angle Entity::angles() const
 {
 	auto val = (*this)["angles"];
 
-	if (val.empty())
+	if (!val.empty())
 		return Angle(val);
 
 	return Angle();
@@ -207,8 +205,27 @@ BoundingBox Entity::bbox() const
 	return BoundingBox(min, max);
 }
 
-Entity::Entity(const std::string& classname) :
-	id_(0)
+void Entity::extraOutput(std::ostream & os) const
+{
+	for (const Solid& solid : solids)
+	{
+		solid.depth(depth() + TABDEPTH);
+		os << solid << "\n";
+	}
+	edt.depth(depth() + TABDEPTH);
+}
+
+std::string Entity::getName() const
+{
+	if ((*this)["classname"] == "worldspawn")
+	{
+		return "world";
+	}
+
+	return "entity";
+}
+
+Entity::Entity(const std::string& classname)
 {
 	keyvals["classname"] = classname;
 }

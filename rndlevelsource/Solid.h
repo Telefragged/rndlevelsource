@@ -14,7 +14,6 @@ class Solid :
 	public KeyValBase
 {
 private:
-	size_t id_ = 0;
 	Editor edt;
 public:
 
@@ -50,25 +49,10 @@ public:
 
 	Vertex origin() const;
 
-	friend std::ostream& operator<<(std::ostream& os, const Solid& s);
+	void extraOutput(std::ostream& os) const override;
+	std::string getName() const override;
 
-	Solid();
+	Solid() = default;
 	Solid(const std::initializer_list<Plane>& planes);
-	~Solid();
+	~Solid() override = default;
 };
-
-inline std::ostream& operator<<(std::ostream& os, const Solid& s)
-{
-	os << std::setw(s.depth()) << "" << "solid\n";
-	os << std::setw(s.depth()) << "" << "{\n";
-	os << std::setw(s.depth()) << "" << "\t\"id\" \"" << s.id_ << "\"\n";
-	for (const Side& sd : s.sides)
-	{
-		sd.depth(s.depth() + TABDEPTH);
-		os << sd << "\n";
-	}
-	s.edt.depth(s.depth() + TABDEPTH);
-	os << s.edt << "\n";
-	os << std::setw(s.depth()) << "" << "}";
-	return os;
-}

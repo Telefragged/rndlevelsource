@@ -122,4 +122,9 @@ void DispInfo::rotate(const Vertex& point, const Matrix3d& rotmat)
 			disp.offset_normal = disp.offset_normal.rotate(rotmat);
 }
 
+std::string DispInfo::getName() const
+{
+	return "dispinfo";
+}
+
 

@@ -200,9 +200,20 @@ Vertex Solid::origin() const
 	return point / double(numPoints);
 }
 
-Solid::Solid() :
-	id_(0)
+void Solid::extraOutput(std::ostream& os) const
 {
+	for (const Side& sd : sides)
+	{
+		sd.depth(depth() + TABDEPTH);
+		os << sd << "\n";
+	}
+	edt.depth(depth() + TABDEPTH);
+	os << edt << "\n";
+}
+
+std::string Solid::getName() const
+{
+	return "solid";
 }
 
 Solid::Solid(const std::initializer_list<Plane>& planes) : Solid()
@@ -218,8 +229,3 @@ Solid::Solid(const std::initializer_list<Plane>& planes) : Solid()
 		sides.push_back(side);
 	}
 }
-
-Solid::~Solid()
-{
-}
-

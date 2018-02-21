@@ -2,14 +2,6 @@
 
 #include <iostream>
 
-KeyValBase::KeyValBase()
-{
-}
-
-KeyValBase::~KeyValBase()
-{
-}
-
 size_t KeyValBase::depth() const
 {
 	return depth_;
@@ -41,3 +33,16 @@ std::string KeyValBase::toStr(const std::pair<std::string, std::string>& pair, c
 	return enclose + pair.first + enclose + ' ' + enclose + pair.second + enclose;
 }
 
+bool KeyValBase::empty() const
+{
+	return keyvals.empty();
+}
+
+void KeyValBase::extraOutput(std::ostream & os) const
+{
+}
+
+std::string KeyValBase::getName() const
+{
+	return std::string();
+}
