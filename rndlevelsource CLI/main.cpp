@@ -13,26 +13,11 @@ int main(int argc, char* argv[])
 
 	//std::mt19937 eng(rd());
 
-	Part part1("f:\\test\\rndmap\\room5.vmf");
-	Part part2("f:\\test\\rndmap\\room6.vmf");
+	Part part1(R"(f:\test\TestMap.vmf)" );
 
-	nanotimer timer;
+	part1.scaleTo(1024.0);
 
-	timer.start();
-
-	World testWorld;
-
-	testWorld.addPart(part1);
-	for(int i = 0; i < 3; i++)
-		testWorld.addPart(part2);
-
-	Part part = testWorld.collapse();
-
-	timer.stop();
-
-	std::cout << (double)(timer.getTime().count()) / 1000000.0 << "\n";
-
-	part.toFile("f:\\test\\ScaledMap.vmf");
+	part1.toFile(R"(F:\test\ScaledMap.vmf)");
 
 	std::cin.get();
 

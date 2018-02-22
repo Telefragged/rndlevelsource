@@ -37,6 +37,8 @@ public:
 	// Returns an AABB with the min and max coordinates of this part
 	BoundingBox bbox() const;
 
+	Vertex origin() const;
+
 	// Move the part
 	void move(const Vector& vec);
 
@@ -47,8 +49,11 @@ public:
 	// By default the part rotates around its origin
 	void rotate(const Angle& angle, const Vertex& point = Vertex());
 
+	// Scales the part around the given origin
+	void scale(const Vertex& scale, const Vertex& origin, bool ignoreEntities = false);
+
 	// Scales the part around its origin
-	void scale(const Vertex& scale);
+	void scale(const Vertex& scale, bool ignoreEntities = false);
 
 	// Scales the part to desired length
 	// Needs exactly two connections that share exactly two axes
@@ -58,7 +63,11 @@ public:
 	// NOTE -- this is called by the parse and += methods
 	void reID();
 
+	//Merges world entities and copies all other entities
 	Part& operator+=(const Part& rhs);
+
+	//Returns reference to a entity with classname equal to argument.
+	//If no such entity exists, the function will create one and return its reference.
 	Entity& operator[](const std::string& classname);
 
 	friend std::ostream& operator<<(std::ostream& os, const Part& p);

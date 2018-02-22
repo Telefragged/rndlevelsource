@@ -124,7 +124,9 @@ Vertex Entity::origin() const
 
 Vertex Entity::originKV() const
 {
-	if (keyvals.count("origin") > 0) return Vertex(keyvals.at("origin"));
+	if (keyvals.count("origin") > 0)
+		return Vertex(keyvals.at("origin"));
+
 	return Vertex();
 }
 

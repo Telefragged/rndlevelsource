@@ -89,7 +89,8 @@ unsigned int Solid::parse(std::istream& stream)
 		}
 		else if (trim(curline) == "}")
 		{
-			if (--depth == 0) break;
+			if (--depth == 0)
+				break;
 		}
 		else
 		{

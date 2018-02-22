@@ -74,6 +74,16 @@ BoundingBox Part::bbox() const
 	return ret;
 }
 
+Vertex Part::origin() const
+{
+	auto it = find_if(entities.begin(), entities.end(), &Entity::entworldcmp);
+
+	if (it == entities.end())
+		return { 0, 0, 0 };
+
+	return it->origin();
+}
+
 bool Part::testCollision(const Part& lhs, const Part& rhs)
 {
 	BoundingBox lhbbox = lhs.bbox(), rhbbox = rhs.bbox();
@@ -141,29 +151,62 @@ void Part::rotate(const Angle& angle, const Vertex& point)
 	}
 }
 
-void Part::scale(const Vertex& scale)
+void Part::scale(const Vertex & scale, const Vertex& origin, bool ignoreEntities)
 {
 	auto it = find_if(entities.begin(), entities.end(), &Entity::entworldcmp);
 
-	Vertex orig;
-	if (it == entities.end())
-		orig = Vertex(0, 0, 0);
-	else
-		orig = it->origin();
+	if (it != entities.end())
+	{
+		for (Solid &s : it->solids)
+			s.scale(scale, origin);
+	}
 
-	for(Entity &e : entities)
-		for (Solid &s : e.solids)
-			s.scale(scale, orig);
+	if (!ignoreEntities)
+	{
+		for (Entity &e : entities)
+		{
+			if (e["classname"] == "worldspawn")
+				continue;
+
+			Vertex entityOrigin = e.originKV();
+
+			if (Vertex::isVertex(entityOrigin))
+			{
+				Vertex vec = Vector::diff(origin, entityOrigin).vec();
+				vec.x(vec.x() * scale.x());
+				vec.y(vec.y() * scale.y());
+				vec.z(vec.z() * scale.z());
+
+				e["origin"] = (origin + vec).toStr();
+			}
+			for (Solid &s : e.solids)
+				s.scale(scale, origin);
+		}
+	}
 
 	for (Connection &c : connections)
 	{
-		Vertex vec = Vector::diff(orig, c.origin()).vec();
+		Vertex vec = Vector::diff(origin, c.origin()).vec();
 		vec.x(vec.x() * scale.x());
 		vec.y(vec.y() * scale.y());
 		vec.z(vec.z() * scale.z());
 
-		c["origin"] = (orig + vec).toStr();
+		c["origin"] = (origin + vec).toStr();
 	}
+}
+
+void Part::scale(const Vertex& scale, bool ignoreEntities)
+{
+	auto it = find_if(entities.begin(), entities.end(), &Entity::entworldcmp);
+
+	Vertex orig = this->origin();
+	if (it != entities.end())
+	{
+		for (Solid &s : it->solids)
+			s.scale(scale, orig);
+	}
+
+	this->scale(scale, orig, ignoreEntities);
 }
 
 void Part::scaleTo(double length)
@@ -174,24 +217,87 @@ void Part::scaleTo(double length)
 	if (Vertex::countDifferentAxes(connections.getIndexed(1)->origin(), connections.getIndexed(0)->origin()) > 1)
 		throw std::exception("Connections can only have one differing axis");
 
-	Vertex diff = Vertex::absolute(connections.getIndexed(1)->origin() - connections.getIndexed(0)->origin());
+	Vertex diff = connections.getIndexed(1)->origin() - connections.getIndexed(0)->origin();
 
-	if (!doubleeq(diff.x(), 0))
-		diff.x(length / diff.x());
+	Vertex scale = Vertex::absolute(diff);
+
+	size_t differentAxis = 0;
+
+	if (!doubleeq(scale.x(), 0))
+	{
+		scale.x(length / scale.x());
+		differentAxis = 0;
+	}
 	else
-		diff.x(1.0);
+	{
+		scale.x(1.0);
+	}
 
-	if (!doubleeq(diff.y(), 0))
-		diff.y(length / diff.y());
+	if (!doubleeq(scale.y(), 0))
+	{
+		scale.y(length / scale.y());
+		differentAxis = 1;
+	}
 	else
-		diff.y(1.0);
+	{
+		scale.y(1.0);
+	}
 
-	if (!doubleeq(diff.z(), 0))
-		diff.z(length / diff.z());
+	if (!doubleeq(scale.z(), 0))
+	{
+		scale.z(length / scale.z());
+		differentAxis = 2;
+	}
 	else
-		diff.z(1.0);
+	{
+		scale.z(1.0);
+	}
 
-	scale(diff);
+	Vertex orig = this->origin();
+
+	//Set origin at one end of the room so we "stretch" the room towards the other side.
+	orig[differentAxis] = connections.getIndexed(0)->origin()[differentAxis];
+
+	this->scale(scale, orig, true);
+
+	size_t numEntities = entities.size();
+
+	for (size_t i = 0; i < numEntities; i++)
+	{
+		if (entities[i]["classname"] == "worldspawn")
+			continue;
+
+		Vertex entityOrig = entities[i].originKV();
+
+		if (!Vertex::isVertex(entityOrig))
+			continue;
+
+		
+		// Get offset to closest connection
+		double offset = entityOrig[differentAxis] - connections.getIndexed(0)->origin()[differentAxis];
+
+		if (std::fabs(offset) >
+			std::fabs(entityOrig[differentAxis] - connections.getIndexed(1)->origin()[differentAxis]))
+		{
+			offset = entityOrig[differentAxis] - connections.getIndexed(1)->origin()[differentAxis];
+		}
+
+		double repeat = diff[differentAxis];
+
+		for (size_t mult = 1; std::fabs(repeat) * mult + std::fabs(offset) < length; mult++)
+		{
+			Entity copy = entities[i];
+
+			Vertex copyOrig = entityOrig;
+
+			copyOrig[differentAxis] += repeat * mult;
+
+			copy["origin"] = copyOrig.toStr();
+
+			entities.push_back(copy);
+		}
+	}
+	reID();
 }
 
 std::streampos Part::toFile(const std::string& path) const
@@ -213,7 +319,6 @@ void Part::reID()
 		e.reID(entityID_, solidID_, sideID_);
 }
 
-//Merges world entities and copies all other entities
 Part& Part::operator+=(const Part& rhs)
 {
 	//Entity *tWorld = entities.get_first_match<std::string>
@@ -230,20 +335,26 @@ Part& Part::operator+=(const Part& rhs)
 	{
 		entities.push_back(*origit);
 	}
-	size_t cap = std::numeric_limits<unsigned int>::max(), count = 0;
-	if (this == &rhs) cap = entities.size(); //Safety against self-addition.
+
+	size_t cap = std::numeric_limits<size_t>::max(), count = 0;
+
+	if (this == &rhs)
+		cap = entities.size(); //Safety against self-addition.
+
 	for (const Entity& entity : rhs.entities)
 	{
-		if (count++ == cap) break;
-		if (entity["classname"] == "worldspawn") continue;
+		if (count++ == cap)
+			break;
+
+		if (entity["classname"] == "worldspawn")
+			continue;
+
 		entities.push_back(entity);
 	}
 	reID(); // Faster to call this here than make lots of copies everywhere.
 	return *this;
 }
 
-//Returns reference to a entity with classname equal to argument.
-//If no such entity exists, the function will create one and return its reference.
 Entity& Part::operator[](const std::string& classname)
 {
 	auto it = find_if(entities.begin(), entities.end(), bind(&Entity::entclasscmp, std::placeholders::_1, classname));
@@ -258,5 +369,3 @@ Part::Part(std::string filepath) : Part()
 {
 	parse(filepath);
 }
-
-
