@@ -214,10 +214,10 @@ void Part::scaleTo(double length)
 	if (connections.size() != 2)
 		throw std::exception("Part needs exactly 2 connections for scaling to work");
 
-	if (Vertex::countDifferentAxes(connections.getIndexed(1)->origin(), connections.getIndexed(0)->origin()) > 1)
+	if (Vertex::countDifferentAxes(connections[1].origin(), connections[0].origin()) > 1)
 		throw std::exception("Connections can only have one differing axis");
 
-	Vertex diff = connections.getIndexed(1)->origin() - connections.getIndexed(0)->origin();
+	Vertex diff = connections[1].origin() - connections[0].origin();
 
 	Vertex scale = Vertex::absolute(diff);
 
@@ -256,7 +256,7 @@ void Part::scaleTo(double length)
 	Vertex orig = this->origin();
 
 	//Set origin at one end of the room so we "stretch" the room towards the other side.
-	orig[differentAxis] = connections.getIndexed(0)->origin()[differentAxis];
+	orig[differentAxis] = connections[0].origin()[differentAxis];
 
 	this->scale(scale, orig, true);
 
@@ -272,14 +272,13 @@ void Part::scaleTo(double length)
 		if (!Vertex::isVertex(entityOrig))
 			continue;
 
-		
 		// Get offset to closest connection
-		double offset = entityOrig[differentAxis] - connections.getIndexed(0)->origin()[differentAxis];
+		double offset = entityOrig[differentAxis] - connections[0].origin()[differentAxis];
 
 		if (std::fabs(offset) >
-			std::fabs(entityOrig[differentAxis] - connections.getIndexed(1)->origin()[differentAxis]))
+			std::fabs(entityOrig[differentAxis] - connections[1].origin()[differentAxis]))
 		{
-			offset = entityOrig[differentAxis] - connections.getIndexed(1)->origin()[differentAxis];
+			offset = entityOrig[differentAxis] - connections[1].origin()[differentAxis];
 		}
 
 		double repeat = diff[differentAxis];
