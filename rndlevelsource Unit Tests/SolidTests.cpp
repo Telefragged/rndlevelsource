@@ -19,6 +19,7 @@ namespace rndlevelsourceUnitTests
 			{{128, 0, 0}, {0, 0, 0}, {0, 0, 128}}
 		};
 
+	public:
 		TEST_METHOD(TestSolidOrigin)
 		{
 			Assert::AreEqual({ 64, 64, 64 }, TestSolid.origin());

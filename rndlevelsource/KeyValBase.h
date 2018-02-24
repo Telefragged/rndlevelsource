@@ -1,6 +1,6 @@
 #pragma once
 
-#include <unordered_map>
+#include <map>
 #include <string>
 #include <iostream>
 #include <iomanip>
@@ -17,7 +17,7 @@ protected:
 
 	size_t id_ = 0;
 
-	std::unordered_map<std::string, std::string> keyvals;
+	std::map<std::string, std::string> keyvals;
 public:
 
 	size_t depth() const;
@@ -39,6 +39,7 @@ public:
 	virtual std::string getName() const = 0;
 
 	KeyValBase() = default;
+	KeyValBase(std::initializer_list<decltype(keyvals)::value_type> init);
 	virtual ~KeyValBase() = default;
 };
 
