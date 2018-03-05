@@ -4,16 +4,19 @@
 
 class KeyVal
 {
+	std::string key_;
+	std::string val_;
 public:
-	std::string key;
-	std::string val;
 
 	std::string toStr(char enclose = '\"') const;
 	int toInt();
 	double toDouble();
 
-	std::string keyc() const;
-	std::string valc() const;
+	void key(const std::string &key);
+	void val(const std::string &val);
+
+	const std::string& key() const;
+	const std::string& val() const;
 
 	// void fromInt(int);
 	// void fromDouble(double);

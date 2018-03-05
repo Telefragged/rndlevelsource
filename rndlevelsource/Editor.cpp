@@ -19,7 +19,7 @@ unsigned int Editor::parse(std::istream& stream)
 
 		KeyVal parsed(curline);
 
-		keyvals[parsed.key] = parsed.val;
+		keyvals[parsed.key()] = parsed.val();
 	}
 	return numparsed;
 }

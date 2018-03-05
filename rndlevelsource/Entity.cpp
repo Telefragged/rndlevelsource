@@ -47,7 +47,7 @@ unsigned int Entity::parse(std::istream& stream)
 		else
 		{
 			KeyVal parsed(curline);
-			keyvals[parsed.key] = parsed.val;
+			keyvals[parsed.key()] = parsed.val();
 		}
 	}
 	if (keyvals.count("id") > 0)

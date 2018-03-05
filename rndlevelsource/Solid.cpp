@@ -95,7 +95,7 @@ unsigned int Solid::parse(std::istream& stream)
 		else
 		{
 			KeyVal k(curline);
-			if (k.key == "id") id_ = k.toInt();
+			if (k.key() == "id") id_ = k.toInt();
 		}
 	}
 

@@ -30,10 +30,10 @@ unsigned int Side::parse(std::istream& stream)
 		else
 		{
 			KeyVal parsed(curline);
-			if (parsed.key == "id")
+			if (parsed.key() == "id")
 				id_ = parsed.toInt();
 			else
-				keyvals[parsed.key] = parsed.val;
+				keyvals[parsed.key()] = parsed.val();
 		}
 	}
 	popuvars();

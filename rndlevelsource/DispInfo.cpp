@@ -52,7 +52,7 @@ unsigned int DispInfo::parse(std::istream& stream)
 						break;
 
 					KeyVal k(curline);
-					group[k.key] = k.val;
+					group[k.key()] = k.val();
 				}
 				tempKeys[groupName] = move(group);
 			}
@@ -64,7 +64,7 @@ unsigned int DispInfo::parse(std::istream& stream)
 		else
 		{
 			KeyVal parsed(curline);
-			keyvals[parsed.key] = parsed.val;
+			keyvals[parsed.key()] = parsed.val();
 		}
 	}
 
