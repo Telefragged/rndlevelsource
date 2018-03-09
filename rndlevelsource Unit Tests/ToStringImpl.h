@@ -24,7 +24,7 @@ namespace Microsoft::VisualStudio::CppUnitTestFramework
 
 		int result = 0;
 
-		for (wchar_t wc; (result = std::mbtowc(&wc, ptr, end - ptr)) > 0; beg += result)
+		for (wchar_t wc; (result = std::mbtowc(&wc, ptr, end - ptr)) > 0; ptr += result)
 			ret += wc;
 
 		return ret;
