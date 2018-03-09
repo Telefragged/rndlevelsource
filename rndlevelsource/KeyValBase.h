@@ -51,7 +51,7 @@ public:
 
 inline std::ostream& operator<<(std::ostream& os, const KeyValBase& k)
 {
-	if (k.keyvals.empty() && k.id_ == 0)
+	if (k.empty() && k.id_ == 0)
 		return os;
 
 	os << std::setw(k.depth()) << "" << k.getName() << "\n";
