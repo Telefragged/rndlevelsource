@@ -20,11 +20,11 @@ namespace Microsoft::VisualStudio::CppUnitTestFramework
 
 		std::wstring ret;
 
-		auto beg = str.data(), end = str.data() + str.size();
+		auto ptr = str.data(), end = str.data() + str.size();
 
 		int result = 0;
 
-		for (wchar_t wc; (result = std::mbtowc(&wc, beg, end - beg)) > 0; beg += result)
+		for (wchar_t wc; (result = std::mbtowc(&wc, ptr, end - ptr)) > 0; beg += result)
 			ret += wc;
 
 		return ret;
@@ -70,4 +70,3 @@ namespace Microsoft::VisualStudio::CppUnitTestFramework
 		return str_to_wstr(mat.toStr());
 	}
 }
-
