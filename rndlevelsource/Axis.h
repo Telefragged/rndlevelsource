@@ -10,7 +10,7 @@ public:
 	double trans = 0.0;
 	double scale = 0.25;
 
-	void parsestr(const std::string& str);
+	void parsestr(std::string_view str);
 	void translate(const Vertex& translation);
 
 	std::string toStr() const;

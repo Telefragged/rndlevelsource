@@ -11,8 +11,6 @@ class Editor :
 {
 private:
 public:
-	unsigned int parse(std::istream& stream);
-
 	std::string getName() const override;
 
 	Editor() = default;

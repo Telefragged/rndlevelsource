@@ -75,7 +75,6 @@ void Polygon::slice(const Plane &plane)
 
 bool Polygon::slice(const Plane& plane, Polygon& back, Polygon& front) const
 {
-
 	auto classification = classify(plane);
 
 	if (classification != classification::spanning)

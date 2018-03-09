@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-#include <random>
 #include "CppUnitTest.h"
 #include "Polygon.h"
 

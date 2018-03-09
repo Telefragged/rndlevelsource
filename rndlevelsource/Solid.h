@@ -34,7 +34,8 @@ public:
 
 	bool slice(const Plane& plane, Solid& front, Solid& back) const;
 
-	unsigned int parse(std::istream& stream);
+	size_t parseSpecial(std::istream& stream, std::string_view type) override;
+
 	void rotate(const Vertex& point, const Matrix3d& rotmat);
 	void move(const Vector& vec);
 	void moveTo(const Vertex& point);

@@ -13,13 +13,11 @@ int main(int argc, char* argv[])
 
 	//std::mt19937 eng(rd());
 
-	Part part1(R"(f:\test\TestMap.vmf)" );
+	Part part1(R"(f:\test\TestMap.vmf)");
 
 	part1.scaleTo(1024.0);
 
 	part1.toFile(R"(F:\test\ScaledMap.vmf)");
-
-	std::cin.get();
 
 	//part.moveTo({ 0, 0, 0 });
 	////part.toFile("f:\\test\\test2.vmf");

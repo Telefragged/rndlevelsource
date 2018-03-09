@@ -26,9 +26,9 @@ struct highResClock
 		return time_point(duration(count.QuadPart * static_cast<rep>(period::den) / g_Frequency)); 
 	}
 };
-typedef highResClock timeclass;
+using timeclass = highResClock;
 #else
-typedef std::chrono::high_resolution_clock timeclass;
+using timeclass = std::chrono::high_resolution_clock;
 #endif
 
 template <class rettm>

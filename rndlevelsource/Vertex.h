@@ -21,7 +21,7 @@ public:
 	static Vertex allmin(const Vertex& v1, const Vertex& v2);
 	static Vertex allmax(const Vertex& v1, const Vertex& v2);
 
-	void parsestr(const std::string& pstr);
+	void parsestr(std::string_view str);
 
 	Vertex rotate(const Matrix3d& rotmat) const;
 	Vertex rotate(const Vertex& point, const Matrix3d& rotmat) const;

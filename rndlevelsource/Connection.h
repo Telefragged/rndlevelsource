@@ -10,6 +10,6 @@ public:
 
 	//Only move constructor for now.
 	Connection(Entity&& entity);
-	~Connection() = default;
+	~Connection() override = default;
 };
 

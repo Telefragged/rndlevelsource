@@ -7,37 +7,14 @@
 #include "KeyVal.h"
 #include "Vector.h"
 
-unsigned int Side::parse(std::istream& stream)
+size_t Side::parseSpecial(std::istream & stream, std::string_view type)
 {
-	unsigned int numparsed = 0;
-	std::string curline;
-	while (trim(curline) != "{")
+	if (type == "dispinfo")
 	{
-		getline(stream, curline);
-		numparsed++;
+		return disp.parse(stream);
 	}
-	while (getline(stream, curline))
-	{
-		numparsed++;
-		if (trim(curline) == "dispinfo")
-		{
-			disp.parse(stream);
-		}
-		else if (trim(curline) == "}")
-		{
-			break;
-		}
-		else
-		{
-			KeyVal parsed(curline);
-			if (parsed.key() == "id")
-				id_ = parsed.toInt();
-			else
-				keyvals[parsed.key()] = parsed.val();
-		}
-	}
-	popuvars();
-	return numparsed;
+
+	return 0;
 }
 
 void Side::reID(unsigned int& sideID)

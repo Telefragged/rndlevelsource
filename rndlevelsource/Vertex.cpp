@@ -2,8 +2,11 @@
 
 #include <algorithm>
 
+#include <boost/spirit/include/qi.hpp>
+
 #include "Matrix.h"
 #include "Vector.h"
+
 
 Vertex::Vertex()
 {
@@ -118,7 +121,6 @@ Vertex Vertex::absolute(const Vertex& v)
 
 Vertex Vertex::normalize(const Vertex& v)
 {
-	
 	double len = v.length();
 	if (doubleeq(len, 0.0)) return v;
 	return {
@@ -162,24 +164,30 @@ size_t Vertex::countDifferentAxes(const Vertex& lhs, const Vertex& rhs)
 	return ret;
 }
 
-void Vertex::parsestr(const std::string& pstr)
+void Vertex::parsestr(std::string_view str)
 {
-	std::string str = trim(pstr, " \t\r\n()");
-	size_t fspos = str.find_first_of(' '), espos = str.find_last_of(' ');
-	if (fspos == std::string::npos || espos == std::string::npos || fspos == espos)
+	namespace qi = boost::spirit::qi;
+	namespace ascii = boost::spirit::ascii;
+
+	//size_t fspos = str.find_first_of(' '), espos = str.find_last_of(' ');
+	//if (fspos == std::string::npos || espos == std::string::npos || fspos == espos)
+	//{
+	//	vertex_[0] = std::numeric_limits<double>::quiet_NaN();
+	//	vertex_[1] = std::numeric_limits<double>::quiet_NaN();
+	//	vertex_[2] = std::numeric_limits<double>::quiet_NaN();
+	//	return;
+	//}
+	//size_t pos = 0;
+	//auto xstr = nextword(pos, str);
+	//auto ystr = nextword(pos, str);
+	//auto zstr = nextword(pos, str);
+
+	if (!qi::phrase_parse(str.cbegin(), str.cend(), qi::double_ >> qi::double_ >> qi::double_, ascii::space | qi::lit('(') | qi::lit(')'),  vertex_[0], vertex_[1], vertex_[2]))
 	{
 		vertex_[0] = std::numeric_limits<double>::quiet_NaN();
 		vertex_[1] = std::numeric_limits<double>::quiet_NaN();
 		vertex_[2] = std::numeric_limits<double>::quiet_NaN();
-		return;
 	}
-	size_t pos = 0;
-	std::string xstr = nextword(pos, str);
-	std::string ystr = nextword(pos, str);
-	std::string zstr = nextword(pos, str);
-	vertex_[0] = atof(xstr.c_str());
-	vertex_[1] = atof(ystr.c_str());
-	vertex_[2] = atof(zstr.c_str());
 }
 
 Vertex& Vertex::operator=(const Vertex& rhs)

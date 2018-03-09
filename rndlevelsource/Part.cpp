@@ -11,9 +11,9 @@
 #include "Part.h"
 #include "Vector.h"
 
-unsigned int Part::parse(std::istream& stream)
+size_t Part::parse(std::istream& stream)
 {
-	unsigned int numparsed = 0;
+	size_t numparsed = 0;
 	std::string curline;
 	//while(trim(curline) != "world") {
 	//	std::getline(file, curline);
@@ -45,13 +45,13 @@ unsigned int Part::parse(std::istream& stream)
 	return numparsed;
 }
 
-unsigned int Part::parse(const std::string& path)
+size_t Part::parse(const std::string& path)
 {
 	std::ifstream file(path);
 	if (!file.good())
 		throw std::exception("Failed to open file");
 
-	unsigned int ret = parse(file);
+	auto ret = parse(file);
 	file.close();
 	return ret;
 }

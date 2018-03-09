@@ -37,7 +37,7 @@ bool Solid::slice(const Plane& plane, Solid& front, Solid& back) const
 		[&plane](const Side &side) {return side.polygon.classify(plane); });
 
 	if (std::count_if(classes.cbegin(), classes.cend(),
-		[](auto &c) {return c != Polygon::classification::spanning; }) == classes.size())
+		[](auto &c) {return c == Polygon::classification::spanning; }) == 0)
 	{
 		if (std::count(classes.cbegin(), classes.cend(), Polygon::classification::back) > 0)
 			back = *this;
@@ -64,44 +64,22 @@ bool Solid::slice(const Plane& plane, Solid& front, Solid& back) const
 	return true;
 }
 
-unsigned int Solid::parse(std::istream& stream)
+size_t Solid::parseSpecial(std::istream & stream, std::string_view type)
 {
-	unsigned int numparsed = 0;
-	std::string curline;
-	while (trim(curline) != "{")
+	if (type == "side")
 	{
-		getline(stream, curline);
-		numparsed++;
+		Side side;
+		auto ret = side.parse(stream);
+		side.popuvars();
+		addSide(side);
+		return ret;
 	}
-	unsigned int depth = 1;
-	while (getline(stream, curline))
+	else if (type == "editor")
 	{
-		numparsed++;
-		if (trim(curline) == "side")
-		{
-			Side side;
-			numparsed += side.parse(stream);
-			addSide(side);
-		}
-		else if (trim(curline) == "editor")
-		{
-			numparsed += edt.parse(stream);
-		}
-		else if (trim(curline) == "}")
-		{
-			if (--depth == 0)
-				break;
-		}
-		else
-		{
-			KeyVal k(curline);
-			if (k.key() == "id") id_ = k.toInt();
-		}
+		return edt.parse(stream);
 	}
 
-	fixSides();
-
-	return numparsed;
+	return 0;
 }
 
 void Solid::rotate(const Vertex& point, const Matrix3d& rotmat)

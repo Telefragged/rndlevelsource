@@ -8,54 +8,26 @@
 #include "Vector.h"
 #include "Vertex.h"
 
-unsigned int Entity::parse(std::istream& stream)
+size_t Entity::parseSpecial(std::istream& stream, std::string_view type)
 {
-	unsigned int numparsed = 0;
-	std::string curline;
-	while (trim(curline) != "{")
+	if (type == "solid")
 	{
-		getline(stream, curline);
-		numparsed++;
+		auto it = solids.emplace(solids.end());
+		auto ret = it->parse(stream);
+		it->fixSides();
+		return ret;
 	}
-	unsigned int depth = 1;
-	while (getline(stream, curline))
+	else if (type == "editor")
 	{
-		numparsed++;
-		if (trim(curline) == "solid")
-		{
-			auto it = solids.emplace(solids.end());
-			numparsed += it->parse(stream);
-		}
-		else if (trim(curline) == "editor")
-		{
-			numparsed += edt.parse(stream);
-		}
-		else if (trim(curline) == "group")
-		{
-			Solid solid;
-			numparsed += solid.parse(stream);
-		}
-		else if (trim(curline) == "}")
-		{
-			if (--depth == 0)
-				break;
-		}
-		else if (trim(curline) == "{")
-		{
-			++depth;
-		}
-		else
-		{
-			KeyVal parsed(curline);
-			keyvals[parsed.key()] = parsed.val();
-		}
+		return edt.parse(stream);
 	}
-	if (keyvals.count("id") > 0)
+	else if (type == "group")
 	{
-		this->id_ = atoi(keyvals["id"].c_str());
-		keyvals.erase("id");
+		Solid solid;
+		return solid.parse(stream);
 	}
-	return numparsed;
+
+	return 0;
 }
 
 bool Entity::testCollision(const Entity& lhs, const Entity& rhs)
@@ -215,6 +187,7 @@ void Entity::extraOutput(std::ostream & os) const
 		os << solid << "\n";
 	}
 	edt.depth(depth() + TABDEPTH);
+	os << edt << "\n";
 }
 
 std::string Entity::getName() const

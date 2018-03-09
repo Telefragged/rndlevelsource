@@ -1,22 +1,25 @@
 #include "Axis.h"
 
-void Axis::parsestr(const std::string& str)
+#include <boost/spirit/include/qi.hpp>
+
+void Axis::parsestr(std::string_view str)
 {
+	namespace qi = boost::spirit::qi;
+
 	size_t epos = str.find_first_of(']') + 1;
 	if (epos == std::string::npos)
 		throw std::exception("Invalid axis string");
 
-	std::string fstr = trim(str.substr(0, epos), "[]");
+	auto fstr = trim(str.substr(0, epos), "[]");
 	size_t vpos = fstr.find_last_of(' ');
 
-	std::string parstr = fstr.substr(0, vpos);
+	auto parstr = fstr.substr(0, vpos);
 	v.parsestr(parstr);
 
 	parstr = fstr.substr(vpos + 1);
-	trans = atof(parstr.c_str());
-
+	qi::parse(parstr.cbegin(), parstr.cend(), qi::double_, trans);
 	parstr = str.substr(fstr.length() + 3);
-	scale = atof(parstr.c_str());
+	qi::parse(parstr.cbegin(), parstr.cend(), qi::double_, scale);
 }
 
 void Axis::translate(const Vertex& translation)
@@ -32,4 +35,3 @@ std::string Axis::toStr() const
 	os << "[" << v.toStr() << " " << trans << "] " << scale;
 	return os.str();
 }
-

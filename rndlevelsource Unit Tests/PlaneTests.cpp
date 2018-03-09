@@ -53,5 +53,16 @@ namespace rndlevelsourceUnitTests
 			Assert::AreEqual(char(-1), testPlaneZ.evaluate(underVertex));
 			Assert::AreEqual(char(0), testPlaneZ.evaluate(onVertex));
 		}
+
+		TEST_METHOD(TestPlaneParse)
+		{
+			constexpr char * parseStr = "(32 32 32) (0.5 -0.5 3) (0 0 0)";
+
+			Plane p{ parseStr };
+
+			Assert::AreEqual({ 32, 32, 32 }, p.p1);
+			Assert::AreEqual({ 0.5, -0.5, 3 }, p.p2);
+			Assert::AreEqual({ 0, 0, 0 }, p.p3);
+		}
 	};
 }

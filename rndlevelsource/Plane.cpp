@@ -4,7 +4,7 @@
 #include "utils.h"
 #include "Vector.h"
 
-void Plane::parsestr(const std::string& pstr)
+void Plane::parsestr(std::string_view pstr)
 {
 	size_t spos, epos = 0;
 	spos = pstr.find_first_of('(', epos);

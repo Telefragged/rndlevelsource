@@ -43,7 +43,7 @@ unsigned int DispInfo::parse(std::istream& stream)
 			stream.seekg(cpos);
 			if (trim(peekline) == "{")
 			{
-				std::string groupName = trim(curline);
+				std::string groupName{ trim(curline) };
 				std::map<std::string, std::string> group;
 				while (getline(stream, curline))
 				{
@@ -72,27 +72,27 @@ unsigned int DispInfo::parse(std::istream& stream)
 	int size = (int)pow(2, power) + 1;
 	info = std::vector<std::vector<SingleDisp>>(size, std::vector<SingleDisp>(size, SingleDisp()));
 
-	for (int row = 0; row < size; row++)
-	{
-		std::string rowID = "row";
-		rowID += std::to_string(row);
-		auto norm = splitstr(tempKeys["normals"][rowID]);
-		auto dist = splitstr(tempKeys["distances"][rowID]);
-		auto off = splitstr(tempKeys["offsets"][rowID]);
-		auto off_norm = splitstr(tempKeys["offset_normals"][rowID]);
-		auto alpha = splitstr(tempKeys["alphas"][rowID]);
+	//for (int row = 0; row < size; row++)
+	//{
+	//	std::string rowID = "row";
+	//	rowID += std::to_string(row);
+	//	auto norm = splitstr(tempKeys["normals"][rowID]);
+	//	auto dist = splitstr(tempKeys["distances"][rowID]);
+	//	auto off = splitstr(tempKeys["offsets"][rowID]);
+	//	auto off_norm = splitstr(tempKeys["offset_normals"][rowID]);
+	//	auto alpha = splitstr(tempKeys["alphas"][rowID]);
 
-		for (int col = 0; col < size; col++)
-		{
-			auto& curInfo = info[row][col];
-			size_t vertInd = 3 * col;
-			curInfo.normal = Vertex(norm[vertInd] + ' ' + norm[vertInd + 1] + ' ' + norm[vertInd + 2]);
-			curInfo.distance = atof(dist[col].c_str());
-			curInfo.offset = Vertex(off[vertInd] + ' ' + off[vertInd + 1] + ' ' + off[vertInd + 2]);
-			curInfo.offset_normal = Vertex(off_norm[vertInd] + ' ' + off_norm[vertInd + 1] + ' ' + off_norm[vertInd + 2]);
-			curInfo.alpha = (char)atoi(alpha[col].c_str());
-		}
-	}
+	//	for (int col = 0; col < size; col++)
+	//	{
+	//		auto& curInfo = info[row][col];
+	//		size_t vertInd = 3 * col;
+	//		curInfo.normal = Vertex(norm[vertInd] + ' ' + norm[vertInd + 1] + ' ' + norm[vertInd + 2]);
+	//		curInfo.distance = atof(dist[col].c_str());
+	//		curInfo.offset = Vertex(off[vertInd] + ' ' + off[vertInd + 1] + ' ' + off[vertInd + 2]);
+	//		curInfo.offset_normal = Vertex(off_norm[vertInd] + ' ' + off_norm[vertInd + 1] + ' ' + off_norm[vertInd + 2]);
+	//		curInfo.alpha = (char)atoi(alpha[col].c_str());
+	//	}
+	//}
 
 	return numparsed;
 }

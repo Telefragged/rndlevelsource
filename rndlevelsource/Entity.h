@@ -19,7 +19,7 @@ public:
 	Vertex originKV() const;
 	Angle angles() const;
 
-	unsigned int parse(std::istream& stream);
+	size_t parseSpecial(std::istream& stream, std::string_view type) override;
 
 	static bool testCollision(const Entity& lhs, const Entity& rhs);
 	static bool entclasscmp(const Entity& lhs, const std::string& rhs);
@@ -42,6 +42,6 @@ public:
 
 	Entity() = default;
 	Entity(const std::string& classname);
-	~Entity() = default;
+	~Entity() override = default;
 };
 

@@ -30,7 +30,7 @@ public:
 	static double dist(const Vector& line, const Vertex& point);
 	static double dist(const Vertex& point, const Vertex& other);
 
-	void parsestr(const std::string& pstr);
+	void parsestr(std::string_view pstr);
 
 	Plane() = default;
 	Plane(const std::string & str);

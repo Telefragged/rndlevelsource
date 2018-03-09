@@ -28,9 +28,15 @@ public:
 
 	std::string get(const std::string& key) const;
 
+	static std::pair<std::string, std::string> parseKeyval(std::string_view keyval);
+
 	static std::string toStr(const std::pair<std::string, std::string>& pair, char enclose = '\"');
 
 	friend std::ostream& operator<<(std::ostream& os, const KeyValBase& k);
+
+	size_t parse(std::istream& stream);
+
+	virtual size_t parseSpecial(std::istream& stream, std::string_view type);
 
 	virtual bool empty() const;
 	

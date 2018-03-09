@@ -3,9 +3,10 @@
 #include <cmath>
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <vector>
 
-inline std::string nextword(size_t& pos, const std::string& str, std::string delim = " \t\n\r")
+inline std::string_view nextword(size_t& pos, std::string_view str, std::string delim = " \t\n\r")
 {
 	if (pos >= str.length())
 		return "";
@@ -18,13 +19,13 @@ inline std::string nextword(size_t& pos, const std::string& str, std::string del
 	return str.substr(spos, to - spos);
 }
 
-inline std::string trim(const std::string& str, const std::string delim = " \t\n\r")
+inline std::string_view trim(std::string_view str, const std::string delim = " \t\n\r")
 {
 	size_t bpos = str.find_first_not_of(delim), epos = str.find_last_not_of(delim);
 	if (epos < bpos || epos >= str.length())
 		return "";
 
-	return str.substr(bpos, epos - bpos + 1);
+	return std::string_view(&str[bpos], epos - bpos + 1);
 }
 
 inline std::string reverse_string(const std::string& input)
@@ -120,10 +121,10 @@ inline std::string numToPretty(T num, bool onlyPretty = false, bool appTxt = tru
 	return pretty;
 }
 
-inline std::vector<std::string> splitstr(const std::string &orig, std::string delim = " \n\r\t")
+inline std::vector<std::string_view> splitstr(const std::string &orig, std::string delim = " \n\r\t")
 {
 	size_t pos = 0;
-	std::vector<std::string> ret;
+	std::vector<std::string_view> ret;
 	while (pos < orig.length())
 	{
 		ret.push_back(nextword(pos, orig, delim));

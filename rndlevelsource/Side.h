@@ -24,7 +24,7 @@ public:
 	Polygon polygon;
 	//Plane p;
 
-	unsigned int parse(std::istream& stream);
+	size_t parseSpecial(std::istream& stream, std::string_view type) override;
 
 	Plane plane() const;
 
@@ -41,5 +41,5 @@ public:
 	std::string getName() const override;
 
 	Side();
-	~Side();
+	~Side() override;
 };
