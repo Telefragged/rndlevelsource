@@ -45,9 +45,11 @@ size_t Part::parse(std::istream& stream)
 	return numparsed;
 }
 
-size_t Part::parse(const std::string& path)
+size_t Part::parse(std::string_view path)
 {
-	std::ifstream file(path);
+	std::string p(path);
+
+	std::ifstream file(p);
 	if (!file.good())
 		throw std::exception("Failed to open file");
 
@@ -110,10 +112,8 @@ void Part::move(const Vector& vec)
 
 void Part::moveTo(const Vertex& point)
 {
-	using namespace std;
-	using namespace placeholders;
 
-	auto it = find_if(entities.begin(), entities.end(), &Entity::entworldcmp);
+	auto it = std::find_if(entities.begin(), entities.end(), &Entity::entworldcmp);
 	Vertex wOrig;
 
 	if (it == entities.end())
@@ -364,7 +364,7 @@ Entity& Part::operator[](const std::string& classname)
 	return *it;
 }
 
-Part::Part(std::string filepath) : Part()
+Part::Part(std::string_view path) : Part()
 {
-	parse(filepath);
+	parse(path);
 }

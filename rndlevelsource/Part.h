@@ -27,7 +27,7 @@ public:
 	// Parses until end of stream
 	size_t parse(std::istream& stream);
 	// Open and parse file in .vmf (valve map format) format.
-	size_t parse(const std::string& path);
+	size_t parse(std::string_view path);
 	// Counts number of entities in the part with the exact same classname
 	unsigned int countEntities(const std::string& classname) const;
 
@@ -76,7 +76,7 @@ public:
 	Part() = default;
 
 	// Open and parse file in .vmf format
-	Part(std::string);
+	Part(std::string_view path);
 	~Part() = default;
 };
 
