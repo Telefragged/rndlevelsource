@@ -230,9 +230,9 @@ Vertex & Vertex::operator/=(double mod)
 	return *this;
 }
 
-bool Vertex::operator==(const Vertex& other) const
+bool Vertex::operator==(const Vertex& rhs) const
 {
-	return doubleeq(x(), other.x()) && doubleeq(y(), other.y()) && doubleeq(z(), other.z());
+	return doubleeq(x(), rhs.x()) && doubleeq(y(), rhs.y()) && doubleeq(z(), rhs.z());
 }
 
 bool Vertex::operator<(const Vertex& rhs) const
@@ -311,9 +311,11 @@ Matrix<double, 3, 1> Vertex::toMat() const
 
 std::string Vertex::toStr() const
 {
-	std::ostringstream os;
-	os << x() << " " << y() << " " << z();
-	return os.str();
+	//std::ostringstream os;
+	//os << x() << " " << y() << " " << z();
+	//return os.str();
+
+	return std::to_string(x()) + ' ' + std::to_string(y()) + ' ' + std::to_string(z());
 }
 
 Vertex Vertex::allmin(const Vertex& v1, const Vertex& v2)
