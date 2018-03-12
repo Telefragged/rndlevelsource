@@ -4,6 +4,73 @@
 #include <random>
 #include <cstddef>
 
+#include <boost/iterator_adaptors.hpp>
+
+
+template <class _Ty>
+class WeightedVectorIterator
+	: public boost::iterator_facade<
+		WeightedVectorIterator<_Ty>,
+		_Ty,
+		boost::random_access_traversal_tag,
+		_Ty&,
+		ptrdiff_t>
+{
+	typename std::vector<std::pair<ptrdiff_t, _Ty>>::iterator iter;
+public:
+	WeightedVectorIterator()
+	{
+	}
+
+	WeightedVectorIterator(const decltype(iter)& iter)
+	{
+		this->iter = iter;
+	}
+
+private:
+	friend class boost::iterator_core_access;
+
+	_Ty& dereference() const { return iter->second; }
+
+	bool equal(WeightedVectorIterator<_Ty> const& other) const { return this->iter == other.iter; }
+	void increment() { ++iter; }
+	void decrement() { --iter; }
+	void advance(ptrdiff_t n) { iter += n; }
+	ptrdiff_t distance_to(WeightedVectorIterator<_Ty> const& other) const { return other.iter - this->iter; }
+};
+
+template <class _Ty>
+class WeightedVectorConstIterator
+	: public boost::iterator_facade<
+	WeightedVectorConstIterator<_Ty>,
+	_Ty,
+	boost::random_access_traversal_tag,
+	const _Ty&,
+	ptrdiff_t>
+{
+	typename std::vector<std::pair<ptrdiff_t, _Ty>>::const_iterator iter;
+public:
+
+	WeightedVectorConstIterator()
+	{
+	}
+
+	WeightedVectorConstIterator(const decltype(iter)& iter)
+	{
+		this->iter = iter;
+	}
+
+private:
+	friend class boost::iterator_core_access;
+
+	const _Ty& dereference() const { return iter->second; }
+	bool equal(WeightedVectorConstIterator<_Ty> const& other) const { return this->iter == other.iter; }
+	void increment() { ++iter; }
+	void decrement() { --iter; }
+	void advance(ptrdiff_t n) { iter += n; }
+	ptrdiff_t distance_to(WeightedVectorConstIterator<_Ty> const& other) const { return other.iter - this->iter; }
+};
+
 template <class _Ty>
 class WeightedVector
 {
@@ -11,57 +78,8 @@ class WeightedVector
 	ptrdiff_t totalWeight_ = 0;
 public:
 
-	class iterator
-	{
-		decltype(vec_.end()) iter;
-	public:
-		iterator(const decltype(iter)& iter)
-		{
-			this->iter = iter;
-		}
-
-		_Ty& operator *() const
-		{
-			return iter->second;
-		}
-
-		const iterator& operator++()
-		{
-			++iter;
-			return *this;
-		}
-
-		bool operator!=(const iterator& rhs)
-		{
-			return this->iter != rhs.iter;
-		}
-	};
-
-	class const_iterator
-	{
-		decltype(vec_.cend()) iter;
-	public:
-		const_iterator(const decltype(iter)& iter)
-		{
-			this->iter = iter;
-		}
-
-		const _Ty& operator *() const
-		{
-			return iter->second;
-		}
-
-		const_iterator& operator++()
-		{
-			++iter;
-			return *this;
-		}
-
-		bool operator!=(const const_iterator& rhs) const
-		{
-			return this->iter != rhs.iter;
-		}
-	};
+	using iterator = WeightedVectorIterator<_Ty>;
+	using const_iterator = WeightedVectorConstIterator<_Ty>;
 
 	iterator begin()
 	{
@@ -73,14 +91,24 @@ public:
 		return iterator(vec_.end());
 	}
 
-	const_iterator begin() const
+	const_iterator cbegin() const
 	{
 		return const_iterator(vec_.cbegin());
 	}
 
-	const_iterator end() const
+	const_iterator cend() const
 	{
 		return const_iterator(vec_.cend());
+	}
+
+	const_iterator begin() const
+	{
+		return cbegin();
+	}
+
+	const_iterator end() const
+	{
+		return cend();
 	}
 
 	void push_back(const _Ty& elem, ptrdiff_t weight = 1)

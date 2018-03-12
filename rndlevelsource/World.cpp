@@ -149,42 +149,6 @@ void World::buildWorld()
 	addPart(endParts.at(endDist(eng_)));
 }
 
-void World::filterFitHelper(const Part& p1, const Part& p2, const Part& test, std::vector<parttuple>& resList)
-{
-	Part copy(test);
-	for (const Connection& prevc : p1.connections)
-	{
-		unsigned int newcpos = 0;
-		for (Connection& newc : copy.connections)
-		{
-			if (newc.connectstr != prevc.connectstr)
-			{
-				newcpos++;
-				continue;
-			}
-			movePart(&copy, &newc, &prevc); // TODO -- Only rotate connections to save some time.
-			unsigned int cmpnewcpos = 0;
-			for (Connection& cmpnewc : copy.connections)
-			{
-				if (&cmpnewc == &newc)
-					continue;
-				for (const Connection& cmpprevc : p2.connections)
-				{
-					if (cmpnewc.connectstr != cmpprevc.connectstr)
-						continue;
-					else if (Vertex::equals(cmpprevc.origin(), cmpnewc.origin()))
-					{
-						resList.push_back(std::make_tuple(copy, newcpos, cmpnewcpos, &prevc, &cmpprevc));
-						//return; // or maybe not?
-					}
-				}
-				cmpnewcpos++;
-			}
-			newcpos++;
-		}
-	}
-}
-
 std::vector<parttuple> World::filterFit(const Part& p1, const Part& p2, const std::vector<Part>& cands)
 {
 	std::vector<parttuple> ret;

@@ -1,112 +1,79 @@
 #include <iostream>
 #include <thread>
 #include <tuple>
+#include <random>
+#include <chrono>
+
 #include "Part.h"
 #include "Angle.h"
+#include "Quaternion.h"
 #include "World.h"
 #include "BoundingBox.h"
 #include "Timer.h"
 
+#include "WeightedVector.h"
+
+#include <boost/range/adaptors.hpp>
+#include <boost/range/algorithm.hpp>
+
+void movePart(Part& part, Connection* newc, const Connection* prevc)
+{
+	Quaternion targetQuat(prevc->angles());
+
+	targetQuat = targetQuat * Quaternion({ 0, 180, 0 });
+
+	Angle newAngle = newc->angles();
+
+	auto rotmat = newAngle.calcRotation(targetQuat);
+
+	part.rotate(rotmat);
+	Vector mov = Vector::diff(newc->origin(), prevc->origin());
+	part.move(mov);
+}
+
+void scaleToFit(Part& scaleable, Connection* scalec, const Connection* firstc, const Connection* secondc)
+{
+	double dist = (firstc->originKV() - secondc->originKV()).length();
+
+	scaleable.scaleTo(dist);
+
+	movePart(scaleable, scalec, firstc);
+}
+
 int main(int argc, char* argv[])
 {
-	//std::random_device rd;
 
-	//std::mt19937 eng(rd());
+	WeightedVector<const Part> vec;
 
-	Part part1(R"(f:\test\TestMap.vmf)");
+	vec.push_back(Part(R"(f:\test\rndmap\room5.vmf)"));
+	vec.push_back(Part(R"(f:\test\testmap.vmf)"));
+	vec.push_back(Part(R"(f:\test\rndmap\room6.vmf)"));
 
-	part1.scaleTo(1024.0);
+	auto range = vec | boost::adaptors::filtered([](const Part &partPtr) {
+		return partPtr.connections.size() == 2
+			&& Vertex::countDifferentAxes(partPtr.connections[0].origin(), partPtr.connections[1].origin()) == 1;
+	}				 | boost::adaptors::indexed());
 
-	part1.toFile(R"(F:\test\ScaledMap.vmf)");
 
-	//part.moveTo({ 0, 0, 0 });
-	////part.toFile("f:\\test\\test2.vmf");
+	auto &startConnection = start.connections.getIndexed(0);
+	auto &endConnection = end.connections.getIndexed(0);
+	auto &scaleConnection = scaleable.connections.getIndexed(0);
 
-	//std::cout << part << "\n";
+	movePart(end, &endConnection, &startConnection);
 
-	//auto mat = Matrix3d::rotmatz(90);
+	Vertex dir = Vertex::unitX.rotate(startConnection.angles().angleMatrix());
 
-	//Vertex vec3{ 1, 0, 0 };
+	end.move(dir * 306.5);
 
-	//std::cout << vec3.toMat() << "\n";
+	scaleToFit(scaleable, &scaleConnection, &startConnection, &endConnection);
 
-	//std::cout << mat << "\n";
+	auto part = (start + scaleable + end);
 
-	//for (size_t x = 0; x < mat.x(); x++)
-	//{
-	//	for (int y = 0; y < mat.y(); y++)
-	//	{
-	//		printf("%3.2f ", mat[x][y]);
-	//	}
-	//	printf("\n");
-	//}
+	part.moveTo({ 0, 0, 0 });
 
-	//Solid s = part.entities[0].solids[0], front, back;
+	part.toFile(R"(f:\test\ScaleTest.vmf)");
 
-	//part.moveTo({ 0, 0, 0 });
-
-	//Plane p{ "(0 0 64) (64 0 64) (64 32 32)" };
-
-	//std::vector<Solid> newSolids;
-
-	//auto worldspawn = std::find_if(part.entities.begin(), part.entities.end(), &Entity::entworldcmp);
-
-	//for (auto solid : worldspawn->solids)
-	//{
-	//	Solid front, back;
-	//	solid.slice(p, front, back);
-	//	if (front.sides.size() > 0) newSolids.push_back(front);
-	//	if (back.sides.size() > 0) newSolids.push_back(back);
-	//}
-
-	//worldspawn->solids = newSolids;
-
-	//part.reID();
-
-	//part.toFile("f:\\test\\test2.vmf");
-
-	//s.slice({ "(0 0 32) (64 0 32) (64 32 64)" }, front, back);
-
-	//back.move({ 0, 32, 32 });
-
-	//part.entities[0].solids.clear();
-	//part.entities[0].solids.push_back(front);
-	//part.entities[0].solids.push_back(back);
-
-	//part.reID();
-
-	//std::cout << part << "\n";
-
-	//Polygon p({ "(0 0 0) (0 64 0) (64 64 0)" });
-
-	//Plane plane{ "(0 0 0) (0 64 0) (64 64 0)" };
-
-	//auto classification = p.classify(plane);
-
-	//std::cout << classification << "\n";
-
-	//Plane plane(p.points[0], p.points[1], p.points[2]);
-
-	//std::cout << plane.toStr() << "\n";
-
-	//Plane p("(0, 0, 64) (0, 64, 64) (64, 64, 64)");
-
-	//Polygon polygon({"(0, 0, 0) (0, 0, 1) (1, 0, 1)"}), front, back;
-
-	/*bool res = polygon.slice(p, front, back);*/
-
-	//for (auto &point : polygon.points)
-	//	std::cout << point.toStr() << "\n";
-
-	//std::cout << "\n";
-
-	//for (auto &point : front.points)
-	//	std::cout << point.toStr() << "\n";
-
-	//std::cout << "\n";
-
-	//for (auto &point : back.points)
-	//	std::cout << point.toStr() << "\n";
+	std::cin.get();
 
 	return 0;
 }
