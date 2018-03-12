@@ -6,6 +6,6 @@ class BaseNPC :
 {
 public:
 	BaseNPC() = default;
-	~BaseNPC() = default;
+	~BaseNPC() override = default;
 };
 
