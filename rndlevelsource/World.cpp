@@ -84,11 +84,12 @@ Part World::collapse()
 
 Connection* World::randConnection(Part& part)
 {
-	if (part.connections.weight() == 0) return nullptr;
-	std::uniform_int_distribution<size_t> dist(0, part.connections.weight() - 1);
-	auto ptr = part.connections.getWeighted(dist(eng_));
-	part.connections.setWeight(ptr, 0);
-	return ptr;
+	if (part.connections.totalWeight() == 0)
+		return nullptr;
+	std::uniform_int_distribution<ptrdiff_t> dist(0, part.connections.totalWeight() - 1);
+	auto& ptr = part.connections.getWeighted(dist(eng_));
+	part.connections.setWeight(&ptr, 0);
+	return &ptr;
 }
 
 void World::removePart(size_t index)
@@ -136,13 +137,13 @@ void World::buildWorld()
 
 	addPart(startParts.at(startDist(eng_)));
 
-	for (unsigned int n = 0; n < 20; n++)
+	for (size_t n = 0; n < 20; n++)
 	{
-		std::uniform_int_distribution<size_t> interDist(0, weightedInter.weight() - 1);
-		auto* part = weightedInter.getWeighted(interDist(eng_));
-		int weight = weightedInter.changeWeight(part, -int(5 * weightedInter.size()));
+		std::uniform_int_distribution<ptrdiff_t> interDist(0, weightedInter.totalWeight() - 1);
+		auto& part = weightedInter.getWeighted(interDist(eng_));
+		ptrdiff_t weight = weightedInter.changeWeight(&part, -ptrdiff_t(5 * weightedInter.size()));
 		weightedInter.addToRandomWeights(abs(weight), eng_);
-		addPart(*part);
+		addPart(part);
 	}
 
 	addPart(endParts.at(endDist(eng_)));
