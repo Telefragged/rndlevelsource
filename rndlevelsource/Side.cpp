@@ -93,7 +93,7 @@ bool Side::testCollision(const Side& lhs, const Side& rhs)
 
 void Side::extraOutput(std::ostream& os) const
 {
-	os << std::setw(depth()) << "" << "\t\"Plane\" \"" << plane().toStr() << "\"\n";
+	os << std::setw(depth()) << "" << "\t\"plane\" \"" << plane().toStr() << "\"\n";
 	os << std::setw(depth()) << "" << "\t\"uaxis\" \"" << uaxis.toStr() << "\"\n";
 	os << std::setw(depth()) << "" << "\t\"vaxis\" \"" << vaxis.toStr() << "\"\n";
 	if (!disp.empty())
