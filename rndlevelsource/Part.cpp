@@ -127,6 +127,11 @@ void Part::moveTo(const Vertex& point)
 
 void Part::rotate(const Angle& angle, const Vertex& point)
 {
+	rotate(angle.angleMatrix(), point);
+}
+
+void Part::rotate(const Matrix3d& rotmat, const Vertex &point)
+{
 	auto it = find_if(entities.begin(), entities.end(), &Entity::entworldcmp);
 
 	Vertex orig;
@@ -136,9 +141,6 @@ void Part::rotate(const Angle& angle, const Vertex& point)
 		orig = Vertex(0, 0, 0);
 	else
 		orig = it->origin();
-
-	Angle rotangle(-angle.pitch(), angle.yaw(), angle.roll()); //Invert pitch for compliance with hammer.
-	auto rotmat = rotangle.angleMatrix();
 
 	for (Entity& e : entities)
 	{
@@ -197,16 +199,7 @@ void Part::scale(const Vertex & scale, const Vertex& origin, bool ignoreEntities
 
 void Part::scale(const Vertex& scale, bool ignoreEntities)
 {
-	auto it = find_if(entities.begin(), entities.end(), &Entity::entworldcmp);
-
-	Vertex orig = this->origin();
-	if (it != entities.end())
-	{
-		for (Solid &s : it->solids)
-			s.scale(scale, orig);
-	}
-
-	this->scale(scale, orig, ignoreEntities);
+	this->scale(scale, origin(), ignoreEntities);
 }
 
 void Part::scaleTo(double length)
@@ -352,6 +345,13 @@ Part& Part::operator+=(const Part& rhs)
 	}
 	reID(); // Faster to call this here than make lots of copies everywhere.
 	return *this;
+}
+
+Part Part::operator+(const Part& rhs) const
+{
+	Part ret = *this;
+	ret += rhs;
+	return ret;
 }
 
 Entity& Part::operator[](const std::string& classname)

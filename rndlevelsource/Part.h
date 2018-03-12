@@ -49,6 +49,8 @@ public:
 	// By default the part rotates around its origin
 	void rotate(const Angle& angle, const Vertex& point = Vertex());
 
+	void rotate(const Matrix3d& rotmat, const Vertex& point = Vertex());
+
 	// Scales the part around the given origin
 	void scale(const Vertex& scale, const Vertex& origin, bool ignoreEntities = false);
 
@@ -65,6 +67,8 @@ public:
 
 	//Merges world entities and copies all other entities
 	Part& operator+=(const Part& rhs);
+
+	Part operator+(const Part& rhs) const;
 
 	//Returns reference to a entity with classname equal to argument.
 	//If no such entity exists, the function will create one and return its reference.
