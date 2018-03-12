@@ -41,6 +41,11 @@ Angle::Angle(const std::string& str) : Vertex(str)
 {
 }
 
+Angle::Angle(const Matrix3d & mat)
+{
+	this->fromMatrix(mat);
+}
+
 double Angle::pitch() const
 {
 	return x();
@@ -59,7 +64,9 @@ double Angle::roll() const
 Vertex Angle::toVertex() const
 {
 	Vertex ret;
-	double yawrad = vertex_[YAW] * (M_PI / 180.0), rollrad = vertex_[ROLL] * (M_PI / 180.0);
+	double yawrad = vertex_[YAW] * (M_PI / 180.0);
+	double rollrad = vertex_[ROLL] * (M_PI / 180.0);
+
 	ret.x(cos(yawrad) * cos(rollrad));
 	ret.y(sin(yawrad) * cos(rollrad));
 	ret.z(sin(rollrad));

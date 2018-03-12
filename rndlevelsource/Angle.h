@@ -40,6 +40,7 @@ public:
 
 	Angle() = default;
 	Angle(const std::string& str);
+	Angle(const Matrix3d& mat);
 	Angle(double pitch, double yaw, double roll);
 
 	~Angle() override = default;
