@@ -26,6 +26,8 @@ public:
 
 	Quaternion& operator*=(const Quaternion& rhs);
 
+	Angle toAngle();
+
 	double& operator[](size_t pos);
 	double operator[](size_t pos) const;
 

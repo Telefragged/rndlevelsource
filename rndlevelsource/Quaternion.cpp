@@ -92,6 +92,30 @@ Quaternion& Quaternion::operator*=(const Quaternion& rhs)
 	return *this;
 }
 
+Angle Quaternion::toAngle()
+{
+	Angle ret;
+
+	// roll (x-axis rotation)
+	double sinr = 2.0 * (w() * x() + y() * z());
+	double cosr = 1.0 - 2.0 * (x() * x() + y() * y());
+	ret[2] = RAD2DEG(atan2(sinr, cosr));
+
+	// pitch (y-axis rotation)
+	double sinp = 2.0 * (w() * y() - z() * x());
+	if (fabs(sinp) >= 1)
+		ret[0] = RAD2DEG(copysign(M_PI / 2, sinp)); // use 90 degrees if out of range
+	else
+		ret[0] = RAD2DEG(asin(sinp));
+
+	// yaw (z-axis rotation)
+	double siny = 2.0 * (w() * z() + x() * y());
+	double cosy = 1.0 - 2.0 * (y() * y() + z() * z());
+	ret[1] = RAD2DEG(atan2(siny, cosy));
+
+	return ret;
+}
+
 double Quaternion::operator[](size_t pos) const
 {
 	switch (pos)
@@ -102,8 +126,6 @@ double Quaternion::operator[](size_t pos) const
 		return xyz_[pos];
 	case 4:
 		return w_;
-	default:
-		;
 	}
 	return std::numeric_limits<double>::quiet_NaN();
 }
