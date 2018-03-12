@@ -106,7 +106,7 @@ Matrix3d Angle::angleMatrix() const
 
 Matrix3d Angle::calcRotation(const Angle& target) const
 {
-	calcRotation(Quaternion{ target });
+	return calcRotation(Quaternion{ target });
 }
 
 Matrix3d Angle::calcRotation(Quaternion target) const
