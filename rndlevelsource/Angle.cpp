@@ -106,11 +106,15 @@ Matrix3d Angle::angleMatrix() const
 
 Matrix3d Angle::calcRotation(const Angle& target) const
 {
+	calcRotation(Quaternion{ target });
+}
+
+Matrix3d Angle::calcRotation(Quaternion target) const
+{
 	Quaternion curQuat(*this);
-	Quaternion targetQuat(target);
 	curQuat.normalize();
-	targetQuat.normalize();
-	Quaternion rot = targetQuat * curQuat.conjugate();
+	target.normalize();
+	Quaternion rot = target * curQuat.conjugate();
 	rot.normalize();
 	return rot.quaternionMatrix();
 }

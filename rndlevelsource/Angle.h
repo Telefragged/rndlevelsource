@@ -8,6 +8,8 @@ enum
 	ROLL
 };
 
+class Quaternion;
+
 class Angle :
 	public Vertex
 {
@@ -30,6 +32,8 @@ public:
 
 	//Calculate rotation matrix from this angle to target angle.
 	Matrix3d calcRotation(const Angle& target) const;
+
+	Matrix3d calcRotation(Quaternion target) const;
 
 	//Sets the pitch, yaw and roll of the angle to the values represented by the rotation matrix.
 	void fromMatrix(const Matrix3d& matrix);
