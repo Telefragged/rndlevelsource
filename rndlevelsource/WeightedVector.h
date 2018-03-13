@@ -77,7 +77,7 @@ class WeightedVector
 	std::vector<std::pair<ptrdiff_t, _Ty>> vec_;
 	ptrdiff_t totalWeight_ = 0;
 public:
-
+	using value_type = _Ty;
 	using iterator = WeightedVectorIterator<_Ty>;
 	using const_iterator = WeightedVectorConstIterator<_Ty>;
 

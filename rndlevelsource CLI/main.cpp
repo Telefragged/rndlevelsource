@@ -42,7 +42,6 @@ void scaleToFit(Part& scaleable, Connection* scalec, const Connection* firstc, c
 
 int main(int argc, char* argv[])
 {
-
 	WeightedVector<const Part> vec;
 
 	vec.push_back(Part(R"(f:\test\rndmap\room5.vmf)"));
@@ -52,26 +51,31 @@ int main(int argc, char* argv[])
 	auto range = vec | boost::adaptors::filtered([](const Part &partPtr) {
 		return partPtr.connections.size() == 2
 			&& Vertex::countDifferentAxes(partPtr.connections[0].origin(), partPtr.connections[1].origin()) == 1;
-	}				 | boost::adaptors::indexed());
+	});
+	
+	WeightedVector<const Part> scaleables;
 
+	boost::copy(range, std::back_inserter(scaleables));
 
-	auto &startConnection = start.connections.getIndexed(0);
-	auto &endConnection = end.connections.getIndexed(0);
-	auto &scaleConnection = scaleable.connections.getIndexed(0);
+	std::cout << scaleables.size() << "\n";
 
-	movePart(end, &endConnection, &startConnection);
+	//auto &startConnection = start.connections.getIndexed(0);
+	//auto &endConnection = end.connections.getIndexed(0);
+	//auto &scaleConnection = scaleable.connections.getIndexed(0);
 
-	Vertex dir = Vertex::unitX.rotate(startConnection.angles().angleMatrix());
+	//movePart(end, &endConnection, &startConnection);
 
-	end.move(dir * 306.5);
+	//Vertex dir = Vertex::unitX.rotate(startConnection.angles().angleMatrix());
 
-	scaleToFit(scaleable, &scaleConnection, &startConnection, &endConnection);
+	//end.move(dir * 306.5);
 
-	auto part = (start + scaleable + end);
+	//scaleToFit(scaleable, &scaleConnection, &startConnection, &endConnection);
 
-	part.moveTo({ 0, 0, 0 });
+	//auto part = (start + scaleable + end);
 
-	part.toFile(R"(f:\test\ScaleTest.vmf)");
+	//part.moveTo({ 0, 0, 0 });
+
+	//part.toFile(R"(f:\test\ScaleTest.vmf)");
 
 	std::cin.get();
 
