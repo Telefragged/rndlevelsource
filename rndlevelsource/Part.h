@@ -15,6 +15,7 @@ private:
 public:
 	std::vector<Entity> entities;
 	WeightedVector<Connection> connections;
+	std::string filename;
 
 	//Test collision between parts
 	static bool testCollision(const Part& lhs, const Part& rhs);
@@ -29,7 +30,7 @@ public:
 	// Open and parse file in .vmf (valve map format) format.
 	size_t parse(std::string_view path);
 	// Counts number of entities in the part with the exact same classname
-	unsigned int countEntities(const std::string& classname) const;
+	size_t countEntities(const std::string& classname) const;
 
 	// Opens and writes a file in .vmf format
 	std::streampos toFile(const std::string& path) const;

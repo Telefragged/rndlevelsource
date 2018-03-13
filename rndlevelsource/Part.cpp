@@ -58,7 +58,7 @@ size_t Part::parse(std::string_view path)
 	return ret;
 }
 
-unsigned int Part::countEntities(const std::string& classname) const
+size_t Part::countEntities(const std::string& classname) const
 {
 	unsigned int count = 0;
 	for (const Entity& entity : entities)
@@ -367,4 +367,5 @@ Entity& Part::operator[](const std::string& classname)
 Part::Part(std::string_view path) : Part()
 {
 	parse(path);
+	filename = path;
 }
