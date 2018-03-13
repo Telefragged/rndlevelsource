@@ -3,9 +3,9 @@
 #include <vector>
 #include <random>
 #include <cstddef>
+#include <iostream>
 
 #include <boost/iterator_adaptors.hpp>
-
 
 template <class _Ty>
 class WeightedVectorIterator
@@ -16,15 +16,28 @@ class WeightedVectorIterator
 		_Ty&,
 		ptrdiff_t>
 {
-	typename std::vector<std::pair<ptrdiff_t, _Ty>>::iterator iter;
+private:
+
+	using _vectorIteratorType = typename std::conditional<
+		std::is_const<_Ty>::value,
+		typename std::vector<std::pair<ptrdiff_t, typename std::remove_const<_Ty>::type>>::const_iterator,
+		typename std::vector<std::pair<ptrdiff_t, _Ty>>::iterator>
+		::type;
+
 public:
-	WeightedVectorIterator()
+	_vectorIteratorType iter;
+
+	WeightedVectorIterator() = default;
+
+	WeightedVectorIterator(_vectorIteratorType iter)
+		: iter(iter)
 	{
 	}
 
-	WeightedVectorIterator(const decltype(iter)& iter)
+	template <class _Ty2, class = typename std::enable_if<std::is_convertible<_Ty2*, _Ty*>::value>::type>
+	WeightedVectorIterator(const WeightedVectorIterator<_Ty2>& other )
+		: iter(other.iter)
 	{
-		this->iter = iter;
 	}
 
 private:
@@ -32,43 +45,13 @@ private:
 
 	_Ty& dereference() const { return iter->second; }
 
-	bool equal(WeightedVectorIterator<_Ty> const& other) const { return this->iter == other.iter; }
+	template <class _Ty2>
+	bool equal(WeightedVectorIterator<_Ty2> const& other) const { return this->iter == other.iter; }
+
 	void increment() { ++iter; }
 	void decrement() { --iter; }
 	void advance(ptrdiff_t n) { iter += n; }
 	ptrdiff_t distance_to(WeightedVectorIterator<_Ty> const& other) const { return other.iter - this->iter; }
-};
-
-template <class _Ty>
-class WeightedVectorConstIterator
-	: public boost::iterator_facade<
-	WeightedVectorConstIterator<_Ty>,
-	_Ty,
-	boost::random_access_traversal_tag,
-	const _Ty&,
-	ptrdiff_t>
-{
-	typename std::vector<std::pair<ptrdiff_t, _Ty>>::const_iterator iter;
-public:
-
-	WeightedVectorConstIterator()
-	{
-	}
-
-	WeightedVectorConstIterator(const decltype(iter)& iter)
-	{
-		this->iter = iter;
-	}
-
-private:
-	friend class boost::iterator_core_access;
-
-	const _Ty& dereference() const { return iter->second; }
-	bool equal(WeightedVectorConstIterator<_Ty> const& other) const { return this->iter == other.iter; }
-	void increment() { ++iter; }
-	void decrement() { --iter; }
-	void advance(ptrdiff_t n) { iter += n; }
-	ptrdiff_t distance_to(WeightedVectorConstIterator<_Ty> const& other) const { return other.iter - this->iter; }
 };
 
 template <class _Ty>
@@ -78,8 +61,12 @@ class WeightedVector
 	ptrdiff_t totalWeight_ = 0;
 public:
 	using value_type = _Ty;
+	using reference = _Ty &;
+	using pointer = _Ty *;
+
 	using iterator = WeightedVectorIterator<_Ty>;
-	using const_iterator = WeightedVectorConstIterator<_Ty>;
+	using const_iterator = WeightedVectorIterator<const _Ty>;
+	using difference_type = ptrdiff_t;
 
 	iterator begin()
 	{
@@ -120,7 +107,15 @@ public:
 	void push_back(_Ty&& elem, ptrdiff_t weight = 1)
 	{
 		totalWeight_ += weight;
-		vec_.push_back(std::make_pair(weight, elem));
+		vec_.push_back(std::make_pair(weight, std::forward<_Ty>(elem)));
+	}
+
+	iterator erase(iterator first, iterator last)
+	{
+		for (auto it = first.iter; it != last.iter; it++)
+			totalWeight_ -= it->first;
+
+		return iterator(vec_.erase(first.iter, last.iter));
 	}
 
 	_Ty& getWeighted(ptrdiff_t weight)
@@ -139,7 +134,12 @@ public:
 		throw std::exception("Weight out of range");
 	}
 
-	_Ty& getIndexed(size_t index)
+	_Ty& at(size_t index)
+	{
+		return vec_.at(index).second;
+	}
+
+	const _Ty& at(size_t index) const
 	{
 		return vec_.at(index).second;
 	}

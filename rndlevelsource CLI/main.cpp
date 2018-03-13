@@ -15,6 +15,8 @@
 
 #include <boost/range/adaptors.hpp>
 #include <boost/range/algorithm.hpp>
+#include <boost/range/algorithm_ext/erase.hpp>
+#include <boost/move/iterator.hpp>
 
 void movePart(Part& part, Connection* newc, const Connection* prevc)
 {
@@ -42,42 +44,66 @@ void scaleToFit(Part& scaleable, Connection* scalec, const Connection* firstc, c
 
 int main(int argc, char* argv[])
 {
-	WeightedVector<const Part> vec;
+	WeightedVector<Part> vec;
+
+	WeightedVector<Part> scaleables, starts, inters;
 
 	vec.push_back(Part(R"(f:\test\rndmap\room5.vmf)"));
 	vec.push_back(Part(R"(f:\test\testmap.vmf)"));
 	vec.push_back(Part(R"(f:\test\rndmap\room6.vmf)"));
 
-	auto range = vec | boost::adaptors::filtered([](const Part &partPtr) {
-		return partPtr.connections.size() == 2
-			&& Vertex::countDifferentAxes(partPtr.connections[0].origin(), partPtr.connections[1].origin()) == 1;
-	});
-	
-	WeightedVector<const Part> scaleables;
+	auto startPred = [](const Part& part)
+	{
+		return part.connections.size() >= 1
+			&& part.countEntities("info_player_start") == 1;
+	};
 
-	boost::copy(range, std::back_inserter(scaleables));
+	auto scaleablePred = [](const Part &part)
+	{
+		return part.connections.size() == 2
+			&& Vertex::countDifferentAxes(part.connections[0].origin(), part.connections[1].origin()) == 1;
+	};
 
-	std::cout << scaleables.size() << "\n";
+	auto interPred = [](const Part& part)
+	{
+		return part.connections.size() >= 2;
+	};
 
-	//auto &startConnection = start.connections.getIndexed(0);
-	//auto &endConnection = end.connections.getIndexed(0);
-	//auto &scaleConnection = scaleable.connections.getIndexed(0);
+	auto startRange = boost::partition<boost::return_begin_found>(vec, startPred);
+	boost::copy(startRange, std::back_inserter(starts));
+	boost::erase(vec, startRange);
 
-	//movePart(end, &endConnection, &startConnection);
+	boost::copy(vec | boost::adaptors::filtered(scaleablePred), std::back_inserter(scaleables));
+	boost::erase(vec, boost::remove_if<boost::return_found_end>(vec, scaleablePred));
 
-	//Vertex dir = Vertex::unitX.rotate(startConnection.angles().angleMatrix());
+	boost::copy(vec | boost::adaptors::filtered(interPred), std::back_inserter(inters));
+	boost::erase(vec, boost::remove_if<boost::return_found_end>(vec, interPred));
 
-	//end.move(dir * 306.5);
+	auto start = starts[0];
+	auto scaleable = scaleables[0];
+	auto end = inters[0];
 
-	//scaleToFit(scaleable, &scaleConnection, &startConnection, &endConnection);
+	auto& startConnection = start.connections.at(0);
+	auto& scaleConnection = scaleable.connections.at(0);
+	auto& endConnection = end.connections.at(0);
 
-	//auto part = (start + scaleable + end);
+	std::random_device dev;
+	std::mt19937 eng(dev());
 
-	//part.moveTo({ 0, 0, 0 });
+	std::uniform_real_distribution<> scaleDist(200., 1000.);
+	std::uniform_real_distribution<> rotDist(-60., 60.);
 
-	//part.toFile(R"(f:\test\ScaleTest.vmf)");
+	start.rotate(Angle{ 0, rotDist(eng), 0 });
+	movePart(end, &endConnection, &startConnection);
 
-	std::cin.get();
+	Vertex dir = Vertex::unitX.rotate(startConnection.angles().angleMatrix());
+
+	end.move(dir * std::round(scaleDist(eng)));
+
+	scaleToFit(scaleable, &scaleConnection, &startConnection, &endConnection);
+	auto part = (start + scaleable + end);
+
+	part.toFile(R"(f:\test\ScaleTest.vmf)");
 
 	return 0;
 }
