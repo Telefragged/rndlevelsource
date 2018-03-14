@@ -17,15 +17,15 @@ class WeightedVectorIterator
 		ptrdiff_t>
 {
 private:
-
 	using _vectorIteratorType = typename std::conditional<
 		std::is_const<_Ty>::value,
 		typename std::vector<std::pair<ptrdiff_t, typename std::remove_const<_Ty>::type>>::const_iterator,
 		typename std::vector<std::pair<ptrdiff_t, _Ty>>::iterator>
 		::type;
 
-public:
 	_vectorIteratorType iter;
+
+public:
 
 	WeightedVectorIterator() = default;
 
@@ -42,6 +42,7 @@ public:
 
 private:
 	friend class boost::iterator_core_access;
+	template<class _Ty> friend class WeightedVector;
 
 	_Ty& dereference() const { return iter->second; }
 
