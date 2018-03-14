@@ -146,10 +146,10 @@ Polygon::Polygon(const Plane & p)
 	auto right = normal.crossProduct(up).normalize();
 
 	points = {
-		p.p1 + right + up,
-		p.p1 - right + up,
-		p.p1 - right - up,
-		p.p1 + right + up
+		p.p1() + right + up,
+		p.p1() - right + up,
+		p.p1() - right - up,
+		p.p1() + right + up
 	};
 
 	auto orig = origin();

@@ -9,21 +9,21 @@ void Plane::parsestr(std::string_view pstr)
 	size_t spos, epos = 0;
 	spos = pstr.find_first_of('(', epos);
 	epos = pstr.find_first_of(')', epos) + 1;
-	p1.parsestr(pstr.substr(spos, epos));
+	p1_.parsestr(pstr.substr(spos, epos));
 
 	spos = pstr.find_first_of('(', epos);
 	epos = pstr.find_first_of(')', epos) + 1;
-	p2.parsestr(pstr.substr(spos, epos));
+	p2_.parsestr(pstr.substr(spos, epos));
 
 	spos = pstr.find_first_of('(', epos);
 	epos = pstr.find_first_of(')', epos) + 1;
-	p3.parsestr(pstr.substr(spos, epos));
+	p3_.parsestr(pstr.substr(spos, epos));
 }
 
 Vertex Plane::normal() const
 {
-	Vertex v1 = p2 - p1;
-	Vertex v2 = p3 - p1;
+	Vertex v1 = p2() - p1();
+	Vertex v2 = p3() - p1();
 	return Vertex::normalize(Vertex::crossProduct(v2, v1));
 }
 
@@ -34,7 +34,7 @@ Matrix<double, 1, 4> Plane::equation() const
 	ret[0][0] = norm[0];
 	ret[0][1] = norm[1];
 	ret[0][2] = norm[2];
-	ret[0][3] = -Vertex::dotProduct(norm, p1);
+	ret[0][3] = -Vertex::dotProduct(norm, p1());
 	return ret;
 }
 
@@ -64,16 +64,12 @@ Plane Plane::vectorPlane(const Vector& line1, const Vector& line2)
 	Vertex p2 = line1.end();
 	Vertex p3 = !(Vertex::equals(line2.beg(), p1) || Vertex::equals(line2.beg(), p2)) ? line2.beg() : line2.end();
 
-	Plane ret;
-	ret.p1 = p1;
-	ret.p2 = p2;
-	ret.p3 = p3;
-	return ret;
+	return Plane(p1, p2, p3);
 }
 
 Plane Plane::flip(const Plane& plane)
 {
-	return Plane(plane.p3, plane.p2, plane.p1);
+	return Plane(plane.p3(), plane.p2(), plane.p1());
 }
 
 Vector Plane::intersectLine(const Plane& lhs, const Plane& rhs)
@@ -123,7 +119,7 @@ Vertex Plane::intersectPoint(const Plane& p, const Vector& line)
 	
 	Vertex normal = p.normal();
 
-	double num = -normal.dotProduct(line.beg() - p.p1);
+	double num = -normal.dotProduct(line.beg() - p.p1());
 	double denom = normal.dotProduct(line.vec());
 
 	if (doubleeq(denom, 0))
@@ -159,7 +155,7 @@ double Plane::dist(const Vertex& point, const Vertex& other)
 std::string Plane::toStr() const
 {
 	std::string ret;
-	ret += '(' + p1.toStr() + ") (" + p2.toStr() + ") (" + p3.toStr() + ')';
+	ret += '(' + p1().toStr() + ") (" + p2().toStr() + ") (" + p3().toStr() + ')';
 	return ret;
 }
 
@@ -169,7 +165,7 @@ Plane::Plane(const std::string& str)
 	this->parsestr(str);
 }
 
-Plane::Plane(const Vertex& p1, const Vertex& p2, const Vertex& p3) : p1(p1), p2(p2), p3(p3)
+Plane::Plane(const Vertex& p1, const Vertex& p2, const Vertex& p3) : p1_(p1), p2_(p2), p3_(p3)
 {
 }
 

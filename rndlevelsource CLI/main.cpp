@@ -3,6 +3,7 @@
 #include <tuple>
 #include <random>
 #include <chrono>
+#include <functional>
 
 #include "Part.h"
 #include "Angle.h"
@@ -16,7 +17,6 @@
 #include <boost/range/adaptors.hpp>
 #include <boost/range/algorithm.hpp>
 #include <boost/range/algorithm_ext/erase.hpp>
-#include <boost/move/iterator.hpp>
 
 void movePart(Part& part, Connection* newc, const Connection* prevc)
 {
@@ -44,13 +44,21 @@ void scaleToFit(Part& scaleable, Connection* scalec, const Connection* firstc, c
 
 int main(int argc, char* argv[])
 {
+	nanotimer incDiskTimer;
+
 	WeightedVector<Part> vec;
 
 	WeightedVector<Part> scaleables, starts, inters;
 
+	incDiskTimer.start();
+
 	vec.push_back(Part(R"(f:\test\rndmap\room5.vmf)"));
 	vec.push_back(Part(R"(f:\test\testmap.vmf)"));
 	vec.push_back(Part(R"(f:\test\rndmap\room6.vmf)"));
+
+	nanotimer excDiskTimer;
+
+	excDiskTimer.start();
 
 	auto startPred = [](const Part& part)
 	{
@@ -69,15 +77,17 @@ int main(int argc, char* argv[])
 		return part.connections.size() >= 2;
 	};
 
-	auto startRange = boost::partition<boost::return_begin_found>(vec, startPred);
+	auto startRange = boost::partition<boost::return_found_end>(vec, std::not_fn(startPred));
 	boost::copy(startRange, std::back_inserter(starts));
 	boost::erase(vec, startRange);
 
-	boost::copy(vec | boost::adaptors::filtered(scaleablePred), std::back_inserter(scaleables));
-	boost::erase(vec, boost::remove_if<boost::return_found_end>(vec, scaleablePred));
+	auto scaleableRange = boost::partition<boost::return_found_end>(vec, std::not_fn(scaleablePred));
+	boost::copy(scaleableRange, std::back_inserter(scaleables));
+	boost::erase(vec, scaleableRange);
 
-	boost::copy(vec | boost::adaptors::filtered(interPred), std::back_inserter(inters));
-	boost::erase(vec, boost::remove_if<boost::return_found_end>(vec, interPred));
+	auto interRange = boost::partition<boost::return_found_end>(vec, std::not_fn(interPred));
+	boost::copy(interRange, std::back_inserter(inters));
+	boost::erase(vec, interRange);
 
 	auto start = starts[0];
 	auto scaleable = scaleables[0];
@@ -103,7 +113,14 @@ int main(int argc, char* argv[])
 	scaleToFit(scaleable, &scaleConnection, &startConnection, &endConnection);
 	auto part = (start + scaleable + end);
 
+	excDiskTimer.stop();
+
 	part.toFile(R"(f:\test\ScaleTest.vmf)");
+
+	incDiskTimer.stop();
+
+	std::cout << "   Execution time: " << (double)incDiskTimer.getTime().count() / 1'000'000. << "ms\n";
+	std::cout << "Excluding disk IO: " << (double)excDiskTimer.getTime().count() / 1'000'000. << "ms\n";
 
 	return 0;
 }

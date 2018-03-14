@@ -15,7 +15,7 @@ namespace rndlevelsourceUnitTests
 		TEST_METHOD(TestPlaneFlip)
 		{
 			Plane flippedPlane = Plane::flip(testPlaneZ);
-			Assert::AreEqual(testPlaneZ.p3, flippedPlane.p1);
+			Assert::AreEqual(testPlaneZ.p3(), flippedPlane.p1());
 		}
 
 		TEST_METHOD(TestPlaneNormal)
@@ -37,9 +37,9 @@ namespace rndlevelsourceUnitTests
 			Assert::AreEqual({ 0, 0, 1, 0 }, testPlaneZ.equation());
 			Vertex translation = { 0, 0, 64 };
 			Plane plane = {
-				testPlaneZ.p1 + translation,
-				testPlaneZ.p2 + translation,
-				testPlaneZ.p3 + translation
+				testPlaneZ.p1() + translation,
+				testPlaneZ.p2() + translation,
+				testPlaneZ.p3() + translation
 			};
 			Assert::AreEqual({ 0, 0, 1, -64 }, plane.equation());
 		}
@@ -60,9 +60,9 @@ namespace rndlevelsourceUnitTests
 
 			Plane p{ parseStr };
 
-			Assert::AreEqual({ 32, 32, 32 }, p.p1);
-			Assert::AreEqual({ 0.5, -0.5, 3 }, p.p2);
-			Assert::AreEqual({ 0, 0, 0 }, p.p3);
+			Assert::AreEqual({ 32, 32, 32 }, p.p1());
+			Assert::AreEqual({ 0.5, -0.5, 3 }, p.p2());
+			Assert::AreEqual({ 0, 0, 0 }, p.p3());
 		}
 	};
 }

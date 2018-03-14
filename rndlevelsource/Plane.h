@@ -6,8 +6,13 @@ class Vector;
 
 class Plane
 {
+	Vertex p1_, p2_, p3_;
 public:
-	Vertex p1, p2, p3;
+
+	const Vertex& p1() const { return p1_; };
+	const Vertex& p2() const { return p2_; };
+	const Vertex& p3() const { return p3_; };
+
 	std::string toStr() const;
 
 	Vertex normal() const;
