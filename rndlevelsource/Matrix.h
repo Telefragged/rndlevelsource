@@ -5,9 +5,18 @@
 #include <string>
 #include <initializer_list>
 
+#ifndef _USE_MATH_DEFINES // for M_PI
+	#define _USE_MATH_DEFINES
+#endif // _USE_MATH_DEFINES
+
+#include <math.h>
+
+#ifndef M_PI // Use provided M_PI if available
+	#define M_PI 3.14159265358979323846
+#endif // M_PI
+
 #include "utils.h"
 
-#define M_PI 3.14159265358979323846
 
 template <class _Ty, size_t _X, size_t _Y>
 class Matrix
