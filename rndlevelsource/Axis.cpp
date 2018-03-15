@@ -31,7 +31,5 @@ void Axis::translate(const Vertex& translation)
 
 std::string Axis::toStr() const
 {
-	std::ostringstream os;
-	os << "[" << v.toStr() << " " << trans << "] " << scale;
-	return os.str();
+	return "[" + v.toStr() + " " + std::to_string(trans) + "] " + std::to_string(scale);
 }
