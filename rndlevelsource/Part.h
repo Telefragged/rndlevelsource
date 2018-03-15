@@ -69,6 +69,8 @@ public:
 	//Merges world entities and copies all other entities
 	Part& operator+=(const Part& rhs);
 
+	Part& operator+=(Part&& rhs);
+
 	Part operator+(const Part& rhs) const;
 
 	//Returns reference to a entity with classname equal to argument.

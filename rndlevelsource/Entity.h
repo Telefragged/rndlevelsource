@@ -31,6 +31,7 @@ public:
 	void rotate(const Matrix3d& rotmat, const Vertex& pt);
 	void move(const Vector& vec);
 	void mergeSolids(const Entity& entity);
+	void mergeSolids(Entity&& entity);
 	void reID(unsigned int& entityID, unsigned int& solidID, unsigned int& sideID);
 
 	BoundingBox bbox() const;

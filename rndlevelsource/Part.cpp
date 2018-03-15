@@ -347,6 +347,42 @@ Part& Part::operator+=(const Part& rhs)
 	return *this;
 }
 
+Part& Part::operator+=(Part&& rhs)
+{
+	//Entity *tWorld = entities.get_first_match<std::string>
+	//	("worldspawn", Entity::entclasscmp),
+	//	*origWorld = rhs.entities.get_first_match<std::string>
+	//	("worldspawn", Entity::entclasscmp);
+	auto thisit = find_if(entities.begin(), entities.end(), &Entity::entworldcmp);
+	auto rhsit = find_if(rhs.entities.begin(), rhs.entities.end(), &Entity::entworldcmp);
+	if (thisit != entities.end() && rhsit != rhs.entities.end())
+	{
+		thisit->mergeSolids(std::move(*rhsit));
+	}
+	else if (thisit == entities.end() && rhsit != rhs.entities.end())
+	{
+		entities.emplace_back(std::move(*rhsit));
+	}
+
+	size_t cap = std::numeric_limits<size_t>::max(), count = 0;
+
+	if (this == &rhs)
+		cap = entities.size(); //Safety against self-addition.
+
+	for (Entity& entity : rhs.entities)
+	{
+		if (count++ == cap)
+			break;
+
+		if (entity["classname"] == "worldspawn")
+			continue;
+
+		entities.emplace_back(std::move(entity));
+	}
+	reID(); // Faster to call this here than make lots of copies everywhere.
+	return *this;
+}
+
 Part Part::operator+(const Part& rhs) const
 {
 	Part ret = *this;
