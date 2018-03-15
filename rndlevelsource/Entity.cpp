@@ -1,6 +1,7 @@
 #include "Entity.h"
 
 #include <sstream>
+#include <boost/range/algorithm.hpp>
 
 #include "Angle.h"
 #include "BoundingBox.h"
@@ -115,7 +116,7 @@ Angle Entity::angles() const
 void Entity::mergeSolids(const Entity& entity)
 {
 	solids.reserve(solids.size() + entity.solids.size());
-	solids.insert(solids.end(), entity.solids.begin(), entity.solids.end());
+	boost::copy(entity.solids, std::back_inserter(solids));
 }
 
 void Entity::rotate(const Matrix3d& rotmat, const Vertex& pt)
