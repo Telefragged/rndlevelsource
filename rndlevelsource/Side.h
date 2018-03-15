@@ -19,7 +19,7 @@ class Side :
 {
 private:
 public:
-	DispInfo disp;
+	std::shared_ptr<DispInfo> disp;
 	Axis uaxis, vaxis;
 	Polygon polygon;
 	//Plane p;
@@ -40,6 +40,6 @@ public:
 	void extraOutput(std::ostream& os) const override;
 	std::string getName() const override;
 
-	Side();
-	~Side() override;
+	Side() = default;
+	~Side() override = default;
 };

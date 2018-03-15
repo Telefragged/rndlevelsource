@@ -11,7 +11,8 @@ size_t Side::parseSpecial(std::istream & stream, std::string_view type)
 {
 	if (type == "dispinfo")
 	{
-		return disp.parse(stream);
+		disp = std::make_shared<DispInfo>();
+		return disp->parse(stream);
 	}
 
 	return 0;
@@ -24,25 +25,25 @@ void Side::reID(unsigned int& sideID)
 
 void Side::popuvars()
 {
-	if (keyvals.count("id") > 0)
+	if (auto it = keyvals.find("id"); it != keyvals.end())
 	{
-		this->id_ = atoi(keyvals["id"].c_str());
-		keyvals.erase("id");
+		this->id_ = atoi(it->second.c_str());
+		keyvals.erase(it);
 	}
-	if (keyvals.count("plane") > 0)
+	if (auto it = keyvals.find("plane"); it != keyvals.end())
 	{
-		this->polygon = Polygon(Plane(keyvals["plane"]));
-		keyvals.erase("plane");
+		this->polygon = Polygon(Plane(it->second));
+		keyvals.erase(it);
 	}
-	if (keyvals.count("uaxis") > 0)
+	if (auto it = keyvals.find("uaxis"); it != keyvals.end())
 	{
-		this->uaxis.parsestr(keyvals["uaxis"]);
-		keyvals.erase("uaxis");
+		this->uaxis.parsestr(it->second);
+		keyvals.erase(it);
 	}
-	if (keyvals.count("vaxis") > 0)
+	if (auto it = keyvals.find("vaxis"); it != keyvals.end())
 	{
-		this->vaxis.parsestr(keyvals["vaxis"]);
-		keyvals.erase("vaxis");
+		this->vaxis.parsestr(it->second);
+		keyvals.erase(it);
 	}
 }
 
@@ -53,7 +54,8 @@ void Side::rotate(const Vertex& point, const Matrix3d& rotmat)
 	uaxis.v = uaxis.v.rotate(rotmat);
 	vaxis.v = vaxis.v.rotate(rotmat);
 
-	disp.rotate(point, rotmat);
+	if(disp != nullptr)
+		disp->rotate(point, rotmat);
 }
 
 void Side::move(const Vector& vec)
@@ -96,9 +98,9 @@ void Side::extraOutput(std::ostream& os) const
 	os << std::setw(depth()) << "" << "\t\"plane\" \"" << plane().toStr() << "\"\n";
 	os << std::setw(depth()) << "" << "\t\"uaxis\" \"" << uaxis.toStr() << "\"\n";
 	os << std::setw(depth()) << "" << "\t\"vaxis\" \"" << vaxis.toStr() << "\"\n";
-	if (!disp.empty())
+	if (disp != nullptr)
 	{
-		disp.depth(depth() + TABDEPTH);
+		disp->depth(depth() + TABDEPTH);
 		os << disp << "\n";
 	}
 }
@@ -107,12 +109,3 @@ std::string Side::getName() const
 {
 	return "side";
 }
-
-Side::Side()
-{
-}
-
-Side::~Side()
-{
-}
-
