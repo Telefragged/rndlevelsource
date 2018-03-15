@@ -69,7 +69,7 @@ void Polygon::scale(const Vertex& origin, const Vertex& scale)
 void Polygon::sliceThis(const Plane &plane)
 {
 	auto[back, front] = slice(plane);
-	if (back.points.size() > 0)
+	if (!back.points.empty() && !front.points.empty())
 		points = back.points;
 }
 
