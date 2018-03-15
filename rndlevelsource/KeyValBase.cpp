@@ -102,7 +102,7 @@ size_t KeyValBase::parse(std::istream& stream)
 		else if (trimmedCurline.find_first_of('"') != std::string::npos)
 		{
 			auto [k, v] = parseKeyval(curline);
-			keyvals[k] = v;
+			keyvals[k] = std::move(v);
 		}
 		else
 		{
