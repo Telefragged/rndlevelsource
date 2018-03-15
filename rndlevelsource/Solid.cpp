@@ -130,8 +130,8 @@ void Solid::addSide(const Side &side)
 
 	for (auto &other : sides)
 	{
-		other.polygon.slice(tmp.plane());
-		tmp.polygon.slice(other.plane());
+		other.polygon.sliceThis(tmp.plane());
+		tmp.polygon.sliceThis(other.plane());
 	}
 
 	sides.push_back(tmp);
@@ -203,7 +203,7 @@ Solid::Solid(const std::initializer_list<Plane>& planes) : Solid()
 		side.polygon = { plane };
 		for (const auto &other : planes)
 			if (&plane != &other)
-				side.polygon.slice(other);
+				side.polygon.sliceThis(other);
 
 		sides.push_back(side);
 	}

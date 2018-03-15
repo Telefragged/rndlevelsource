@@ -66,26 +66,25 @@ void Polygon::scale(const Vertex& origin, const Vertex& scale)
 	}
 }
 
-void Polygon::slice(const Plane &plane)
+void Polygon::sliceThis(const Plane &plane)
 {
-	Polygon front, back;
-	if (slice(plane, back, front))
+	auto[back, front] = slice(plane);
+	if (back.points.size() > 0)
 		points = back.points;
 }
 
-bool Polygon::slice(const Plane& plane, Polygon& back, Polygon& front) const
+std::pair<Polygon, Polygon> Polygon::slice(const Plane& plane) const
 {
 	auto classification = classify(plane);
 
+	std::pair<Polygon, Polygon> ret;
+
 	if (classification != classification::spanning)
 	{
-		if (classification == classification::back) back = *this;
-		else if (classification == classification::front) front = *this;
-		return false;
+		if (classification == classification::back) ret.first = *this;
+		else if (classification == classification::front) ret.second = *this;
+		return ret;
 	}
-
-	back.points.clear();
-	front.points.clear();
 
 	size_t prev = 0;
 
@@ -102,20 +101,20 @@ bool Polygon::slice(const Plane& plane, Polygon& back, Polygon& front) const
 			Vertex intersect = Plane::intersectPoint(plane, line);
 			if (!Vertex::isVertex(intersect))
 				throw new std::exception("Expected intersection");
-			front.points.push_back(intersect);
-			back.points.push_back(intersect);
+			ret.first.points.push_back(intersect);
+			ret.second.points.push_back(intersect);
 		}
 
 		if (i < points.size())
 		{
-			if (c >= 0) front.points.push_back(end);
-			if (c <= 0) back.points.push_back(end);
+			if (c <= 0) ret.first.points.push_back(end);
+			if (c >= 0) ret.second.points.push_back(end);
 		}
 
 		prev = c;
 	}
 
-	return true;
+	return ret;
 }
 
 void Polygon::flip()

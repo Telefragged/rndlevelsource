@@ -28,8 +28,8 @@ public:
 	void scale(const Vertex& scale);
 	void scale(const Vertex& origin, const Vertex& scale);
 
-	void slice(const Plane& plane);
-	bool slice(const Plane& plane, Polygon& back, Polygon& front) const;
+	void sliceThis(const Plane& plane);
+	std::pair<Polygon, Polygon> slice(const Plane& plane) const;
 
 	void flip();
 	void roundPoints(size_t precision = 3);
