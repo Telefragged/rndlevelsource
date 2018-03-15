@@ -33,8 +33,7 @@ namespace rndlevelsourceUnitTests
 
 		TEST_METHOD(TestPolygonSplitOnPlane)
 		{
-			Polygon back, front;
-			TestPolygonUp.slice(TestPlaneUp, back, front);
+			auto [back, front] = TestPolygonUp.slice(TestPlaneUp);
 
 			Assert::AreEqual(size_t(0), front.points.size());
 			Assert::AreEqual(size_t(0), back.points.size());
@@ -68,8 +67,8 @@ namespace rndlevelsourceUnitTests
 		{
 			Polygon polygon = TestPolygonUp;
 			polygon.rotate(polygon.origin(), Matrix3d::rotmatx(90));
-			Polygon back, front;
-			polygon.slice(TestPlaneUp, back, front);
+
+			auto [back, front] = polygon.slice(TestPlaneUp);
 
 			Assert::AreEqual(size_t(4), back.points.size());
 			Assert::AreEqual(size_t(4), front.points.size());
