@@ -16,25 +16,13 @@
 
 #include <boost/range/adaptors.hpp>
 #include <boost/range/algorithm.hpp>
-#include <boost/range/numeric.hpp>
 #include <boost/range/algorithm_ext/erase.hpp>
-
-template <class Eng>
-Connection *selectRandomConnection(Part& part, Eng &engine)
-{
-	if (part.connections.reachable() == 0)
-		return nullptr;
-
-	std::uniform_int_distribution<ptrdiff_t> dist(0, part.connections.totalWeight() - 1); 
-
-	return &part.connections.getWeighted(dist(engine));
-}
 
 void movePart(Part& part, Connection* newc, const Connection* prevc)
 {
 	Quaternion targetQuat(prevc->angles());
 
-	targetQuat = targetQuat * Quaternion(Angle{ 0, 180, 0 });
+	targetQuat = targetQuat * Quaternion({ 0, 180, 0 });
 
 	Angle newAngle = newc->angles();
 
@@ -43,8 +31,6 @@ void movePart(Part& part, Connection* newc, const Connection* prevc)
 	part.rotate(rotmat);
 	Vector mov = Vector::diff(newc->origin(), prevc->origin());
 	part.move(mov);
-
-	part.connections.setWeight(newc, 0);
 }
 
 void scaleToFit(Part& scaleable, Connection* scalec, const Connection* firstc, const Connection* secondc)
@@ -58,15 +44,21 @@ void scaleToFit(Part& scaleable, Connection* scalec, const Connection* firstc, c
 
 int main(int argc, char* argv[])
 {
+	nanotimer incDiskTimer;
+
 	WeightedVector<Part> vec;
 
 	WeightedVector<Part> scaleables, starts, inters;
 
+	incDiskTimer.start();
+
 	vec.push_back(Part(R"(f:\test\rndmap\room5.vmf)"));
 	vec.push_back(Part(R"(f:\test\testmap.vmf)"));
 	vec.push_back(Part(R"(f:\test\rndmap\room6.vmf)"));
-	vec.push_back(Part(R"(f:\test\rndmap\room1.vmf)"));
-	vec.push_back(Part(R"(f:\test\rndmap\room2.vmf)"));
+
+	nanotimer excDiskTimer;
+
+	excDiskTimer.start();
 
 	auto startPred = [](const Part& part)
 	{
@@ -76,12 +68,8 @@ int main(int argc, char* argv[])
 
 	auto scaleablePred = [](const Part &part)
 	{
-		bool aligned = part.connections.size() == 2
-					   && Vertex::countDifferentAxes(part.connections[0].origin(), part.connections[1].origin()) == 1;
-
-		bool scaleable = part.info ? part.info->scaleable : false;
-
-		return aligned && scaleable;
+		return part.connections.size() == 2
+			&& Vertex::countDifferentAxes(part.connections[0].origin(), part.connections[1].origin()) == 1;
 	};
 
 	auto interPred = [](const Part& part)
@@ -93,57 +81,46 @@ int main(int argc, char* argv[])
 	boost::copy(startRange, std::back_inserter(starts));
 	boost::erase(vec, startRange);
 
-	//auto scaleableRange = boost::partition<boost::return_found_end>(vec, std::not_fn(scaleablePred));
-	//boost::copy(scaleableRange, std::back_inserter(scaleables));
-	//boost::erase(vec, scaleableRange);
+	auto scaleableRange = boost::partition<boost::return_found_end>(vec, std::not_fn(scaleablePred));
+	boost::copy(scaleableRange, std::back_inserter(scaleables));
+	boost::erase(vec, scaleableRange);
 
 	auto interRange = boost::partition<boost::return_found_end>(vec, std::not_fn(interPred));
 	boost::copy(interRange, std::back_inserter(inters));
 	boost::erase(vec, interRange);
 
-	std::random_device dev;
+	auto start = starts[0];
+	auto scaleable = scaleables[0];
+	auto end = inters[0];
 
-	std::mt19937_64 eng(dev());
+	auto& startConnection = start.connections.at(0);
+	auto& scaleConnection = scaleable.connections.at(0);
+	auto& endConnection = end.connections.at(0);
+
+	std::random_device dev;
+	std::mt19937 eng(dev());
 
 	std::uniform_real_distribution<> scaleDist(200., 1000.);
+	std::uniform_real_distribution<> rotDist(-60., 60.);
 
-	std::vector<Part> world;
+	start.rotate(Angle{ 0, rotDist(eng), 0 });
+	movePart(end, &endConnection, &startConnection);
 
-	std::uniform_int_distribution<ptrdiff_t> startDist(0, starts.totalWeight() - 1);
+	Vertex dir = Vertex::unitX.rotate(startConnection.angles().angleMatrix());
 
-	world.emplace_back(starts.getWeighted(startDist(eng)));
+	end.move(dir * std::round(scaleDist(eng)));
 
-	auto &startPart = world.back();
+	scaleToFit(scaleable, &scaleConnection, &startConnection, &endConnection);
+	auto part = (start + scaleable + end);
 
-	auto box = startPart.bbox();
+	excDiskTimer.stop();
 
-	startPart.moveTo((box.max - box.min) / 2);
+	part.toFile(R"(f:\test\ScaleTest.vmf)");
 
-	for(size_t n = 0; n < 15; n++)
-	{
-		std::uniform_int_distribution<ptrdiff_t> interDist(0, inters.totalWeight() - 1);
+	incDiskTimer.stop();
 
-		auto &weightedPart = inters.getWeighted(interDist(eng));
-
-		inters.addToRandomWeights(inters.setWeight(&weightedPart, 0), eng);
-
-		auto &newPart = world.emplace_back(weightedPart);
-
-		if(scaleablePred(newPart) == true)
-			newPart.scaleTo(std::round(scaleDist(eng)));
-
-		auto &prevPart = world[world.size() - 2];
-		auto prevc = selectRandomConnection(prevPart, eng);
-		auto newc = selectRandomConnection(newPart, eng);
-
-		movePart(newPart, newc, prevc);
-
-		prevPart.connections.setWeight(prevc, 0);
-	}
-
-	auto part = boost::accumulate(world, Part());
-
-	part.toFile(R"(f:\test\randomworld.vmf)");
+	std::cout << "   Execution time: " << (double)incDiskTimer.getTime().count() / 1'000'000. << "ms\n";
+	std::cout << "Excluding disk IO: " << (double)excDiskTimer.getTime().count() / 1'000'000. << "ms\n";
 
 	return 0;
 }

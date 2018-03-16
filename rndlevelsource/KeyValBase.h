@@ -24,9 +24,9 @@ public:
 	void depth(size_t depth) const;
 
 	std::string& operator[](const std::string& key);
-	std::string_view operator[](const std::string& key) const;
+	std::string operator[](const std::string& key) const;
 
-	std::string_view get(const std::string& key) const;
+	std::string get(const std::string& key) const;
 
 	bool hasKey(const std::string &key) const;
 
