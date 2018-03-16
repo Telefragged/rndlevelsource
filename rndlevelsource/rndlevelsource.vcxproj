@@ -155,6 +155,7 @@
     <ClInclude Include="KeyValBase.h" />
     <ClInclude Include="Matrix.h" />
     <ClInclude Include="Part.h" />
+    <ClInclude Include="PartInfo.h" />
     <ClInclude Include="Plane.h" />
     <ClInclude Include="Polygon.h" />
     <ClInclude Include="Quaternion.h" />
@@ -185,6 +186,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Part.cpp" />
+    <ClCompile Include="PartInfo.cpp" />
     <ClCompile Include="Plane.cpp" />
     <ClCompile Include="Polygon.cpp" />
     <ClCompile Include="Quaternion.cpp" />

@@ -2,8 +2,11 @@
 
 #include <iostream>
 #include <array>
+
 #include <boost/spirit/include/qi.hpp>
 #include <boost/fusion/include/std_pair.hpp>
+#include <boost/algorithm/string/predicate.hpp>
+#include <boost/range/algorithm.hpp>
 
 #include "utils.h"
 
@@ -28,9 +31,14 @@ std::string& KeyValBase::operator[](const std::string& key)
 	return keyvals[key];
 }
 
-std::string KeyValBase::get(const std::string& key) const
+std::string_view KeyValBase::get(std::string_view key) const
 {
-	return (*this)[key];
+	auto it = boost::find_if(keyvals, [&key](const auto& p) { return boost::iequals(p.first, key); });
+
+	if (it != keyvals.end())
+		return it->second;
+
+	return std::string_view();
 }
 
 bool KeyValBase::hasKey(const std::string & key) const

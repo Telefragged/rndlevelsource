@@ -26,7 +26,7 @@ public:
 	std::string& operator[](const std::string& key);
 	std::string operator[](const std::string& key) const;
 
-	std::string get(const std::string& key) const;
+	std::string_view get(std::string_view key) const;
 
 	bool hasKey(const std::string &key) const;
 
