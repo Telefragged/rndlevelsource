@@ -13,9 +13,8 @@ class Vertex;
 class Solid :
 	public KeyValBase
 {
-private:
-	Editor edt;
 public:
+	Editor edt;
 
 	enum texmode
 	{
