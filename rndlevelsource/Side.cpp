@@ -11,7 +11,7 @@ size_t Side::parseSpecial(std::istream & stream, std::string_view type)
 {
 	if (type == "dispinfo")
 	{
-		disp = std::make_shared<DispInfo>();
+		disp.emplace();
 		return disp->parse(stream);
 	}
 
@@ -54,7 +54,7 @@ void Side::rotate(const Vertex& point, const Matrix3d& rotmat)
 	uaxis.v = uaxis.v.rotate(rotmat);
 	vaxis.v = vaxis.v.rotate(rotmat);
 
-	if(disp != nullptr)
+	if(disp.has_value())
 		disp->rotate(point, rotmat);
 }
 
@@ -98,10 +98,10 @@ void Side::extraOutput(std::ostream& os) const
 	os << std::setw(depth()) << "" << "\t\"plane\" \"" << plane() << "\"\n";
 	os << std::setw(depth()) << "" << "\t\"uaxis\" \"" << uaxis << "\"\n";
 	os << std::setw(depth()) << "" << "\t\"vaxis\" \"" << vaxis << "\"\n";
-	if (disp != nullptr)
+	if (disp.has_value())
 	{
 		disp->depth(depth() + TABDEPTH);
-		os << disp << "\n";
+		os << disp.value() << "\n";
 	}
 }
 

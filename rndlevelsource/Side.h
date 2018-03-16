@@ -2,6 +2,8 @@
 
 #include <ios>
 #include <iomanip>
+#include <optional>
+
 #include "Axis.h"
 #include "DispInfo.h"
 #include "KeyValBase.h"
@@ -19,7 +21,7 @@ class Side :
 {
 private:
 public:
-	std::shared_ptr<DispInfo> disp;
+	std::optional<DispInfo> disp;
 	Axis uaxis, vaxis;
 	Polygon polygon;
 	//Plane p;
