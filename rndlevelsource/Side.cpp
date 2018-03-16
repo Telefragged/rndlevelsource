@@ -95,9 +95,9 @@ bool Side::testCollision(const Side& lhs, const Side& rhs)
 
 void Side::extraOutput(std::ostream& os) const
 {
-	os << std::setw(depth()) << "" << "\t\"plane\" \"" << plane().toStr() << "\"\n";
-	os << std::setw(depth()) << "" << "\t\"uaxis\" \"" << uaxis.toStr() << "\"\n";
-	os << std::setw(depth()) << "" << "\t\"vaxis\" \"" << vaxis.toStr() << "\"\n";
+	os << std::setw(depth()) << "" << "\t\"plane\" \"" << plane() << "\"\n";
+	os << std::setw(depth()) << "" << "\t\"uaxis\" \"" << uaxis << "\"\n";
+	os << std::setw(depth()) << "" << "\t\"vaxis\" \"" << vaxis << "\"\n";
 	if (disp != nullptr)
 	{
 		disp->depth(depth() + TABDEPTH);

@@ -43,3 +43,8 @@ public:
 	~Plane() = default;
 };
 
+inline std::ostream& operator<<(std::ostream& os, const Plane& p)
+{
+	os << '(' << p.p1() << ") (" << p.p2() << ") (" << p.p3() << ')';
+	return os;
+}

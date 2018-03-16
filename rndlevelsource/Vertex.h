@@ -77,6 +77,12 @@ public:
 	virtual ~Vertex();
 };
 
+inline std::ostream& operator<<(std::ostream& os, const Vertex& v)
+{
+	os << v.x() << ' ' << v.y() << ' ' << v.z();
+	return os;
+}
+
 inline Vertex operator+(Vertex lhs, const Vertex& rhs)
 {
 	lhs += rhs;

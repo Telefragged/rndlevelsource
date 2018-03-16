@@ -19,3 +19,8 @@ public:
 	~Axis() = default;
 };
 
+inline std::ostream& operator<<(std::ostream& os, const Axis& a)
+{
+	os << '[' << a.v << ' ' << a.trans << "] " << a.scale;
+	return os;
+}

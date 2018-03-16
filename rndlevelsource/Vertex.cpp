@@ -311,7 +311,8 @@ Matrix<double, 3, 1> Vertex::toMat() const
 
 std::string Vertex::toStr() const
 {
-	//std::ostringstream os;
+	//static std::ostringstream os;
+	//os.str("");
 	//os << x() << " " << y() << " " << z();
 	//return os.str();
 
