@@ -129,11 +129,12 @@ void Entity::rotate(const Matrix3d& rotmat, const Vertex& pt)
 	{
 		s.rotate(pt, rotmat);
 	}
-	Angle thAngle = angles();
-	if (Angle::isAngle(thAngle))
+
+	Angle angle = angles();
+	if (Angle::isAngle(angle))
 	{
-		thAngle.fromMatrix(rotmat * thAngle.angleMatrix());
-		(*this)["angles"] = thAngle.toStr();
+		angle.fromMatrix(rotmat * angle.angleMatrix());
+		(*this)["angles"] = angle.toStr();
 	}
 	Vertex orig = originKV();
 	if (Vertex::isVertex(orig))
