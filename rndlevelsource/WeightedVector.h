@@ -135,6 +135,38 @@ public:
 		throw std::exception("Weight out of range");
 	}
 
+	template<class _Eng>
+	_Ty& getWeightedAndRedistribute(ptrdiff_t weight, _Eng engine)
+	{
+		if (weight >= totalWeight_ || weight < 0)
+			throw std::exception("Weight out of range");
+
+		if (vec_.size() < 2)
+			return getWeighted(weight);
+
+		ptrdiff_t cWeight = 0;
+		for (size_t n = 0; n < vec_.size(); n++)
+		{
+			auto &pair = vec_[n];
+
+			if (pair.first + cWeight > weight)
+			{
+				ptrdiff_t redistWeight = pair.first;
+
+				pair.first = 0;
+
+				totalWeight_ -= redistWeight;
+
+				addToRandomWeights(redistWeight, engine, n);
+
+				return pair.second;
+			}
+			cWeight += pair.first;
+		}
+
+		throw std::exception("Weight out of range");
+	}
+
 	_Ty& at(size_t index)
 	{
 		return vec_.at(index).second;
@@ -203,15 +235,18 @@ public:
 	}
 
 	template <typename _Eng>
-	void addToRandomWeights(ptrdiff_t distWeight, _Eng& engine)
+	void addToRandomWeights(ptrdiff_t distWeight, _Eng& engine, size_t skipIndex = std::numeric_limits<size_t>::max())
 	{
 		if (distWeight < 0)
 			throw std::exception("distWeight must be zero or greater");
 
-		std::uniform_int_distribution<size_t> dist(0, vec_.size() - 1);
+		std::uniform_int_distribution<size_t> dist(0, vec_.size() - (skipIndex >= vec_.size() ? 1 : 2));
 		for (ptrdiff_t n = 0; n < distWeight; n++)
 		{
-			auto& pair = vec_[dist(engine)];
+			size_t index = dist(engine);
+			if (index >= skipIndex)
+				++index;
+			auto& pair = vec_[index];
 			++pair.first;
 		}
 		totalWeight_ += distWeight;
