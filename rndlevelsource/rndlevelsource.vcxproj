@@ -153,6 +153,7 @@
     <ClInclude Include="Entity.h" />
     <ClInclude Include="KeyVal.h" />
     <ClInclude Include="KeyValBase.h" />
+    <ClInclude Include="PartInfo.h" />
     <ClInclude Include="Matrix.h" />
     <ClInclude Include="Part.h" />
     <ClInclude Include="Plane.h" />
@@ -180,6 +181,7 @@
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="KeyVal.cpp" />
     <ClCompile Include="KeyValBase.cpp" />
+    <ClCompile Include="PartInfo.cpp" />
     <ClCompile Include="Matrix.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>

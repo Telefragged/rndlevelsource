@@ -4,6 +4,7 @@
 #include <array>
 #include <boost/spirit/include/qi.hpp>
 #include <boost/fusion/include/std_pair.hpp>
+#include <boost/algorithm/string/predicate.hpp>
 
 #include "utils.h"
 
@@ -17,7 +18,7 @@ void KeyValBase::depth(size_t depth) const
 	depth_ = depth;
 }
 
-std::string KeyValBase::operator[](const std::string& key) const
+std::string_view KeyValBase::operator[](const std::string& key) const
 {
 	if (keyvals.count(key) == 0) return "";
 	return keyvals.at(key);
@@ -28,9 +29,14 @@ std::string& KeyValBase::operator[](const std::string& key)
 	return keyvals[key];
 }
 
-std::string KeyValBase::get(const std::string& key) const
+std::string_view KeyValBase::get(const std::string& key) const
 {
-	return (*this)[key];
+	auto it = std::find_if(keyvals.begin(), keyvals.end(), [&key](const auto& p) { return boost::iequals(p.first, key); });
+
+	if(it != keyvals.end())
+		return it->second;
+
+	return std::string_view();
 }
 
 bool KeyValBase::hasKey(const std::string & key) const
