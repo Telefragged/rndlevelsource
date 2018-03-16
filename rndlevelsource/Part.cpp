@@ -35,7 +35,7 @@ size_t Part::parse(std::istream& stream)
 			{
 				connections.push_back(std::move(entity));
 			}
-			else if (entity["classname"].substr(0, 11) == "rnd_mapinfo")
+			else if (entity["classname"].substr(0, 12) == "rnd_partinfo")
 			{
 				info = entity;
 			}
