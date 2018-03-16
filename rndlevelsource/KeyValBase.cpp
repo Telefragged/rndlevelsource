@@ -33,6 +33,11 @@ std::string KeyValBase::get(const std::string& key) const
 	return (*this)[key];
 }
 
+bool KeyValBase::hasKey(const std::string & key) const
+{
+	return keyvals.find(key) != keyvals.cend();
+}
+
 std::pair<std::string, std::string> KeyValBase::parseKeyval(std::string_view keyval)
 {
 	namespace qi = boost::spirit::qi;

@@ -28,6 +28,8 @@ public:
 
 	std::string get(const std::string& key) const;
 
+	bool hasKey(const std::string &key) const;
+
 	static std::pair<std::string, std::string> parseKeyval(std::string_view keyval);
 
 	static std::string toStr(const std::pair<std::string, std::string>& pair, char enclose = '\"');
