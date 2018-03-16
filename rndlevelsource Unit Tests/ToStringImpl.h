@@ -40,6 +40,11 @@ namespace Microsoft::VisualStudio::CppUnitTestFramework
 		return str_to_wstr(p.toStr());
 	}
 
+	template<> inline static std::wstring ToString<ptrdiff_t>(const ptrdiff_t& p)
+	{
+		return std::to_wstring(p);
+	}
+
 	template<>
 	inline static std::wstring ToString(const Polygon::classification &c)
 	{

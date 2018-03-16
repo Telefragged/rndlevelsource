@@ -31,12 +31,12 @@ namespace rndlevelsourceUnitTests
 			Assert::AreEqual(Polygon::classification::spanning, polygon.classify(TestPlaneUp));
 		}
 
-		TEST_METHOD(TestPolygonSplitOnPlane)
+		TEST_METHOD(TestPolygonSliceOnPlane)
 		{
 			auto [back, front] = TestPolygonUp.slice(TestPlaneUp);
 
-			Assert::AreEqual(size_t(0), front.points.size());
-			Assert::AreEqual(size_t(0), back.points.size());
+			Assert::AreEqual(size_t{ 0 }, front.points.size());
+			Assert::AreEqual(size_t{ 0 }, back.points.size());
 		}
 
 		TEST_METHOD(TestPolygonMoveTo)
@@ -63,15 +63,15 @@ namespace rndlevelsourceUnitTests
 			Assert::AreEqual({ 0, 0, 0 }, polygon.origin());
 		}
 
-		TEST_METHOD(TestPolygonSplit)
+		TEST_METHOD(TestPolygonSlice)
 		{
 			Polygon polygon = TestPolygonUp;
 			polygon.rotate(polygon.origin(), Matrix3d::rotmatx(90));
 
 			auto [back, front] = polygon.slice(TestPlaneUp);
 
-			Assert::AreEqual(size_t(4), back.points.size());
-			Assert::AreEqual(size_t(4), front.points.size());
+			Assert::AreEqual(size_t{ 4 }, back.points.size());
+			Assert::AreEqual(size_t{ 4 }, front.points.size());
 		}
 	};
 }

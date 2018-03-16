@@ -123,9 +123,7 @@ int main(int argc, char* argv[])
 	{
 		std::uniform_int_distribution<ptrdiff_t> interDist(0, inters.totalWeight() - 1);
 
-		auto &weightedPart = inters.getWeighted(interDist(eng));
-
-		inters.addToRandomWeights(inters.setWeight(&weightedPart, 0), eng);
+		auto &weightedPart = inters.getWeightedAndRedistribute(interDist(eng), eng);
 
 		auto &newPart = world.emplace_back(weightedPart);
 
