@@ -22,7 +22,7 @@ Vertex::Vertex(double x, double y, double z)
 	vertex_[2] = z;
 }
 
-Vertex::Vertex(const std::string& str)
+Vertex::Vertex(std::string_view str)
 {
 	parsestr(str);
 }

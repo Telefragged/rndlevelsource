@@ -43,7 +43,7 @@ public:
 	Angle operator-() const;
 
 	Angle() = default;
-	Angle(const std::string& str);
+	Angle(std::string_view str);
 	Angle(const Matrix3d& mat);
 	Angle(double pitch, double yaw, double roll);
 

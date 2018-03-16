@@ -72,7 +72,7 @@ public:
 	double& operator[](size_t pos);
 
 	Vertex();
-	Vertex(const std::string& str);
+	Vertex(std::string_view str);
 	Vertex(double x, double y, double z);
 	virtual ~Vertex();
 };

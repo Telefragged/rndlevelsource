@@ -37,7 +37,7 @@
 //}
 
 
-Angle::Angle(const std::string& str) : Vertex(str)
+Angle::Angle(std::string_view str) : Vertex(str)
 {
 }
 
