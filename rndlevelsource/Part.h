@@ -1,9 +1,11 @@
 #pragma once
 #include <ios>
 #include <random>
+
 #include "Connection.h"
 #include "Entity.h"
 #include "WeightedVector.h"
+#include "PartInfo.h"
 
 class BoundingBox;
 class DispInfo;
@@ -13,9 +15,11 @@ class Part
 private:
 	unsigned int entityID_, solidID_, sideID_;
 public:
+	std::optional<PartInfo> info;
+
 	std::vector<Entity> entities;
-	WeightedVector<Connection> connections;
 	std::string filename;
+	WeightedVector<Connection> connections;
 
 	//Test collision between parts
 	static bool testCollision(const Part& lhs, const Part& rhs);
