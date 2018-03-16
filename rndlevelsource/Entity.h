@@ -10,9 +10,9 @@ class Connection;
 class Entity :
 	public KeyValBase
 {
-private:
-	Editor edt;
 public:
+	Editor edt;
+
 	std::vector<Solid> solids;
 
 	Vertex origin() const;
