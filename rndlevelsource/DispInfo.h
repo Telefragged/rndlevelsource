@@ -49,7 +49,7 @@ inline std::ostream& operator<<(std::ostream& os, const DispInfo& dispinfo)
 	for (const auto& pair : dispinfo.keyvals)
 		os << std::setw(dispinfo.depth()) << "" << "\t" << KeyValBase::toStr(pair) << "\n";
 
-	int sz = (int)pow(2, atoi(dispinfo["power"].c_str())) + 1;
+	int sz = (int)pow(2, atoi(dispinfo["power"].data())) + 1;
 
 	os << std::setw(dispinfo.depth()) << "" << "\tnormals\n";
 	os << std::setw(dispinfo.depth()) << "" << "\t{\n";

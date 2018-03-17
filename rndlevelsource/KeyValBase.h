@@ -23,8 +23,8 @@ public:
 	size_t depth() const;
 	void depth(size_t depth) const;
 
-	std::string& operator[](const std::string& key);
-	std::string operator[](const std::string& key) const;
+	std::string_view operator[](std::string_view key) const;
+	std::string& operator[](std::string_view key);
 
 	std::string_view get(std::string_view key) const;
 

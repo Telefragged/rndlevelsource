@@ -60,7 +60,7 @@ void scaleToFit(Part& scaleable, Connection* scalec, const Connection* firstc, c
 
 int main(int argc, char* argv[])
 {
-	WeightedVector<Part> vec;
+	std::vector<Part> vec;
 
 	WeightedVector<Part> scaleables, starts, inters;
 
@@ -111,7 +111,7 @@ int main(int argc, char* argv[])
 
 	std::vector<Part> world;
 
-	std::uniform_int_distribution<ptrdiff_t> startDist(0, starts.totalWeight());
+	std::uniform_int_distribution<ptrdiff_t> startDist(0, starts.totalWeight() - 1);
 
 	world.emplace_back(*starts.getWeighted(startDist(eng)));
 
@@ -135,8 +135,7 @@ int main(int argc, char* argv[])
 	{
 		std::uniform_int_distribution<ptrdiff_t> interDist(0, inters.totalWeight() - 1);
 
-		auto weightedPartIter = inters.getWeightedAndRedistribute(interDist(eng), eng);
-		Part &weightedPart = weightedPartIter;
+		Part &weightedPart = inters.getWeightedAndRedistribute(interDist(eng), eng);
 
 		auto &newPart = world.emplace_back(weightedPart);
 

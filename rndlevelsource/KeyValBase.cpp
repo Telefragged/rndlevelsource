@@ -20,15 +20,28 @@ void KeyValBase::depth(size_t depth) const
 	depth_ = depth;
 }
 
-std::string KeyValBase::operator[](const std::string& key) const
+std::string_view KeyValBase::operator[](std::string_view key) const
 {
-	if (keyvals.count(key) == 0) return "";
-	return keyvals.at(key);
+	auto it = boost::find_if(keyvals, [&key](const auto& p) { return boost::iequals(p.first, key); });
+
+	if (it != keyvals.end())
+		return it->second;
+
+	return std::string_view();
 }
 
-std::string& KeyValBase::operator[](const std::string& key)
+std::string& KeyValBase::operator[](std::string_view key)
 {
-	return keyvals[key];
+	auto it = boost::find_if(keyvals, [&key](const auto& p) { return boost::iequals(p.first, key); });
+	if (it != keyvals.end())
+		return it->second;
+	
+	auto[constructedIt, success] = keyvals.emplace(key, "");
+
+	if(success)
+		return constructedIt->second;
+
+	throw std::exception("Failed to insert key");
 }
 
 std::string_view KeyValBase::get(std::string_view key) const
