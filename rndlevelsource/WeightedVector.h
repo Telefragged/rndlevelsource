@@ -4,13 +4,14 @@
 #include <random>
 #include <cstddef>
 #include <iostream>
+#include <type_traits>
 
 #include <boost/iterator_adaptors.hpp>
 
-template <class _Ty>
+template <class _Ty, class _WeightTy>
 class WeightedVectorIterator
 	: public boost::iterator_facade<
-		WeightedVectorIterator<_Ty>,
+		WeightedVectorIterator<_Ty, _WeightTy>,
 		_Ty,
 		boost::random_access_traversal_tag,
 		_Ty&,
@@ -19,13 +20,18 @@ class WeightedVectorIterator
 private:
 	using _vectorIteratorType = typename std::conditional<
 		std::is_const<_Ty>::value,
-		typename std::vector<std::pair<ptrdiff_t, typename std::remove_const<_Ty>::type>>::const_iterator,
-		typename std::vector<std::pair<ptrdiff_t, _Ty>>::iterator>
+		typename std::vector<std::pair<_WeightTy, typename std::remove_const<_Ty>::type>>::const_iterator,
+		typename std::vector<std::pair<_WeightTy, _Ty>>::iterator>
 		::type;
 
 	_vectorIteratorType iter;
 
 public:
+
+	template<typename = typename std::enable_if<!std::is_convertible_v<_Ty, _WeightTy>>::type>
+	operator _Ty&() const { return iter->second; };
+
+	explicit operator _Ty&() const { return iter->second; };
 
 	WeightedVectorIterator() = default;
 
@@ -34,39 +40,40 @@ public:
 	{
 	}
 
-	template <class _Ty2, class = typename std::enable_if<std::is_convertible<_Ty2*, _Ty*>::value>::type>
-	WeightedVectorIterator(const WeightedVectorIterator<_Ty2>& other )
+	template <class _Ty2, class = typename std::enable_if<
+		   std::is_convertible_v<_Ty2*, _Ty*>>::type>
+	WeightedVectorIterator(const WeightedVectorIterator<_Ty2, _WeightTy>& other )
 		: iter(other.iter)
 	{
 	}
 
 private:
 	friend class boost::iterator_core_access;
-	template<class _Ty> friend class WeightedVector;
+	template<class _Ty, class _WeightTy> friend class WeightedVector;
 
 	_Ty& dereference() const { return iter->second; }
 
 	template <class _Ty2>
-	bool equal(WeightedVectorIterator<_Ty2> const& other) const { return this->iter == other.iter; }
+	bool equal(WeightedVectorIterator<_Ty2, _WeightTy> const& other) const { return this->iter == other.iter; }
 
 	void increment() { ++iter; }
 	void decrement() { --iter; }
 	void advance(ptrdiff_t n) { iter += n; }
-	ptrdiff_t distance_to(WeightedVectorIterator<_Ty> const& other) const { return other.iter - this->iter; }
+	ptrdiff_t distance_to(WeightedVectorIterator<_Ty, _WeightTy> const& other) const { return other.iter - this->iter; }
 };
 
-template <class _Ty>
+template <class _Ty, class _WeightTy = ptrdiff_t>
 class WeightedVector
 {
-	std::vector<std::pair<ptrdiff_t, _Ty>> vec_;
-	ptrdiff_t totalWeight_ = 0;
+	std::vector<std::pair<_WeightTy, _Ty>> vec_;
+	_WeightTy totalWeight_ = 0;
 public:
 	using value_type = _Ty;
 	using reference = _Ty &;
 	using pointer = _Ty *;
 
-	using iterator = WeightedVectorIterator<_Ty>;
-	using const_iterator = WeightedVectorIterator<const _Ty>;
+	using iterator = WeightedVectorIterator<_Ty, _WeightTy>;
+	using const_iterator = WeightedVectorIterator<const _Ty, _WeightTy>;
 	using difference_type = ptrdiff_t;
 
 	iterator begin()
@@ -99,13 +106,13 @@ public:
 		return cend();
 	}
 
-	void push_back(const _Ty& elem, ptrdiff_t weight = 1)
+	void push_back(const _Ty& elem, _WeightTy weight = 1)
 	{
 		totalWeight_ += weight;
 		vec_.push_back(std::make_pair(weight, elem));
 	}
 
-	void push_back(_Ty&& elem, ptrdiff_t weight = 1)
+	void push_back(_Ty&& elem, _WeightTy weight = 1)
 	{
 		totalWeight_ += weight;
 		vec_.push_back(std::make_pair(weight, std::forward<_Ty>(elem)));
@@ -119,24 +126,25 @@ public:
 		return iterator(vec_.erase(first.iter, last.iter));
 	}
 
-	_Ty& getWeighted(ptrdiff_t weight)
+	iterator getWeighted(_WeightTy weight)
 	{
 		if (weight >= totalWeight_ || weight < 0)
 			throw std::exception("Weight out of range");
 
-		ptrdiff_t cWeight = 0;
-		for (auto& pair : vec_)
+		_WeightTy cWeight = 0;
+		for (size_t n = 0; n < vec_.size(); n++)
 		{
+			auto& pair = vec_[n];
 			if (pair.first + cWeight > weight)
-				return pair.second;
+				return iterator(vec_.begin() + n);
 			cWeight += pair.first;
 		}
 
 		throw std::exception("Weight out of range");
 	}
 
-	template<class _Eng>
-	_Ty& getWeightedAndRedistribute(ptrdiff_t weight, _Eng engine)
+	template<class _Eng, typename = typename std::enable_if<std::is_integral<_WeightTy>::value>::type>
+	iterator getWeightedAndRedistribute(_WeightTy weight, _Eng engine)
 	{
 		if (weight >= totalWeight_ || weight < 0)
 			throw std::exception("Weight out of range");
@@ -144,14 +152,14 @@ public:
 		if (vec_.size() < 2)
 			return getWeighted(weight);
 
-		ptrdiff_t cWeight = 0;
+		_WeightTy cWeight = 0;
 		for (size_t n = 0; n < vec_.size(); n++)
 		{
 			auto &pair = vec_[n];
 
 			if (pair.first + cWeight > weight)
 			{
-				ptrdiff_t redistWeight = pair.first;
+				_WeightTy redistWeight = pair.first;
 
 				pair.first = 0;
 
@@ -159,7 +167,7 @@ public:
 
 				addToRandomWeights(redistWeight, engine, n);
 
-				return pair.second;
+				return iterator(vec_.begin() + n);
 			}
 			cWeight += pair.first;
 		}
@@ -189,37 +197,23 @@ public:
 
 	// Modify weight of the object pointed at by ptr.
 	// Returns how much the weight actually changed by ( Weight can't be less than 0 )
-	ptrdiff_t changeWeight(_Ty* ptr, ptrdiff_t diff)
+	_WeightTy changeWeight(iterator iter, _WeightTy diff)
 	{
-		for (auto& pair : vec_)
-		{
-			if (&pair.second == ptr)
-			{
-				ptrdiff_t aDiff = (-diff > pair.first) ? -pair.first : diff;
-				totalWeight_ += aDiff;
-				pair.first += aDiff;
-				return aDiff;
-			}
-		}
-		return -1;
+		_WeightTy aDiff = (-diff > iter.iter->first) ? -iter.iter->first : diff;
+		totalWeight_ += aDiff;
+		iter.iter->first += aDiff;
+		return aDiff;
 	}
 
-	ptrdiff_t setWeight(_Ty* ptr, ptrdiff_t newWeight)
+	_WeightTy setWeight(iterator iter, _WeightTy newWeight)
 	{
-		for (auto& pair : vec_)
-		{
-			if (&pair.second == ptr)
-			{
-				auto oldWeight = pair.first;
-				totalWeight_ -= (pair.first - newWeight);
-				pair.first = newWeight;
-				return oldWeight;
-			}
-		}
-		return -1;
+		auto oldWeight = iter.iter->first;
+		totalWeight_ -= (iter.iter->first - newWeight);
+		iter.iter->first = newWeight;
+		return oldWeight;
 	}
 
-	void addToAllWeights(ptrdiff_t diff)
+	void addToAllWeights(_WeightTy diff)
 	{
 		for (auto& pair : vec_)
 		{
@@ -234,14 +228,14 @@ public:
 		}
 	}
 
-	template <typename _Eng>
-	void addToRandomWeights(ptrdiff_t distWeight, _Eng& engine, size_t skipIndex = std::numeric_limits<size_t>::max())
+	template <typename _Eng, typename = typename std::enable_if<std::is_integral<_WeightTy>::value>::type>
+	void addToRandomWeights(_WeightTy distWeight, _Eng& engine, size_t skipIndex = std::numeric_limits<size_t>::max())
 	{
 		if (distWeight < 0)
 			throw std::exception("distWeight must be zero or greater");
 
 		std::uniform_int_distribution<size_t> dist(0, vec_.size() - (skipIndex >= vec_.size() ? 1 : 2));
-		for (ptrdiff_t n = 0; n < distWeight; n++)
+		for (_WeightTy n = 0; n < distWeight; n++)
 		{
 			size_t index = dist(engine);
 			if (index >= skipIndex)
@@ -252,26 +246,39 @@ public:
 		totalWeight_ += distWeight;
 	}
 
-	void distributeWeight(ptrdiff_t distWeight)
+	void distributeWeight(_WeightTy distWeight)
 	{
 		if (size() == 0 || distWeight < 0)
 			return;
 
-		ptrdiff_t add = distWeight / (ptrdiff_t)size();
-		ptrdiff_t remain = distWeight % (ptrdiff_t)size();
-
-		for (auto &pair : vec_)
+		if constexpr (std::is_integral<_WeightTy>::value)
 		{
-			pair.first += add;
 
-			if (remain > 0)
+			_WeightTy add = distWeight / (_WeightTy)size();
+			_WeightTy remain = distWeight % (_WeightTy)size();
+
+			for (auto &pair : vec_)
 			{
-				pair.first += 1;
-				--remain;
+				pair.first += add;
+
+				if (remain > 0)
+				{
+					pair.first += 1;
+					--remain;
+				}
+			}
+			totalWeight_ += distWeight;
+		}
+		else if constexpr(std::is_floating_point<_WeightTy>::value)
+		{
+			_WeightTy add = distWeight / static_cast<_WeightTy>(size());
+
+			for (auto &pair : vec_)
+			{
+				pair.first += add;
+				totalWeight_ += add;
 			}
 		}
-
-		totalWeight_ += distWeight;
 	}
 
 	size_t size() const
@@ -279,7 +286,7 @@ public:
 		return vec_.size();
 	}
 
-	ptrdiff_t totalWeight() const
+	_WeightTy totalWeight() const
 	{
 		return totalWeight_;
 	}
@@ -294,15 +301,14 @@ public:
 		return count;
 	}
 
-	WeightedVector(const std::vector<_Ty>& other, ptrdiff_t initWeight = 1)
+	WeightedVector(const std::vector<_Ty>& other, _WeightTy initWeight = 1)
 	{
 		for (const auto& item : other)
 			vec_.emplace_back(initWeight, item);
 
-		totalWeight_ = initWeight * (ptrdiff_t)other.size();
+		totalWeight_ = initWeight * (_WeightTy)other.size();
 	}
 
 	WeightedVector() = default;
 	~WeightedVector() = default;
 };
-

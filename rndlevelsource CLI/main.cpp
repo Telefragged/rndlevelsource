@@ -27,7 +27,7 @@ Connection *selectRandomConnection(Part& part, Eng &engine)
 
 	std::uniform_int_distribution<ptrdiff_t> dist(0, part.connections.totalWeight() - 1);
 
-	return &part.connections.getWeighted(dist(engine));
+	return &*part.connections.getWeighted(dist(engine));
 }
 
 void movePart(Part& part, Connection* newc, const Connection* prevc)
@@ -44,7 +44,9 @@ void movePart(Part& part, Connection* newc, const Connection* prevc)
 	Vector mov = Vector::diff(newc->origin(), prevc->origin());
 	part.move(mov);
 
-	part.connections.setWeight(newc, 0);
+	auto iter = boost::find_if(part.connections, [newc](auto &con) {return &con == newc; });
+
+	part.connections.setWeight(iter, 0);
 }
 
 void scaleToFit(Part& scaleable, Connection* scalec, const Connection* firstc, const Connection* secondc)
@@ -109,9 +111,9 @@ int main(int argc, char* argv[])
 
 	std::vector<Part> world;
 
-	std::uniform_int_distribution<ptrdiff_t> startDist(0, starts.totalWeight() - 1);
+	std::uniform_int_distribution<ptrdiff_t> startDist(0, starts.totalWeight());
 
-	world.emplace_back(starts.getWeighted(startDist(eng)));
+	world.emplace_back(*starts.getWeighted(startDist(eng)));
 
 	auto &startPart = world.back();
 
@@ -119,11 +121,22 @@ int main(int argc, char* argv[])
 
 	startPart.moveTo((box.max - box.min) / 2);
 
-	for (size_t n = 0; n < 15; n++)
+	std::array<std::string, 2> colors = { "255 0 0", "0 255 0" };
+
+	for (auto &entity : startPart.entities)
+	{
+		for (auto &solid : entity.solids)
+		{
+			solid.edt["color"] = colors[1];
+		}
+	}
+
+	for (size_t n = 0; n < 20; n++)
 	{
 		std::uniform_int_distribution<ptrdiff_t> interDist(0, inters.totalWeight() - 1);
 
-		auto &weightedPart = inters.getWeightedAndRedistribute(interDist(eng), eng);
+		auto weightedPartIter = inters.getWeightedAndRedistribute(interDist(eng), eng);
+		Part &weightedPart = weightedPartIter;
 
 		auto &newPart = world.emplace_back(weightedPart);
 
@@ -136,7 +149,17 @@ int main(int argc, char* argv[])
 
 		movePart(newPart, newc, prevc);
 
-		prevPart.connections.setWeight(prevc, 0);
+		auto iter = boost::find_if(prevPart.connections, [prevc](auto &con) {return &con == prevc; });
+
+		prevPart.connections.setWeight(iter, 0);
+
+		for (auto &entity : newPart.entities)
+		{
+			for (auto &solid : entity.solids)
+			{
+				solid.edt["color"] = colors[n % 2];
+			}
+		}
 	}
 
 	auto part = boost::accumulate(world, Part());
