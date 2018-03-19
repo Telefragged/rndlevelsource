@@ -4,6 +4,7 @@
 #include <random>
 #include <chrono>
 #include <functional>
+#include <experimental\coroutine>
 
 #include "Part.h"
 #include "Angle.h"
@@ -27,7 +28,7 @@ Connection *selectRandomConnection(Part& part, Eng &engine)
 
 	std::uniform_int_distribution<ptrdiff_t> dist(0, part.connections.totalWeight() - 1);
 
-	return &*part.connections.getWeighted(dist(engine));
+	return &part.connections.getWeighted(dist(engine));
 }
 
 void movePart(Part& part, Connection* newc, const Connection* prevc)
@@ -81,9 +82,7 @@ int main(int argc, char* argv[])
 		bool aligned = part.connections.size() == 2
 			&& Vertex::countDifferentAxes(part.connections[0].origin(), part.connections[1].origin()) == 1;
 
-		bool scaleable = part.info ? part.info->scaleable : false;
-
-		return aligned && scaleable;
+		return aligned && part.info.scaleable;
 	};
 
 	auto interPred = [](const Part& part)
@@ -113,7 +112,7 @@ int main(int argc, char* argv[])
 
 	std::uniform_int_distribution<ptrdiff_t> startDist(0, starts.totalWeight() - 1);
 
-	world.emplace_back(*starts.getWeighted(startDist(eng)));
+	world.emplace_back(starts.getWeighted(startDist(eng)));
 
 	auto &startPart = world.back();
 
@@ -131,11 +130,11 @@ int main(int argc, char* argv[])
 		}
 	}
 
-	for (size_t n = 0; n < 20; n++)
+	for (size_t n = 0; n < 100; n++)
 	{
 		std::uniform_int_distribution<ptrdiff_t> interDist(0, inters.totalWeight() - 1);
 
-		Part &weightedPart = inters.getWeightedAndRedistribute(interDist(eng), eng);
+		auto &weightedPart = *inters.getWeightedAndRedistribute(interDist(eng), eng);
 
 		auto &newPart = world.emplace_back(weightedPart);
 
@@ -161,7 +160,10 @@ int main(int argc, char* argv[])
 		}
 	}
 
-	auto part = boost::accumulate(world, Part());
+	Part part;
+
+	for (auto& p : world)
+		part += p;
 
 	part.toFile(R"(f:\test\randomworld.vmf)");
 

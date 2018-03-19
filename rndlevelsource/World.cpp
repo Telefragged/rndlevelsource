@@ -87,7 +87,7 @@ Connection* World::randConnection(Part& part)
 	if (part.connections.totalWeight() == 0)
 		return nullptr;
 	std::uniform_int_distribution<ptrdiff_t> dist(0, part.connections.totalWeight() - 1);
-	auto iter = part.connections.getWeighted(dist(eng_));
+	auto iter = part.connections.getWeightedIter(dist(eng_));
 	part.connections.setWeight(iter, 0);
 	return &*iter;
 }
@@ -140,7 +140,7 @@ void World::buildWorld()
 	for (size_t n = 0; n < 20; n++)
 	{
 		std::uniform_int_distribution<ptrdiff_t> interDist(0, weightedInter.totalWeight() - 1);
-		auto part = weightedInter.getWeighted(interDist(eng_));
+		auto part = weightedInter.getWeightedIter(interDist(eng_));
 		ptrdiff_t weight = weightedInter.changeWeight(part, -ptrdiff_t(5 * weightedInter.size()));
 		weightedInter.addToRandomWeights(abs(weight), eng_);
 		addPart(*part);
@@ -182,8 +182,8 @@ std::vector<Part> World::filter(const Connection* connection, const std::vector<
 
 World::World()
 {
-	auto t = std::chrono::system_clock::now();
-	eng_.seed(t.time_since_epoch().count());
+	std::random_device dev;
+	eng_.seed(dev());
 }
 
 World::~World()
