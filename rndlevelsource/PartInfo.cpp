@@ -5,9 +5,9 @@
 
 PartInfo::PartInfo(const Entity &entity)
 {
-	if (auto str = entity.get("scaleable"); boost::iequals(str, "true"))
+	if (auto str = entity.get("Scaleable"); boost::iequals(str, "true"))
 		scaleable = true;
 
-	if (auto str = entity.get("canBeRoot"); boost::iequals(str, "true"))
+	if (auto str = entity.get("CanBeRoot"); boost::iequals(str, "true"))
 		canBeRoot = true;
 }

@@ -9,5 +9,7 @@ public:
 	bool canBeRoot = false;
 
 	PartInfo(const Entity &ent);
+
+	PartInfo() = default;
 };
 

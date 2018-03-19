@@ -15,7 +15,7 @@ class Part
 private:
 	unsigned int entityID_, solidID_, sideID_;
 public:
-	std::optional<PartInfo> info;
+	PartInfo info;
 
 	std::vector<Entity> entities;
 	std::string filename;
