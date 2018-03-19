@@ -28,11 +28,6 @@ private:
 
 public:
 
-	template<typename = typename std::enable_if<!std::is_convertible_v<_Ty, _WeightTy>>::type>
-	operator _Ty&() const { return iter->second; };
-
-	explicit operator _Ty&() const { return iter->second; };
-
 	WeightedVectorIterator() = default;
 
 	WeightedVectorIterator(_vectorIteratorType iter)
@@ -126,7 +121,7 @@ public:
 		return iterator(vec_.erase(first.iter, last.iter));
 	}
 
-	iterator getWeighted(_WeightTy weight)
+	iterator getWeightedIter(_WeightTy weight)
 	{
 		if (weight >= totalWeight_ || weight < 0)
 			throw std::exception("Weight out of range");
@@ -143,6 +138,11 @@ public:
 		throw std::exception("Weight out of range");
 	}
 
+	_Ty& getWeighted(_WeightTy weight)
+	{
+		return *getWeightedIter(weight);
+	}
+
 	template<class _Eng, typename = typename std::enable_if<std::is_integral<_WeightTy>::value>::type>
 	iterator getWeightedAndRedistribute(_WeightTy weight, _Eng engine)
 	{
@@ -150,7 +150,7 @@ public:
 			throw std::exception("Weight out of range");
 
 		if (vec_.size() < 2)
-			return getWeighted(weight);
+			return getWeightedIter(weight);
 
 		_WeightTy cWeight = 0;
 		for (size_t n = 0; n < vec_.size(); n++)

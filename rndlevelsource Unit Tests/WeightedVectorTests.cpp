@@ -31,9 +31,9 @@ namespace rndlevelsourceUnitTests
 			vector.push_back(2, 2);
 			vector.push_back(3);
 
-			Assert::AreEqual(size_t{ 1 }, *vector.getWeighted(0));
-			Assert::AreEqual(size_t{ 2 }, *vector.getWeighted(2));
-			Assert::AreEqual(size_t{ 3 }, *vector.getWeighted(3));
+			Assert::AreEqual(size_t{ 1 }, vector.getWeighted(0));
+			Assert::AreEqual(size_t{ 2 }, vector.getWeighted(2));
+			Assert::AreEqual(size_t{ 3 }, vector.getWeighted(3));
 		}
 
 		TEST_METHOD(TestWeightedVectorErase)
