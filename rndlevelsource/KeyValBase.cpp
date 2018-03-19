@@ -54,9 +54,11 @@ std::string_view KeyValBase::get(std::string_view key) const
 	return std::string_view();
 }
 
-bool KeyValBase::hasKey(const std::string & key) const
+bool KeyValBase::hasKey(std::string_view key) const
 {
-	return keyvals.find(key) != keyvals.cend();
+	auto it = boost::find_if(keyvals, [&key](const auto& p) { return boost::iequals(p.first, key); });
+
+	return it != keyvals.end();
 }
 
 std::pair<std::string, std::string> KeyValBase::parseKeyval(std::string_view keyval)

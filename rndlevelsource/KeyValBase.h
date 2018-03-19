@@ -28,7 +28,7 @@ public:
 
 	std::string_view get(std::string_view key) const;
 
-	bool hasKey(const std::string &key) const;
+	bool hasKey(std::string_view key) const;
 
 	static std::pair<std::string, std::string> parseKeyval(std::string_view keyval);
 
