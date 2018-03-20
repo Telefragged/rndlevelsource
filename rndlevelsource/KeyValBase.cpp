@@ -97,7 +97,22 @@ std::pair<std::string, std::string> KeyValBase::parseKeyval(std::string_view key
 
 std::string KeyValBase::toStr(const std::pair<std::string, std::string>& pair, char enclose)
 {
-	return enclose + pair.first + enclose + ' ' + enclose + pair.second + enclose;
+	std::string ret;
+
+	ret.reserve(pair.first.size() + pair.second.size() + 5);
+
+	ret.push_back(enclose);
+	boost::copy(pair.first, std::back_inserter(ret));
+	ret.push_back(enclose);
+
+	ret.push_back(' ');
+
+	ret.push_back(enclose);
+	boost::copy(pair.second, std::back_inserter(ret));
+	ret.push_back(enclose);
+
+	return ret;
+	//return enclose + pair.first + enclose + ' ' + enclose + pair.second + enclose;
 }
 
 size_t KeyValBase::parse(std::istream& stream)
