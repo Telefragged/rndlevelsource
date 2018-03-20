@@ -4,14 +4,12 @@
 #include <random>
 #include <chrono>
 #include <functional>
-#include <experimental\coroutine>
 
 #include "Part.h"
 #include "Angle.h"
 #include "Quaternion.h"
 #include "World.h"
 #include "BoundingBox.h"
-#include "Timer.h"
 
 #include "WeightedVector.h"
 
@@ -19,6 +17,7 @@
 #include <boost/range/algorithm.hpp>
 #include <boost/range/numeric.hpp>
 #include <boost/range/algorithm_ext/erase.hpp>
+#include <boost/timer/timer.hpp>
 
 template <class Eng>
 Connection *selectRandomConnection(Part& part, Eng &engine)
@@ -35,7 +34,7 @@ void movePart(Part& part, Connection* newc, const Connection* prevc)
 {
 	Quaternion targetQuat(prevc->angles());
 
-	targetQuat = targetQuat * Quaternion(Angle{ 0, 180, 0 });
+	targetQuat = targetQuat * Quaternion{ 0, 0, 1, 0 };
 
 	Angle newAngle = newc->angles();
 
@@ -61,6 +60,10 @@ void scaleToFit(Part& scaleable, Connection* scalec, const Connection* firstc, c
 
 int main(int argc, char* argv[])
 {
+	boost::timer::cpu_timer t;
+
+	t.start();
+
 	std::vector<Part> vec;
 
 	WeightedVector<Part> scaleables, starts, inters;
@@ -130,7 +133,7 @@ int main(int argc, char* argv[])
 		}
 	}
 
-	for (size_t n = 0; n < 100; n++)
+	for (size_t n = 0; n < 20; n++)
 	{
 		std::uniform_int_distribution<ptrdiff_t> interDist(0, inters.totalWeight() - 1);
 
@@ -142,14 +145,10 @@ int main(int argc, char* argv[])
 			newPart.scaleTo(std::round(scaleDist(eng)));
 
 		auto &prevPart = world[world.size() - 2];
-		auto prevc = selectRandomConnection(prevPart, eng);
-		auto newc = selectRandomConnection(newPart, eng);
+		auto prevc = prevPart.selectRandomConnection(eng);
+		auto newc = newPart.selectRandomConnection(eng);
 
-		movePart(newPart, newc, prevc);
-
-		auto iter = boost::find_if(prevPart.connections, [prevc](auto &con) {return &con == prevc; });
-
-		prevPart.connections.setWeight(iter, 0);
+		newc->connectTo(prevc);
 
 		for (auto &entity : newPart.entities)
 		{
@@ -166,6 +165,12 @@ int main(int argc, char* argv[])
 		part += p;
 
 	part.toFile(R"(f:\test\randomworld.vmf)");
+
+	t.stop();
+
+	auto times = t.elapsed();
+
+	std::cout << (double)times.wall / 1'000'000.0 << "\n";
 
 	return 0;
 }

@@ -70,8 +70,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>F:\boost\boost_1_66_0;$(IncludePath)</IncludePath>
-    <LibraryPath>F:\boost\boost_1_66_0\stage\x64\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>F:\boost\boost_1_67_0;$(IncludePath)</IncludePath>
+    <LibraryPath>F:\boost\boost_1_67_0\stage\x64\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>F:\boost\boost_1_66_0;$(IncludePath)</IncludePath>
@@ -81,8 +81,8 @@
     <LibraryPath>F:\boost\boost_1_66_0\stage\x64\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>F:\boost\boost_1_66_0;$(IncludePath)</IncludePath>
-    <LibraryPath>F:\boost\boost_1_66_0\stage\x64\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>F:\boost\boost_1_67_0;$(IncludePath)</IncludePath>
+    <LibraryPath>F:\boost\boost_1_67_0\stage\x64\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -98,7 +98,7 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)rndlevelsource\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <PreprocessorDefinitions>_SILENCE_ALL_CXX17_DEPRECATION_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <AdditionalDependencies>rndlevelsource.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -127,7 +127,7 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)rndlevelsource\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <PreprocessorDefinitions>_SILENCE_ALL_CXX17_DEPRECATION_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
