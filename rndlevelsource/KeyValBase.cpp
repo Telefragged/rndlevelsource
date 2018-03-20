@@ -99,7 +99,7 @@ std::string KeyValBase::toStr(const std::pair<std::string, std::string>& pair, c
 {
 	std::string ret;
 
-	ret.reserve(pair.first.size() + pair.second.size() + 5);
+	ret.reserve(pair.first.size() + pair.second.size() + 6);
 
 	ret.push_back(enclose);
 	boost::copy(pair.first, std::back_inserter(ret));

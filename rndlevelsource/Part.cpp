@@ -321,15 +321,21 @@ Part& Part::operator+=(const Part& rhs)
 	//	("worldspawn", Entity::entclasscmp),
 	//	*origWorld = rhs.entities.get_first_match<std::string>
 	//	("worldspawn", Entity::entclasscmp);
-	auto cit = find_if(entities.begin(), entities.end(), &Entity::entworldcmp);
-	auto origit = find_if(rhs.entities.cbegin(), rhs.entities.cend(), &Entity::entworldcmp);
-	if (cit != entities.end() && origit != rhs.entities.cend())
+	auto thisit = find_if(entities.begin(), entities.end(), &Entity::entworldcmp);
+	auto rhsit = find_if(rhs.entities.cbegin(), rhs.entities.cend(), &Entity::entworldcmp);
+	if (thisit != entities.end() && rhsit != rhs.entities.cend())
 	{
-		cit->mergeSolids(*origit);
+		size_t reIDindex = thisit->solids.size();
+
+		thisit->mergeSolids(*rhsit);
+
+		for (size_t n = reIDindex; n < thisit->solids.size(); n++)
+			thisit->solids[n].reID(solidID_, sideID_);
 	}
-	else if (cit == entities.end() && origit != rhs.entities.cend())
+	else if (thisit == entities.end() && rhsit != rhs.entities.cend())
 	{
-		entities.push_back(*origit);
+		auto &ent = entities.emplace_back(*rhsit);
+		ent.reID(entityID_, solidID_, sideID_);
 	}
 
 	size_t cap = std::numeric_limits<size_t>::max(), count = 0;
@@ -345,9 +351,11 @@ Part& Part::operator+=(const Part& rhs)
 		if (entity["classname"] == "worldspawn")
 			continue;
 
-		entities.push_back(entity);
+		auto &ent = entities.emplace_back(entity);
+
+		ent.reID(entityID_, solidID_, sideID_);
 	}
-	reID(); // Faster to call this here than make lots of copies everywhere.
+	//reID(); // Faster to call this here than make lots of copies everywhere.
 	return *this;
 }
 
@@ -361,11 +369,15 @@ Part& Part::operator+=(Part&& rhs)
 	auto rhsit = find_if(rhs.entities.begin(), rhs.entities.end(), &Entity::entworldcmp);
 	if (thisit != entities.end() && rhsit != rhs.entities.end())
 	{
+		size_t reIDindex = thisit->solids.size();
 		thisit->mergeSolids(std::move(*rhsit));
+		for (size_t n = reIDindex; n < thisit->solids.size(); n++)
+			thisit->solids[n].reID(solidID_, sideID_);
 	}
 	else if (thisit == entities.end() && rhsit != rhs.entities.end())
 	{
-		entities.emplace_back(std::move(*rhsit));
+		auto &ent = entities.emplace_back(std::move(*rhsit));
+		ent.reID(entityID_, solidID_, sideID_);
 	}
 
 	size_t cap = std::numeric_limits<size_t>::max(), count = 0;
@@ -381,9 +393,10 @@ Part& Part::operator+=(Part&& rhs)
 		if (entity["classname"] == "worldspawn")
 			continue;
 
-		entities.emplace_back(std::move(entity));
+		auto &ent = entities.emplace_back(std::move(entity));
+		ent.reID(entityID_, solidID_, sideID_);
 	}
-	reID(); // Faster to call this here than make lots of copies everywhere.
+	//reID(); // Faster to call this here than make lots of copies everywhere.
 	return *this;
 }
 

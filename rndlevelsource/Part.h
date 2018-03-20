@@ -14,6 +14,7 @@ class Part
 {
 private:
 	unsigned int entityID_, solidID_, sideID_;
+	using ConnectionIteratorType = WeightedVector<Connection>::iterator;
 public:
 	PartInfo info;
 
@@ -69,6 +70,21 @@ public:
 	// Re-assigns all entity-, solid- and sideids so that they are unique and in order
 	// NOTE -- this is called by the parse and += methods
 	void reID();
+
+	//Selects a random connection from this part
+	template <class Eng>
+	ConnectionIteratorType selectRandomConnection(Eng &engine)
+	{
+		if (connections.totalWeight() == 0)
+			return connections.end();
+
+		std::uniform_int_distribution<ptrdiff_t> dist(0, connections.totalWeight() - 1);
+
+		auto ret = connections.getWeightedIter(dist(engine));
+		ret->parent = this;
+
+		return ret;
+	}
 
 	//Merges world entities and copies all other entities
 	Part& operator+=(const Part& rhs);
