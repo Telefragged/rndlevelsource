@@ -50,6 +50,7 @@ public:
 
 	bool testCollision(const Vertex& point) const;
 	bool testCollision(const Vector& line, int flags = lineBoundsFlag::ALLOW_BOTH) const;
+	bool testCollision(const Polygon& polygon) const;
 
 	Polygon() = default;
 	Polygon(const Plane& p);

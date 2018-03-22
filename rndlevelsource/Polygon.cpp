@@ -205,6 +205,33 @@ bool Polygon::testCollision(const Vector& line, int flags) const
 	return Vertex::isVertex(intersectPoint(line, static_cast<lineBoundsFlag>(flags & lineBoundsFlag::ALLOW_BOTH)));
 }
 
+bool Polygon::testCollision(const Polygon& polygon) const
+{
+	if (&polygon == this)
+		return true;
+
+	if (points.size() < 3 || polygon.points.size() < 3)
+		return false;
+
+	for (size_t n = 0; n < points.size(); n++)
+	{
+		Vector line = Vector::diff(points[n], points[(n + 1) % points.size()]);
+
+		if (polygon.testCollision(line, ALLOW_NONE))
+			return true;
+	}
+
+	for (size_t n = 0; n < polygon.points.size(); n++)
+	{
+		Vector line = Vector::diff(polygon.points[n], polygon.points[(n + 1) % polygon.points.size()]);
+
+		if (this->testCollision(line, ALLOW_NONE))
+			return true;
+	}
+
+	return false;
+}
+
 Polygon::Polygon(const Plane & p)
 {
 	auto dir = p.closestAxisToNormal();
