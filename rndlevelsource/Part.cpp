@@ -11,6 +11,25 @@
 #include "Part.h"
 #include "Vector.h"
 
+bool Part::startPredicate(const Part& part)
+{
+	return part.connections.size() >= 1
+		&& part.countEntities("info_player_start") == 1;
+}
+
+bool Part::scaleablePredicate(const Part& part)
+{
+	bool aligned = part.connections.size() == 2
+		&& Vertex::countDifferentAxes(part.connections[0].origin(), part.connections[1].origin()) == 1;
+
+	return aligned && part.info.scaleable;
+}
+
+bool Part::interPredicate(const Part& part)
+{
+	return part.connections.size() >= 2;
+}
+
 size_t Part::parse(std::istream& stream)
 {
 	size_t numparsed = 0;

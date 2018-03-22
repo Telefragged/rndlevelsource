@@ -2,46 +2,37 @@
 
 #include <boost/range/algorithm.hpp>
 
-#include "Angle.h"
-#include "Quaternion.h"
-#include "Connection.h"
 #include "Part.h"
-#include "Vector.h"
 
-void movePart(Part& part, Connection* newc, const Connection* prevc)
+bool World::addPart(Part&& part)
 {
-	Quaternion targetQuat(prevc->angles());
+	if (Part::scaleablePredicate(part))
+	{
+		scaleables.push_back(std::move(part));
+		return true;
+	}
 
-	targetQuat = targetQuat * Quaternion(Angle{ 0, 180, 0 });
+	if (Part::startPredicate(part))
+	{
+		starts.push_back(std::move(part));
+		return true;
+	}
 
-	Angle newAngle = newc->angles();
+	if (Part::interPredicate(part))
+	{
+		inters.push_back(std::move(part));
+		return true;
+	}
 
-	auto rotmat = newAngle.calcRotation(targetQuat);
-
-	part.rotate(rotmat);
-	Vector mov = Vector::diff(newc->origin(), prevc->origin());
-	part.move(mov);
-
-	auto iter = boost::find_if(part.connections, [newc](auto &con) {return &con == newc; });
-
-	part.connections.setWeight(iter, 0);
+	return false;
 }
 
-void scaleToFit(Part& scaleable, Connection* scalec, const Connection* firstc, const Connection* secondc)
+void World::buildInitial()
 {
-	double dist = (firstc->originKV() - secondc->originKV()).length();
-
-	scaleable.scaleTo(dist);
-
-	movePart(scaleable, scalec, firstc);
 }
 
 World::World()
 {
 	std::random_device dev;
 	eng_.seed(dev());
-}
-
-World::~World()
-{
 }

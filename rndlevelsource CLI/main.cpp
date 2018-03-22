@@ -60,6 +60,13 @@ void scaleToFit(Part& scaleable, Connection* scalec, const Connection* firstc, c
 
 int main(int argc, char* argv[])
 {
+
+	WeightedVector<int> abc;
+
+
+	std::cin.get();
+
+	return 0;
 	std::vector<Part> vec;
 
 	WeightedVector<Part> scaleables, starts, inters;

@@ -2,16 +2,23 @@
 #include <vector>
 #include <random>
 
-#include "Part.h"
+#include "WeightedVector.h"
+
+class Part;
 
 class World
 {
-	std::vector<Part> master;
+	WeightedVector<Part> starts, scaleables, inters;
 	std::mt19937_64 eng_;
 
+	std::vector<Part> world;
+
 public:
+	bool addPart(Part&& part);
+
+	void buildInitial();
 
 	World();
-	~World();
+	~World() = default;
 };
 

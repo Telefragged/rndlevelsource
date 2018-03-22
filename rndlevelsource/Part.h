@@ -3,10 +3,10 @@
 #include <random>
 
 #include "Connection.h"
-#include "Entity.h"
 #include "WeightedVector.h"
 #include "PartInfo.h"
 
+class Entity;
 class BoundingBox;
 class DispInfo;
 
@@ -28,6 +28,10 @@ public:
 	// Generate a random room
 	// Thickness determines the brush thickness
 	static Part createRoom(std::mt19937& eng, const Vector& pos, double thickness);
+
+	static bool startPredicate(const Part& part);
+	static bool scaleablePredicate(const Part& part);
+	static bool interPredicate(const Part& part);
 
 	// Parse contents of stream in .vmf format
 	// Parses until end of stream
