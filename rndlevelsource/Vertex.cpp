@@ -235,6 +235,11 @@ bool Vertex::operator==(const Vertex& rhs) const
 	return doubleeq(x(), rhs.x()) && doubleeq(y(), rhs.y()) && doubleeq(z(), rhs.z());
 }
 
+bool Vertex::operator!=(const Vertex& rhs) const
+{
+	return !(*this == rhs);
+}
+
 bool Vertex::operator<(const Vertex& rhs) const
 {
 	if (!doubleeq(x(), rhs.x()) && x() < rhs.x())

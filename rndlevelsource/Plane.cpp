@@ -38,7 +38,7 @@ Matrix<double, 1, 4> Plane::equation() const
 	return ret;
 }
 
-char Plane::evaluate(const Vertex& point) const
+int Plane::evaluate(const Vertex& point) const
 {
 	double dist = Plane::dist(*this, point);
 	if (doubleeq(dist, 0)) return 0;
@@ -116,7 +116,6 @@ Vector Plane::intersectLine(const Plane& lhs, const Plane& rhs)
 
 Vertex Plane::intersectPoint(const Plane& p, const Vector& line)
 {
-	
 	Vertex normal = p.normal();
 
 	double num = -normal.dotProduct(line.beg() - p.p1());

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "CppUnitTest.h"
 #include "Solid.h"
+#include "Vector.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 

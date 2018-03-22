@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "CppUnitTest.h"
 #include "Plane.h"
+#include "Vector.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -49,20 +50,27 @@ namespace rndlevelsourceUnitTests
 			Vertex overVertex = { 0, 0, 64 };
 			Vertex onVertex = { 0, 0, 0 };
 			Vertex underVertex = { 0, 0, -64 };
-			Assert::AreEqual(char(1), testPlaneZ.evaluate(overVertex));
-			Assert::AreEqual(char(-1), testPlaneZ.evaluate(underVertex));
-			Assert::AreEqual(char(0), testPlaneZ.evaluate(onVertex));
+			Assert::AreEqual(1, testPlaneZ.evaluate(overVertex));
+			Assert::AreEqual(-1, testPlaneZ.evaluate(underVertex));
+			Assert::AreEqual(0, testPlaneZ.evaluate(onVertex));
 		}
 
 		TEST_METHOD(TestPlaneParse)
 		{
-			constexpr char * parseStr = "(32 32 32) (0.5 -0.5 3) (0 0 0)";
+			constexpr char * parseStr = "(32 32 32) (0.5 -0.5 3) (0 1e-6 0)";
 
 			Plane p{ parseStr };
 
 			Assert::AreEqual({ 32, 32, 32 }, p.p1());
 			Assert::AreEqual({ 0.5, -0.5, 3 }, p.p2());
-			Assert::AreEqual({ 0, 0, 0 }, p.p3());
+			Assert::AreEqual({ 0, 1e-6, 0 }, p.p3());
+		}
+
+		TEST_METHOD(TestPlaneIntersect)
+		{
+			Vector line = Plane::intersectLine(testPlaneX, testPlaneZ);
+
+			Assert::AreEqual({ 0, 1, 0 }, Vertex::absolute(line.vec().normalize()));
 		}
 	};
 }

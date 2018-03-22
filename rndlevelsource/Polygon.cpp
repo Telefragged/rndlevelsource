@@ -1,6 +1,13 @@
 #include "Polygon.h"
+
 #include <algorithm>
 #include <numeric>
+
+#include <boost/range/adaptors.hpp>
+#include <boost/range/algorithm.hpp>
+
+#include "Vector.h"
+#include "Vertex.h"
 
 Polygon::classification Polygon::classify(const Plane& plane) const
 {
@@ -16,7 +23,7 @@ Polygon::classification Polygon::classify(const Plane& plane) const
 		if (test >= 0) front++;
 		if (test == 0) onplane++;
 	}
-
+	
 	if (onplane == count) return Polygon::classification::onPlane;
 	if (front == count) return Polygon::classification::front;
 	if (back == count) return Polygon::classification::back;
@@ -26,6 +33,14 @@ Polygon::classification Polygon::classify(const Plane& plane) const
 Vertex Polygon::origin() const
 {
 	return std::accumulate(points.cbegin(), points.cend(), Vertex{ 0, 0, 0 }) / double(points.size());
+}
+
+Plane Polygon::plane() const
+{
+	if(points.size() < 3)
+		return Plane();
+	
+	return { points[0], points[1], points[2] };
 }
 
 void Polygon::rotate(const Vertex & point, const Matrix3d & rotmat)
@@ -133,6 +148,62 @@ void Polygon::roundPoints(size_t precision)
 	});
 }
 
+Vertex Polygon::intersectPoint(const Vector & line, int flags) const
+{
+	Plane plane = this->plane();
+	auto point = Plane::intersectPoint(plane, line);
+
+	Vertex defaultRet = (flags & lineBoundsFlag::RETURN_END_ON_FAIL) > 0 ? line.end() : Vertex();
+
+	flags = static_cast<lineBoundsFlag>(flags & lineBoundsFlag::ALLOW_BOTH);
+
+	if (!Vertex::isVertex(point))
+		return defaultRet;
+
+	bool test = testCollision(point);
+
+	if (!test)
+		return defaultRet;
+
+	if (flags != lineBoundsFlag::ALLOW_BOTH)
+	{
+		double position = line.calculatePosition(point);
+
+		if ((lineBoundsFlag::ALLOW_BACK & flags) == 0 && position < 0)
+			return defaultRet;
+
+		if ((lineBoundsFlag::ALLOW_FRONT & flags) == 0 && position > 1)
+			return defaultRet;
+	}
+
+	return point;
+}
+
+bool Polygon::testCollision(const Vertex& point) const
+{
+	double sum = 0;
+
+	for (size_t n = 0; n < points.size(); n++)
+	{
+		Vertex p1 = points[n] - point;
+		Vertex p2 = points[(n + 1) % points.size()] - point;
+
+		double nom = p1.length() * p2.length();
+
+		if (doubleeq(nom, 0))
+			return true;
+
+		sum += acos(p1.dotProduct(p2) / nom);
+	}
+
+	return doubleeq(sum, M_PI * 2);
+}
+
+bool Polygon::testCollision(const Vector& line, int flags) const
+{
+	// Ensure method returns NaN vector if it fails so we can test it.
+	return Vertex::isVertex(intersectPoint(line, static_cast<lineBoundsFlag>(flags & lineBoundsFlag::ALLOW_BOTH)));
+}
 
 Polygon::Polygon(const Plane & p)
 {

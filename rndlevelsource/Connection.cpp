@@ -4,6 +4,7 @@
 #include "Angle.h"
 #include "Quaternion.h"
 #include "Part.h"
+#include "Vector.h"
 
 void Connection::connectTo(WeightedVector<Connection>::iterator targetCon)
 {
@@ -25,8 +26,7 @@ void Connection::connectTo(WeightedVector<Connection>::iterator targetCon)
 	auto iter = boost::find_if(parent->connections, [this](auto &con) {return &con == this; });
 	parent->connections.setWeight(iter, 0);
 
-	iter = boost::find_if(neighbour->parent->connections, [targetCon](auto &con) {return &con == &*targetCon; });
-	neighbour->parent->connections.setWeight(iter, 0);
+	neighbour->parent->connections.setWeight(targetCon, 0);
 }
 
 bool Connection::isConnected() const

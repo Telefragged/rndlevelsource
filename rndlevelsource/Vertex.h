@@ -66,6 +66,7 @@ public:
 	Vertex& operator/=(double mod);
 
 	bool operator==(const Vertex& rhs) const;
+	bool operator!=(const Vertex& rhs) const;
 	bool operator<(const Vertex& rhs) const;
 
 	double operator[](size_t pos) const;

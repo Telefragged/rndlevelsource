@@ -21,7 +21,7 @@ public:
 	//returned as a 1x4 matrix.
 	Matrix<double, 1, 4> equation() const;
 
-	char evaluate(const Vertex& point) const;
+	int evaluate(const Vertex& point) const;
 
 	Vertex closestAxisToNormal() const;
 

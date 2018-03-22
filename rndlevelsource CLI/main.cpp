@@ -10,7 +10,7 @@
 #include "Quaternion.h"
 #include "World.h"
 #include "BoundingBox.h"
-
+#include "Vector.h"
 #include "WeightedVector.h"
 
 #include <boost/range/adaptors.hpp>
@@ -60,10 +60,6 @@ void scaleToFit(Part& scaleable, Connection* scalec, const Connection* firstc, c
 
 int main(int argc, char* argv[])
 {
-	boost::timer::cpu_timer t;
-
-	t.start();
-
 	std::vector<Part> vec;
 
 	WeightedVector<Part> scaleables, starts, inters;
@@ -165,12 +161,6 @@ int main(int argc, char* argv[])
 		part += p;
 
 	part.toFile(R"(f:\test\randomworld.vmf)");
-
-	t.stop();
-
-	auto times = t.elapsed();
-
-	std::cout << (double)times.wall / 1'000'000.0 << "\n";
 
 	return 0;
 }

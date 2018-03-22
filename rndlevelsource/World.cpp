@@ -6,6 +6,7 @@
 #include "Quaternion.h"
 #include "Connection.h"
 #include "Part.h"
+#include "Vector.h"
 
 void movePart(Part& part, Connection* newc, const Connection* prevc)
 {
