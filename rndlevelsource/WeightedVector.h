@@ -7,6 +7,7 @@
 #include <type_traits>
 
 #include <boost/iterator_adaptors.hpp>
+#include <boost/range/adaptors.hpp>
 
 template <class _Ty, class _WeightTy>
 class WeightedVectorIterator
@@ -99,6 +100,12 @@ public:
 	const_iterator end() const
 	{
 		return cend();
+	}
+
+	auto reachableRange()
+	{
+		return vec_ | boost::adaptors::filtered([](auto& pair) { return pair.first > _WeightTy{ 0 }; })
+					| boost::adaptors::transformed([](auto& pair) -> reference { return pair.second; });
 	}
 
 	void push_back(const _Ty& elem, _WeightTy weight = 1)
