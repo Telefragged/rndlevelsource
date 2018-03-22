@@ -90,7 +90,7 @@ BoundingBox Side::bbox() const
 
 bool Side::testCollision(const Side& lhs, const Side& rhs)
 {
-	return false;
+	return lhs.polygon.testCollision(rhs.polygon);
 }
 
 void Side::extraOutput(std::ostream& os) const
