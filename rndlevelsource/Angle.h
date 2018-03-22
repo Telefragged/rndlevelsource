@@ -1,5 +1,7 @@
 #pragma once
-#include "Vertex.h"
+
+#include <string>
+#include <string_view>
 
 enum
 {
@@ -9,20 +11,29 @@ enum
 };
 
 class Quaternion;
+class Vertex;
+template <class _Ty, size_t _X, size_t _Y> class Matrix;
 
-class Angle :
-	public Vertex
+using Matrix3d = Matrix<double, 3, 3>;
+
+class Angle
 {
+	double pitch_, yaw_, roll_;
 public:
 	//Returns a string representing the angle object.
-	std::string toStr() const override;
+	std::string toStr() const;
 
 	//Returns true if all angles are non-NAN, return false otherwise.
 	static bool isAngle(const Angle& a);
 
 	double pitch() const;
+	void pitch(double pitch);
+
 	double yaw() const;
+	void yaw(double yaw);
+
 	double roll() const;
+	void roll(double roll);
 
 	//Returns a (non-normalized) vector representing the angle.
 	Vertex toVertex() const;
@@ -47,7 +58,7 @@ public:
 	Angle(const Matrix3d& mat);
 	Angle(double pitch, double yaw, double roll);
 
-	~Angle() override = default;
+	~Angle() = default;
 };
 
 inline Angle operator+(Angle lhs, const Angle& rhs)
@@ -61,4 +72,3 @@ inline Angle operator-(Angle lhs, const Angle& rhs)
 	lhs -= rhs;
 	return lhs;
 }
-

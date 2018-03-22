@@ -6,6 +6,7 @@
 
 #include "Matrix.h"
 #include "Quaternion.h"
+#include "Vertex.h"
 
 #define M_PI 3.14159265358979323846
 
@@ -37,8 +38,12 @@
 //}
 
 
-Angle::Angle(std::string_view str) : Vertex(str)
+Angle::Angle(std::string_view str)
 {
+	Vertex v(str);
+	pitch_ = v.x();
+	yaw_ = v.y();
+	roll_ = v.z();
 }
 
 Angle::Angle(const Matrix3d & mat)
@@ -48,39 +53,57 @@ Angle::Angle(const Matrix3d & mat)
 
 double Angle::pitch() const
 {
-	return x();
+	return pitch_;
+}
+
+void Angle::pitch(double pitch)
+{
+	this->pitch_ = pitch;
 }
 
 double Angle::yaw() const
 {
-	return y();
+	return yaw_;
+}
+
+void Angle::yaw(double yaw)
+{
+	this->yaw_ = yaw;
 }
 
 double Angle::roll() const
 {
-	return z();
+	return roll_;
+}
+
+void Angle::roll(double roll)
+{
+	this->roll_ = roll;
 }
 
 Vertex Angle::toVertex() const
 {
-	Vertex ret;
-	double yawrad = vertex_[YAW] * (M_PI / 180.0);
-	double rollrad = vertex_[ROLL] * (M_PI / 180.0);
+	Vertex ret(1, 0, 0);
+	//double yawrad = vertex_[YAW] * (M_PI / 180.0);
+	//double rollrad = vertex_[ROLL] * (M_PI / 180.0);
 
-	ret.x(cos(yawrad) * cos(rollrad));
-	ret.y(sin(yawrad) * cos(rollrad));
-	ret.z(sin(rollrad));
-	return ret;
+	//ret.pitch(cos(yawrad) * cos(rollrad));
+	//ret.yaw(sin(yawrad) * cos(rollrad));
+	//ret.roll(sin(rollrad));
+
+	auto rotMat = Matrix3d::rotmaty(pitch()) * Matrix3d::rotmatz(yaw()) * Matrix3d::rotmatx(roll());
+
+	return ret.rotate(rotMat);
 }
 
 Matrix3d Angle::angleMatrix() const
 {
-	double sinpitch = sin(DEG2RAD((*this)[PITCH])),
-		cospitch = cos(DEG2RAD((*this)[PITCH])),
-		sinyaw = sin(DEG2RAD((*this)[YAW])),
-		cosyaw = cos(DEG2RAD((*this)[YAW])),
-		sinroll = sin(DEG2RAD((*this)[ROLL])),
-		cosroll = cos(DEG2RAD((*this)[ROLL]));
+	double sinpitch = sin(DEG2RAD(pitch())),
+		cospitch = cos(DEG2RAD(pitch())),
+		sinyaw = sin(DEG2RAD(yaw())),
+		cosyaw = cos(DEG2RAD(yaw())),
+		sinroll = sin(DEG2RAD(roll())),
+		cosroll = cos(DEG2RAD(roll()));
 
 	Matrix3d matrix;
 
@@ -137,72 +160,72 @@ void Angle::fromMatrix(const Matrix3d& matrix)
 
 	if (!doubleeq(xyDist, 0))
 	{
-		(*this)[PITCH] = RAD2DEG( atan2( -forward[2], xyDist ) );
-		(*this)[YAW] = RAD2DEG( atan2( forward[1], forward[0] ) );
-		(*this)[ROLL] = RAD2DEG( atan2( left[2], up[2] ) );
+		pitch_ = RAD2DEG( atan2( -forward[2], xyDist ) );
+		yaw_ = RAD2DEG( atan2( forward[1], forward[0] ) );
+		roll_ = RAD2DEG( atan2( left[2], up[2] ) );
 	}
 	else
 	{ // gimbal lock
-		(*this)[PITCH] = RAD2DEG( atan2( -forward[2], xyDist ) );
-		(*this)[YAW] = RAD2DEG( atan2( -left[0], left[1] ) );
-		(*this)[ROLL] = 0;
+		pitch_ = RAD2DEG( atan2( -forward[2], xyDist ) );
+		yaw_ = RAD2DEG( atan2( -left[0], left[1] ) );
+		roll_ = 0;
 	}
 }
 
 std::string Angle::toStr() const
 {
 	std::ostringstream os;
-	os << (*this)[PITCH] << " "
-		<< (*this)[YAW] << " "
-		<< (*this)[ROLL];
+	os << pitch_ << " "
+		<< yaw_ << " "
+		<< roll_;
 	return os.str();
 }
 
 bool Angle::isAngle(const Angle& a)
 {
-	return (a.x() == a.x() && a.y() == a.y() && a.z() == a.z());
+	return (a.pitch() == a.pitch() && a.yaw() == a.yaw() && a.roll() == a.roll());
 }
 
 Angle& Angle::operator+=(const Angle& rhs)
 {
-	this->vertex_[0] += rhs.vertex_[0];
-	this->vertex_[1] += rhs.vertex_[1];
-	this->vertex_[2] += rhs.vertex_[2];
+	this->pitch_ += rhs.pitch_;
+	this->yaw_ += rhs.yaw_;
+	this->roll_ += rhs.roll_;
 	return *this;
 }
 
 Angle& Angle::operator-=(const Angle& rhs)
 {
-	this->vertex_[0] -= rhs.vertex_[0];
-	this->vertex_[1] -= rhs.vertex_[1];
-	this->vertex_[2] -= rhs.vertex_[2];
+	this->pitch_ -= rhs.pitch_;
+	this->yaw_ -= rhs.yaw_;
+	this->roll_ -= rhs.roll_;
 	return *this;
 }
 
 Angle Angle::operator-() const
 {
 	Angle ret;
-	if (x() > 0)
-		ret.x(x() - 180.0);
+	if (pitch() > 0)
+		ret.pitch(pitch() - 180.0);
 	else
-		ret.x(x() + 180.0);
+		ret.pitch(pitch() + 180.0);
 
-	if (y() > 0)
-		ret.y(y() - 180.0);
+	if (yaw() > 0)
+		ret.yaw(yaw() - 180.0);
 	else
-		ret.y(y() + 180.0);
+		ret.yaw(yaw() + 180.0);
 
-	if (z() > 0)
-		ret.z(z() - 180.0);
+	if (roll() > 0)
+		ret.roll(roll() - 180.0);
 	else
-		ret.z(z() + 180.0);
+		ret.roll(roll() + 180.0);
 
 	return ret;
 }
 
-Angle::Angle(double pitch, double yaw, double roll)
+Angle::Angle(double pitch, double yaw, double roll) :
+	pitch_(pitch),
+	yaw_(yaw),
+	roll_(roll)
 {
-	vertex_[0] = pitch;
-	vertex_[1] = yaw;
-	vertex_[2] = roll;
 }

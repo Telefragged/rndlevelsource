@@ -99,19 +99,19 @@ Angle Quaternion::toAngle()
 	// roll (x-axis rotation)
 	double sinr = 2.0 * (w() * x() + y() * z());
 	double cosr = 1.0 - 2.0 * (x() * x() + y() * y());
-	ret[2] = RAD2DEG(atan2(sinr, cosr));
+	ret.roll(RAD2DEG(atan2(sinr, cosr)));
 
 	// pitch (y-axis rotation)
 	double sinp = 2.0 * (w() * y() - z() * x());
 	if (fabs(sinp) >= 1)
-		ret[0] = RAD2DEG(copysign(M_PI / 2, sinp)); // use 90 degrees if out of range
+		ret.pitch(RAD2DEG(copysign(M_PI / 2, sinp))); // use 90 degrees if out of range
 	else
-		ret[0] = RAD2DEG(asin(sinp));
+		ret.pitch(RAD2DEG(asin(sinp)));
 
 	// yaw (z-axis rotation)
 	double siny = 2.0 * (w() * z() + x() * y());
 	double cosy = 1.0 - 2.0 * (y() * y() + z() * z());
-	ret[1] = RAD2DEG(atan2(siny, cosy));
+	ret.yaw(RAD2DEG(atan2(siny, cosy)));
 
 	return ret;
 }
@@ -151,12 +151,12 @@ Quaternion::Quaternion(double x, double y, double z, double w) :
 
 Quaternion::Quaternion(const Angle& a)
 {
-	double sp = sin(DEG2RAD(a.y()) * 0.5);
-	double cp = cos(DEG2RAD(a.y()) * 0.5);
-	double sr = sin(DEG2RAD(a.x()) * 0.5);
-	double cr = cos(DEG2RAD(a.x()) * 0.5);
-	double sy = sin(DEG2RAD(a.z()) * 0.5);
-	double cy = cos(DEG2RAD(a.z()) * 0.5);
+	double sp = sin(DEG2RAD(a.yaw()) * 0.5);
+	double cp = cos(DEG2RAD(a.yaw()) * 0.5);
+	double sr = sin(DEG2RAD(a.pitch()) * 0.5);
+	double cr = cos(DEG2RAD(a.pitch()) * 0.5);
+	double sy = sin(DEG2RAD(a.roll()) * 0.5);
+	double cy = cos(DEG2RAD(a.roll()) * 0.5);
 
 	double srXcp = sy * cr;
 	double crXsp = cy * sr;
