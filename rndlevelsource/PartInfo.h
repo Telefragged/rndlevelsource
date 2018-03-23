@@ -8,8 +8,7 @@ public:
 	bool scaleable = false;
 	bool canBeRoot = false;
 
-	PartInfo(const Entity &ent);
+	PartInfo(const Entity &entity);
 
 	PartInfo() = default;
 };
-

@@ -45,13 +45,13 @@ public:
 
 	std::string toStr() const;
 
-	Vector();
+	Vector() = default;
 	Vector(const Vertex& vert);
 	Vector(double x, double y, double z);
 
 	//Construct vector with point and vector part
 	Vector(const Vertex& beg, const Vertex& vec);
-	~Vector();
+	~Vector() = default;
 };
 
 inline Vector operator+(Vector lhs, const Vector& rhs)

@@ -61,10 +61,6 @@ bool KeyVal::keycmp(const KeyVal& lhs, const std::string& rhs)
 //	return std::regex_match(lhs.key, reg);
 //}
 
-KeyVal::KeyVal()
-{
-}
-
 KeyVal::KeyVal(const std::string& str)
 {
 	auto trimmed = trim(str);
@@ -94,8 +90,3 @@ KeyVal::KeyVal(const std::string& k, const std::string& v) :
 	val_(v)
 {
 }
-
-KeyVal::~KeyVal()
-{
-}
-

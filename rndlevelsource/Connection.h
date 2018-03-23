@@ -13,7 +13,7 @@ public:
 	Part *parent = nullptr;
 	Connection *neighbour = nullptr;
 
-	void connectTo(WeightedVector<Connection>::iterator other);
+	void connectTo(Connection *targetCon);
 
 	bool isConnected() const;
 

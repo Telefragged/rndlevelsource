@@ -182,6 +182,18 @@ public:
 		throw std::exception("Weight out of range");
 	}
 
+	template <class _Eng>
+	iterator getRandomWeightedIter(_Eng eng)
+	{
+		if constexpr (std::is_integral_v<_WeightTy>)
+		{
+			std::uniform_int_distribution<_WeightTy> dist(0, totalWeight_ - 1);
+			return getWeightedIter(dist(eng));
+		}
+
+		return end();
+	}
+
 	_Ty& at(size_t index)
 	{
 		return vec_.at(index).second;

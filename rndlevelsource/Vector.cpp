@@ -38,10 +38,6 @@ std::string Vector::toStr() const
 	return '(' + orig_.toStr() + ") + t(" + vec_.toStr() + ')';
 }
 
-Vector::Vector()
-{
-}
-
 Vector::Vector(const Vertex& vert) :
 	orig_(0, 0, 0),
 	vec_(vert)
@@ -110,10 +106,6 @@ double Vector::calculatePosition(const Vertex & v) const
 		return -len;
 
 	return len;
-}
-
-Vector::~Vector(void)
-{
 }
 
 Vertex Vector::beg() const

@@ -148,14 +148,15 @@ void Polygon::roundPoints(size_t precision)
 	});
 }
 
-Vertex Polygon::intersectPoint(const Vector & line, int flags) const
+Vertex Polygon::intersectPoint(const Vector& line, int flags) const
 {
 	Plane plane = this->plane();
+
 	auto point = Plane::intersectPoint(plane, line);
 
 	Vertex defaultRet = (flags & lineBoundsFlag::RETURN_END_ON_FAIL) > 0 ? line.end() : Vertex();
 
-	flags = static_cast<lineBoundsFlag>(flags & lineBoundsFlag::ALLOW_BOTH);
+	flags = flags & lineBoundsFlag::ALLOW_BOTH;
 
 	if (!Vertex::isVertex(point))
 		return defaultRet;
@@ -169,10 +170,10 @@ Vertex Polygon::intersectPoint(const Vector & line, int flags) const
 	{
 		double position = line.calculatePosition(point);
 
-		if ((lineBoundsFlag::ALLOW_BACK & flags) == 0 && position < 0)
+		if ((lineBoundsFlag::ALLOW_BACK & flags) == 0 && (position < 0 || doubleeq(position, 0)))
 			return defaultRet;
 
-		if ((lineBoundsFlag::ALLOW_FRONT & flags) == 0 && position > 1)
+		if ((lineBoundsFlag::ALLOW_FRONT & flags) == 0 && (position > 1 || doubleeq(position, 1)))
 			return defaultRet;
 	}
 
@@ -191,7 +192,7 @@ bool Polygon::testCollision(const Vertex& point) const
 		double nom = p1.length() * p2.length();
 
 		if (doubleeq(nom, 0))
-			return true;
+			return false;
 
 		sum += acos(p1.dotProduct(p2) / nom);
 	}
@@ -202,7 +203,12 @@ bool Polygon::testCollision(const Vertex& point) const
 bool Polygon::testCollision(const Vector& line, int flags) const
 {
 	// Ensure method returns NaN vector if it fails so we can test it.
-	return Vertex::isVertex(intersectPoint(line, static_cast<lineBoundsFlag>(flags & lineBoundsFlag::ALLOW_BOTH)));
+	Vertex intersect = intersectPoint(line, flags);
+
+	if (!Vertex::isVertex(intersect))
+		return false;
+
+	return true;
 }
 
 bool Polygon::testCollision(const Polygon& polygon) const
@@ -211,6 +217,12 @@ bool Polygon::testCollision(const Polygon& polygon) const
 		return true;
 
 	if (points.size() < 3 || polygon.points.size() < 3)
+		return false;
+
+	Vertex thisNorm = this->plane().normal();
+	Vertex polyNorm = polygon.plane().normal();
+
+	if (thisNorm == polyNorm || thisNorm == -polyNorm)
 		return false;
 
 	for (size_t n = 0; n < points.size(); n++)

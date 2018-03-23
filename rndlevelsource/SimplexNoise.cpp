@@ -31,8 +31,8 @@ double SimplexNoise::getNoise(double x, double y)
 	const double unskew2D = (3.0 - sqrt(3.0)) / 6.0;
 
 	double s = (x + y) * skew2D;
-	int i = static_cast<int>(floor(s + x));
-	int j = static_cast<int>(floor(s + y));
+	auto i = static_cast<int>(floor(s + x));
+	auto j = static_cast<int>(floor(s + y));
 	double t = (i + j) * unskew2D;
 
 	double origx = i - t;
@@ -88,12 +88,6 @@ double SimplexNoise::getNoise(double x, double y)
 	return 70.0 * (contribs[0] + contribs[1] + contribs[2]);
 }
 
-
-SimplexNoise::~SimplexNoise(void)
-{
-}
-
-
 double SimplexFractal::getNoise(double x, double y)
 {
 	double result = 0.0;
@@ -120,9 +114,5 @@ SimplexFractal::SimplexFractal(std::mt19937& eng, size_t octaves, double lacunar
 	{
 		octaves_.emplace_back(eng);
 	}
-}
-
-SimplexFractal::~SimplexFractal()
-{
 }
 

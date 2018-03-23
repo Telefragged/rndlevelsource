@@ -23,12 +23,36 @@ bool Solid::testCollision(const Solid& lhs, const Solid& rhs)
 	return false;
 }
 
+Vertex Solid::intersectPoint(const Vector& line, int flags)
+{
+	Vertex ret = (flags & Polygon::lineBoundsFlag::RETURN_END_ON_FAIL) > 0 ? line.end() : Vertex();
+
+	double minPos = std::numeric_limits<double>::infinity();
+
+	for (auto &side : sides)
+	{
+		Vertex intersect = side.polygon.intersectPoint(line, flags & Polygon::lineBoundsFlag::ALLOW_BOTH);
+
+		if (Vertex::isVertex(intersect))
+		{
+			double position = abs(line.calculatePosition(intersect));
+			if (position < minPos)
+			{
+				minPos = position;
+				ret = intersect;
+			}
+		}
+	}
+
+	return ret;
+}
+
 bool Solid::slice(const Plane& plane, Solid& front, Solid& back) const
 {
 	front = Solid();
 	back = Solid();
 
-	if (sides.size() == 0)
+	if (sides.empty())
 		return false;
 
 	std::vector<Polygon::classification> classes;
@@ -74,10 +98,9 @@ size_t Solid::parseSpecial(std::istream & stream, std::string_view type)
 		addSide(side);
 		return ret;
 	}
-	else if (type == "editor")
-	{
+
+	if (type == "editor")
 		return edt.parse(stream);
-	}
 
 	return 0;
 }
@@ -134,7 +157,7 @@ void Solid::addSide(const Side &side)
 		tmp.polygon.sliceThis(other.plane());
 	}
 
-	sides.push_back(tmp);
+	sides.push_back(std::move(tmp));
 }
 
 void Solid::fixSides()
@@ -195,16 +218,29 @@ std::string Solid::getName() const
 	return "solid";
 }
 
+bool Solid::empty() const
+{
+	return keyvals.empty() && sides.empty();
+}
+
+Solid::Solid(const BoundingBox & b)
+{
+	Plane under = { { b.min.x(), b.min.y(), b.min.z() },{ b.max.x(), b.min.y(), b.min.z() },{ b.max.x(), b.max.y(), b.min.z() } };
+	Plane over = { { b.max.x(), b.max.y(), b.max.z() },{ b.max.x(), b.min.y(), b.max.z() },{ b.min.x(), b.min.y(), b.max.z() } };
+	Plane front = { { b.min.x(), b.min.y(), b.min.z() },{ b.min.x(), b.min.y(), b.max.z() },{ b.max.x(), b.min.y(), b.max.z() } };
+	Plane back = { { b.min.x(), b.max.y(), b.min.z() },{ b.max.x(), b.max.y(), b.min.z() },{ b.max.x(), b.max.y(), b.max.z() } };
+	Plane left = { { b.min.x(), b.max.y(), b.min.z() },{ b.min.x(), b.max.y(), b.max.z() },{ b.min.x(), b.min.y(), b.max.z() } };
+	Plane right = { { b.max.x(), b.min.y(), b.min.z() },{ b.max.x(), b.min.y(), b.max.z() },{ b.max.x(), b.max.y(), b.max.z() } };
+
+	*this = Solid{ under, over, front, back, left, right };
+}
+
 Solid::Solid(const std::initializer_list<Plane>& planes) : Solid()
 {
 	for (const auto &plane : planes)
 	{
 		Side side;
 		side.polygon = { plane };
-		for (const auto &other : planes)
-			if (&plane != &other)
-				side.polygon.sliceThis(other);
-
-		sides.push_back(side);
+		addSide(side);
 	}
 }

@@ -75,7 +75,7 @@ public:
 	Vertex();
 	Vertex(std::string_view str);
 	Vertex(double x, double y, double z);
-	virtual ~Vertex();
+	virtual ~Vertex() = default;
 };
 
 inline std::ostream& operator<<(std::ostream& os, const Vertex& v)
@@ -122,5 +122,5 @@ inline Vertex operator/(Vertex lhs, double rhs)
 
 inline Vertex operator-(const Vertex& v)
 {
-	return -1 * v;
+	return Vertex{ -v.x(), -v.y(), -v.z() };
 }

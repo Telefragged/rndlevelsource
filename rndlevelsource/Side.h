@@ -41,6 +41,7 @@ public:
 
 	void extraOutput(std::ostream& os) const override;
 	std::string getName() const override;
+	bool empty() const override;
 
 	Side() = default;
 	~Side() override = default;

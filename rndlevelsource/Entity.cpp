@@ -17,11 +17,13 @@ size_t Entity::parseSpecial(std::istream& stream, std::string_view type)
 		it->fixSides();
 		return ret;
 	}
-	else if (type == "editor")
+
+	if (type == "editor")
 	{
 		return edt.parse(stream);
 	}
-	else if (type == "group")
+
+	if (type == "group")
 	{
 		Solid solid;
 		return solid.parse(stream);
@@ -47,10 +49,7 @@ bool Entity::testCollision(const Entity& lhs, const Entity& rhs)
 
 bool Entity::entclasscmp(const Entity& lhs, const std::string& rhs)
 {
-	if (lhs.keyvals.count("classname") == 0)
-		return false;
-
-	else if (lhs.keyvals.at("classname") == rhs)
+	if (auto it = lhs.keyvals.find("classname");  it->second == rhs)
 		return true;
 
 	return false;

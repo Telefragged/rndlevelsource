@@ -2,7 +2,6 @@
 #include <fstream>
 #include <functional>
 #include <string>
-#include <stdio.h>
 
 #include "Angle.h"
 #include "BoundingBox.h"
@@ -27,7 +26,7 @@ bool Part::scaleablePredicate(const Part& part)
 
 bool Part::interPredicate(const Part& part)
 {
-	return part.connections.size() >= 2;
+	return part.connections.size() >= 2 && !scaleablePredicate(part);
 }
 
 size_t Part::parse(std::istream& stream)

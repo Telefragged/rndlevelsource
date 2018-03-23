@@ -91,12 +91,12 @@ public:
 	{
 		prevTime = double(getTime().count());
 		double printtime = prevTime / mod;
-		if (print_on_destruct && printtime >= mint) printf("%.3f%s\n", printtime, _print.c_str());
+		if (print_on_destruct && printtime >= mint) printf("%.3f %s\n", printtime, _print.c_str());
 	}
 };
 
 template <class rettm>
-bool Timer<rettm>::print_on_destruct = false;
+bool Timer<rettm>::print_on_destruct = true;
 
 template <class rettm>
 double Timer<rettm>::prevTime = 0.0;

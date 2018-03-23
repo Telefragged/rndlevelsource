@@ -44,7 +44,7 @@ public:
 	std::pair<Polygon, Polygon> slice(const Plane& plane) const;
 
 	void flip();
-	void roundPoints(size_t precision = 3);
+	void roundPoints(size_t precision = 4);
 
 	Vertex intersectPoint(const Vector& line, int flags = lineBoundsFlag::ALLOW_BOTH) const;
 

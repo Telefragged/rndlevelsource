@@ -16,20 +16,10 @@ class Solid :
 public:
 	Editor edt;
 
-	enum texmode
-	{
-		UP = 0x0001,
-		DOWN = 0x0002,
-		NORTH = 0x0004,
-		SOUTH = 0x0008,
-		WEST = 0x0010,
-		EAST = 0x0020,
-		INSIDE = 0x0040
-	};
-
 	std::vector<Side> sides;
 
 	static bool testCollision(const Solid& lhs, const Solid& rhs);
+	Vertex intersectPoint(const Vector& line, int flags = Polygon::lineBoundsFlag::ALLOW_BOTH);
 
 	bool slice(const Plane& plane, Solid& front, Solid& back) const;
 
@@ -51,8 +41,10 @@ public:
 
 	void extraOutput(std::ostream& os) const override;
 	std::string getName() const override;
+	bool empty() const override;
 
 	Solid() = default;
+	Solid(const BoundingBox& b);
 	Solid(const std::initializer_list<Plane>& planes);
 	~Solid() override = default;
 };

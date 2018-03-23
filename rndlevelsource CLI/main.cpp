@@ -17,7 +17,6 @@
 #include <boost/range/algorithm.hpp>
 #include <boost/range/numeric.hpp>
 #include <boost/range/algorithm_ext/erase.hpp>
-#include <boost/timer/timer.hpp>
 
 template <class Eng>
 Connection *selectRandomConnection(Part& part, Eng &engine)
@@ -60,114 +59,54 @@ void scaleToFit(Part& scaleable, Connection* scalec, const Connection* firstc, c
 
 int main(int argc, char* argv[])
 {
+	//Part p(R"(f:\test\collisions\collision 1.vmf)");
 
-	WeightedVector<int> abc;
+	//std::vector<Solid> lhs, rhs;
 
+	//const auto &worldspawn = *boost::find_if(p.entities, &Entity::entworldcmp);
+
+	//for (auto &solid : worldspawn.solids)
+	//{
+	//	auto &side = solid.sides[0];
+
+	//	if (side["material"] == "BRICK/BRICKFLOOR001A")
+	//		lhs.push_back(solid);
+	//	else if (side["material"] == "BRICK/BRICKWALL001A")
+	//		rhs.push_back(solid);
+	//}
+
+	//std::cout << lhs.size() << ", " << rhs.size() << "\n";
+
+	//for (auto &lhsSolid : lhs)
+	//{
+	//	for (auto &rhsSolid : rhs)
+	//	{
+	//		if (Solid::testCollision(lhsSolid, rhsSolid))
+	//		{
+	//			std::cout << "collision\n";
+	//		}
+	//	}
+	//}
+
+	//std::cin.get();
+
+	//return 0;
+
+	World randomWorld;
+
+	randomWorld.addPart(Part(R"(f:\test\rndmap\room5.vmf)"));
+	randomWorld.addPart(Part(R"(f:\test\testmap.vmf)"));
+	randomWorld.addPart(Part(R"(f:\test\rndmap\room6.vmf)"));
+	randomWorld.addPart(Part(R"(f:\test\rndmap\room1.vmf)"));
+	randomWorld.addPart(Part(R"(f:\test\rndmap\room2.vmf)"));
+	randomWorld.addPart(Part(R"(f:\test\rndmap\roomT.vmf)"));
+	randomWorld.addPart(Part(R"(f:\test\rndmap\roomX.vmf)"));
+
+	randomWorld.buildInitial(30);
+
+	randomWorld.serialize().toFile(R"(f:\test\randomworld.vmf)");
 
 	std::cin.get();
-
-	return 0;
-	std::vector<Part> vec;
-
-	WeightedVector<Part> scaleables, starts, inters;
-
-	vec.push_back(Part(R"(f:\test\rndmap\room5.vmf)"));
-	vec.push_back(Part(R"(f:\test\testmap.vmf)"));
-	vec.push_back(Part(R"(f:\test\rndmap\room6.vmf)"));
-	vec.push_back(Part(R"(f:\test\rndmap\room1.vmf)"));
-	vec.push_back(Part(R"(f:\test\rndmap\room2.vmf)"));
-
-	auto startPred = [](const Part& part)
-	{
-		return part.connections.size() >= 1
-			&& part.countEntities("info_player_start") == 1;
-	};
-
-	auto scaleablePred = [](const Part &part)
-	{
-		bool aligned = part.connections.size() == 2
-			&& Vertex::countDifferentAxes(part.connections[0].origin(), part.connections[1].origin()) == 1;
-
-		return aligned && part.info.scaleable;
-	};
-
-	auto interPred = [](const Part& part)
-	{
-		return part.connections.size() >= 2;
-	};
-
-	auto startRange = boost::partition<boost::return_found_end>(vec, std::not_fn(startPred));
-	boost::copy(startRange, std::back_inserter(starts));
-	boost::erase(vec, startRange);
-
-	//auto scaleableRange = boost::partition<boost::return_found_end>(vec, std::not_fn(scaleablePred));
-	//boost::copy(scaleableRange, std::back_inserter(scaleables));
-	//boost::erase(vec, scaleableRange);
-
-	auto interRange = boost::partition<boost::return_found_end>(vec, std::not_fn(interPred));
-	boost::copy(interRange, std::back_inserter(inters));
-	boost::erase(vec, interRange);
-
-	std::random_device dev;
-
-	std::mt19937_64 eng(dev());
-
-	std::uniform_real_distribution<> scaleDist(200., 1000.);
-
-	std::vector<Part> world;
-
-	std::uniform_int_distribution<ptrdiff_t> startDist(0, starts.totalWeight() - 1);
-
-	world.emplace_back(starts.getWeighted(startDist(eng)));
-
-	auto &startPart = world.back();
-
-	auto box = startPart.bbox();
-
-	startPart.moveTo((box.max - box.min) / 2);
-
-	std::array<std::string, 2> colors = { "255 0 0", "0 255 0" };
-
-	for (auto &entity : startPart.entities)
-	{
-		for (auto &solid : entity.solids)
-		{
-			solid.edt["color"] = colors[1];
-		}
-	}
-
-	for (size_t n = 0; n < 20; n++)
-	{
-		std::uniform_int_distribution<ptrdiff_t> interDist(0, inters.totalWeight() - 1);
-
-		auto &weightedPart = *inters.getWeightedAndRedistribute(interDist(eng), eng);
-
-		auto &newPart = world.emplace_back(weightedPart);
-
-		if (scaleablePred(newPart) == true)
-			newPart.scaleTo(std::round(scaleDist(eng)));
-
-		auto &prevPart = world[world.size() - 2];
-		auto prevc = prevPart.selectRandomConnection(eng);
-		auto newc = newPart.selectRandomConnection(eng);
-
-		newc->connectTo(prevc);
-
-		for (auto &entity : newPart.entities)
-		{
-			for (auto &solid : entity.solids)
-			{
-				solid.edt["color"] = colors[n % 2];
-			}
-		}
-	}
-
-	Part part;
-
-	for (auto& p : world)
-		part += p;
-
-	part.toFile(R"(f:\test\randomworld.vmf)");
 
 	return 0;
 }

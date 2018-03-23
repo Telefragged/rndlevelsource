@@ -15,7 +15,7 @@ public:
 
 	double getNoise(double x, double y);
 
-	SimplexNoise(std::mt19937&);
+	SimplexNoise(std::mt19937& eng);
 	~SimplexNoise();
 };
 
@@ -29,7 +29,7 @@ public:
 
 	double getNoise(double x, double y);
 
-	SimplexFractal(std::mt19937&, size_t octaves, double lacunarity);
+	SimplexFractal(std::mt19937& eng, size_t octaves, double lacunarity);
 	~SimplexFractal();
 };
 

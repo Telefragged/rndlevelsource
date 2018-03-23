@@ -1,7 +1,6 @@
 #include "Side.h"
 
 #include <ios>
-#include <stdio.h>
 
 #include "BoundingBox.h"
 #include "KeyVal.h"
@@ -90,7 +89,9 @@ BoundingBox Side::bbox() const
 
 bool Side::testCollision(const Side& lhs, const Side& rhs)
 {
-	return lhs.polygon.testCollision(rhs.polygon);
+	bool collided = lhs.polygon.testCollision(rhs.polygon);
+
+	return collided;
 }
 
 void Side::extraOutput(std::ostream& os) const
@@ -108,4 +109,9 @@ void Side::extraOutput(std::ostream& os) const
 std::string Side::getName() const
 {
 	return "side";
+}
+
+bool Side::empty() const
+{
+	return keyvals.empty() && polygon.points.size() < 3;
 }

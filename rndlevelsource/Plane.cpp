@@ -50,9 +50,13 @@ Vertex Plane::closestAxisToNormal() const
 {
 	auto norm = Vertex::absolute(normal());
 
-	if (norm.x() >= norm.y() && norm.x() >= norm.z()) return Vertex::unitX;
-	else if (norm.y() >= norm.z()) return Vertex::unitY;
-	else return Vertex::unitZ;
+	if (norm.x() >= norm.y() && norm.x() >= norm.z())
+		return Vertex::unitX;
+
+	if (norm.y() >= norm.z())
+		return Vertex::unitY;
+
+	return Vertex::unitZ;
 }
 
 Plane Plane::vectorPlane(const Vector& line1, const Vector& line2)

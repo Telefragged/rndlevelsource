@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Vertex.h"
+#include "Polygon.h"
 
 class Vector;
 
@@ -12,10 +13,12 @@ public:
 
 	//Returns true if lhs collides with rhs. Returns false otherwise.
 	static bool testCollision(const BoundingBox& lhs, const BoundingBox& rhs);
+	
+	bool testCollision(const Vector& line, int flags = Polygon::lineBoundsFlag::ALLOW_NONE);
 
 	std::string toStr() const;
 
-	BoundingBox();
+	BoundingBox() = default;
 	BoundingBox(const Vector& v);
 	BoundingBox(const Vertex& min, const Vertex& max);
 	~BoundingBox() = default;

@@ -10,6 +10,7 @@ namespace rndlevelsourceUnitTests
 	TEST_CLASS(PolygonTests)
 	{
 		const Polygon TestPolygonUp{ {0, 0, 0}, {0, 64, 0}, {64, 64, 0}, {64, 0, 0} };
+		const Polygon TestPolygonRight{ {0, 0, 0}, {0, 64, 0}, {0, 64, 64}, {0, 0, 64} };
 		const Plane TestPlaneUp{ {0, 0, 0}, {0, 64, 0}, {64, 64, 0} };
 	public:
 
@@ -72,6 +73,19 @@ namespace rndlevelsourceUnitTests
 
 			Assert::AreEqual(size_t{ 4 }, back.points.size());
 			Assert::AreEqual(size_t{ 4 }, front.points.size());
+		}
+
+		TEST_METHOD(TestPolygonCollide)
+		{
+			Polygon movedRightPolygon = TestPolygonRight;
+
+			movedRightPolygon.moveTo({ 0, 0, 0 });
+
+			Assert::AreEqual(true, TestPolygonUp.testCollision(movedRightPolygon));
+
+			movedRightPolygon.moveTo({ 0, 0, 33 });
+
+			Assert::AreEqual(false, TestPolygonUp.testCollision(movedRightPolygon));
 		}
 	};
 }

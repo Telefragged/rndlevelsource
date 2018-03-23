@@ -4,6 +4,7 @@
 #include <limits>
 
 #include "Vector.h"
+#include "Solid.h"
 
 bool BoundingBox::testCollision(const BoundingBox& lhs, const BoundingBox& rhs)
 {
@@ -15,16 +16,21 @@ bool BoundingBox::testCollision(const BoundingBox& lhs, const BoundingBox& rhs)
 		&& lhs.min.z() < rhs.max.z());
 }
 
+bool BoundingBox::testCollision(const Vector& line, int flags)
+{
+	Solid s(*this);
+
+	Vertex intersect = s.intersectPoint(line, flags & Polygon::lineBoundsFlag::ALLOW_BOTH);
+
+	return Vertex::isVertex(intersect);
+}
+
 std::string BoundingBox::toStr() const
 {
 	std::ostringstream os;
 	os << "(" << min.x() << ", " << min.y() << ", " << min.z() << ")"
 		<< " (" << max.x() << ", " << max.y() << ", " << max.z() << ")";
 	return os.str();
-}
-
-BoundingBox::BoundingBox()
-{
 }
 
 BoundingBox::BoundingBox(const Vector& v) :
@@ -38,5 +44,3 @@ BoundingBox::BoundingBox(const Vertex& min, const Vertex& max) :
 	max(max)
 {
 }
-
-
